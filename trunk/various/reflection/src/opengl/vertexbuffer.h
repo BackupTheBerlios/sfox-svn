@@ -6,7 +6,7 @@ private:
   int type;
   unsigned int id;
   unsigned int size;
-  void *mem;
+  bool locked;
   
 public:
   //type = GL_ARRAY_BUFFER_ARB or GL_ELEMENT_ARRAY_BUFFER_ARB
@@ -26,7 +26,7 @@ public:
 
   void bind();
 
-  void lock(int access);
+  void *lock(int access);
   void unlock();
 };
 

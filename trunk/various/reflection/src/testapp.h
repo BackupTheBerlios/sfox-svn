@@ -29,6 +29,9 @@ private:
 
   void printInfos();
 
+  void computeTangent();
+  void drawTangent();
+  
 public:
   TestApp();
   ~TestApp() {}

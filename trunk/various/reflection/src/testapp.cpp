@@ -58,7 +58,7 @@ TestApp::init() {
   m->setSpecular(1, 1, 1);
   m->setShininess(16);
 
-  Mesh meshTest("data/monkey.scn");
+  Mesh meshTest("data/sphere.scn");
   obj = new Object3d(&meshTest);
   obj->setMaterial(m);
 
@@ -72,19 +72,69 @@ TestApp::init() {
   light->setDiffuse(1, 1, 1, 1);
   
   shader = new Shader();
-  shader->setVertexShader("shaders/phong.vert");
-  shader->setFragmentShader("shaders/phong.frag");
+  shader->setVertexShader("shaders/bump.vert");
+  shader->setFragmentShader("shaders/bump.frag");
   shader->link();
   shader->validate();
 
-  shader->getAttrib("tangent");
+  computeTangent();
+}
 
-/*  VertexBuffer *vb = obj->getVertexBuffer();
+void
+TestApp::computeTangent()
+{
+  VertexBuffer *vb = obj->getVertexBuffer();
   vb->bind();
+  Vertex *vert=(Vertex *)vb->lock(GL_READ_WRITE_ARB);
+  for(size_t i=0; i<obj->getNumVertices(); i++) {
+    float u = vert[i].u; float v = vert[i].v;
+    vert[i].tangent[0] = sin(u*M_PI)*cos(-v*M_PI);
+    vert[i].tangent[1] = -cos(u*M_PI)*sin(-v*M_PI);
+    vert[i].tangent[2] = 0.0f;
+  }
+  vb->unlock();
+  //shader->bind();
   glEnableVertexAttribArrayARB(shader->getAttrib("tangent"));
   vb->attribPointer(shader->getAttrib("tangent"), 3, GL_FLOAT, sizeof(Vertex),
-  OFFSETTANGENT);*/
-  //shader->setUniform("myTexture", 0);
+                    OFFSETTANGENT);
+}
+
+void
+TestApp::drawTangent()
+{
+  static Vec3f *tangent = 0;
+  static Vec3f *normal = 0;
+  if(!tangent) {
+    tangent = new Vec3f[obj->getNumVertices()*2];
+    normal = new Vec3f[obj->getNumVertices()*2];
+    VertexBuffer *vb = obj->getVertexBuffer();
+    vb->bind();
+    Vertex *vert=(Vertex *)vb->lock(GL_READ_ONLY_ARB);
+    for(size_t i=0; i<obj->getNumVertices(); i+=2) {
+      float u = vert[i].u; float v = vert[i].v;
+      std::cout << u << " " << v << std::endl;
+      normal[i].x = tangent[i].x = vert[i].x;
+      normal[i].y = tangent[i].y = vert[i].y;
+      normal[i].z = tangent[i].z = vert[i].z;
+
+      tangent[i+1].x = vert[i].x+sin(u*M_PI)*cos(-v*M_PI)*0.1f;
+      tangent[i+1].y = vert[i].y-cos(u*M_PI)*sin(-v*M_PI)*0.1f;
+      tangent[i+1].z = vert[i].z;
+
+      normal[i+1].x = vert[i].x+vert[i].nx*0.1;
+      normal[i+1].y = vert[i].y+vert[i].ny*0.1;
+      normal[i+1].z = vert[i].z+vert[i].nz*0.1;
+    }
+    vb->unlock();
+  }
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glBegin(GL_LINES);
+  for(size_t i=0; i<obj->getNumVertices()*2; i++)
+    glVertex3f(tangent[i].x, tangent[i].y, tangent[i].z);
+  glColor3f(0.0f, 1.0f, 0.0f);
+  for(size_t i=0; i<obj->getNumVertices()*2; i++)
+    glVertex3f(normal[i].x, normal[i].y, normal[i].z);
+  glEnd();
 }
 
 /*****************************************************************************/
@@ -110,7 +160,7 @@ TestApp::render() {
   
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
-  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glPushMatrix();
   glRotatef(alpha, 0, 1, 0);
   //alpha+=0.1;
@@ -120,6 +170,8 @@ TestApp::render() {
 
   Shader::useFixedPipeline();
 
+  drawTangent();
+  
   printInfos();
 }
 

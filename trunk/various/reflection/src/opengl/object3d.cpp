@@ -13,13 +13,16 @@
 Object3d::Object3d(Mesh *m)
   : mat(0)
 {
-  unsigned int n;
-  Vertex *vec = m->getVertex(&n);
-  vertices = new VertexBuffer(GL_ARRAY_BUFFER_ARB, n*sizeof(Vertex), GL_STATIC_DRAW_ARB, vec);
+  Vertex *vec = m->getVertex(&numVertices);
+  vertices = new VertexBuffer(GL_ARRAY_BUFFER_ARB, numVertices*sizeof(Vertex),
+                              GL_STATIC_DRAW_ARB, vec);
   delete[] vec;
 
   unsigned int *in = m->getFaces();
-  indices = new VertexBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, m->getNumFaces()*sizeof(int)*3, GL_STATIC_DRAW_ARB, in);
+  numFaces = m->getNumFaces();
+  indices = new VertexBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB,
+                             numFaces*sizeof(int)*3,
+                             GL_STATIC_DRAW_ARB, in);
   delete[] in;
 }
 

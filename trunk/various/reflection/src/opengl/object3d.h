@@ -9,6 +9,7 @@ class Object3d {
 private:
   Material *mat; //Destructor deletes everything
   VertexBuffer *vertices, *indices;
+  unsigned int numVertices, numFaces;
 
 public:
   Object3d(Mesh *m);
@@ -21,6 +22,8 @@ public:
 
   VertexBuffer *getVertexBuffer() { return vertices; }
   VertexBuffer *getIndexBuffer() { return indices; }
+  unsigned int getNumVertices() { return numVertices; }
+  unsigned int getNumFaces() { return numFaces; }
 };
 
 #endif

@@ -11,7 +11,7 @@
 #define OFFSET(x) ((char *)NULL + (x))
 
 VertexBuffer::VertexBuffer(int type, int size, int usage, const void *data)
-  : type(type), size(size), mem(0)
+  : type(type), size(size), locked(false)
 {
   assert(type==GL_ARRAY_BUFFER_ARB||type==GL_ELEMENT_ARRAY_BUFFER_ARB);
   glGenBuffersARB(1, &id);
@@ -75,17 +75,18 @@ VertexBuffer::drawElements(int mode)
   glDrawElements(mode, size/sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 }
 
-void
+void *
 VertexBuffer::lock(int access)
 {
-  assert(!mem&&"Buffer alreaddy locked");
-  mem = glMapBufferARB(type, access);
+  assert(!locked&&"Buffer alreaddy locked");
+  locked = true;
+  return glMapBufferARB(type, access);
 }
 
 void
 VertexBuffer::unlock()
 {
-  assert(mem&&"Buffer not locked");
+  assert(locked&&"Buffer not locked");
   glUnmapBufferARB(type);
-  mem = 0;
+  locked = false;
 }
