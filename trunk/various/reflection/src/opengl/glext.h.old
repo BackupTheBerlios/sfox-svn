@@ -1,0 +1,46 @@
+#ifndef MYGLEXT_H
+#define MYGLEXT_H
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+// vbo
+extern PFNGLGENBUFFERSARBPROC glGenBuffersARB;
+extern PFNGLBINDBUFFERARBPROC glBindBufferARB;
+extern PFNGLBUFFERDATAARBPROC glBufferDataARB;
+extern PFNGLDELETEBUFFERSARBPROC glDeleteBuffersARB;
+extern PFNGLMAPBUFFERARBPROC glMapBufferARB;
+extern PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB;
+
+// vertex program
+extern PFNGLGENPROGRAMSARBPROC glGenProgramsARB;
+extern PFNGLPROGRAMSTRINGARBPROC glProgramStringARB;
+extern PFNGLDELETEPROGRAMSARBPROC glDeleteProgramsARB;
+extern PFNGLBINDPROGRAMARBPROC glBindProgramARB;
+
+//glsl
+extern PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
+extern PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
+extern PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
+extern PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB;
+extern PFNGLLINKPROGRAMARBPROC glLinkProgramARB;
+extern PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB;
+extern PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
+extern PFNGLATTACHOBJECTARBPROC glAttachObjectARB;
+
+// Multitexturing
+extern PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;
+extern PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB;
+extern PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB;
+extern PFNGLMULTITEXCOORD3FARBPROC glMultiTexCoord3fARB;
+
+namespace GLext {
+  extern void init();
+}
+
+
+#endif
