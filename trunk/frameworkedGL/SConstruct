@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+import sys
+
+sdl_env = Environment()
+freetype_env = Environment()
+
+if sys.platform == 'linux2' or sys.platform == 'linux-i386':
+	#SDL
+	sdl_env.ParseConfig('sdl-config --cflags --libs')
+	sdl_cflags = sdl_env.Dictionary()['CCFLAGS']
+	sdl_include = sdl_env.Dictionary()['CPPPATH']
+	sdl_libpath = sdl_env.Dictionary()['LIBPATH']
+	sdl_lib = sdl_env.Dictionary()['LIBS']
+	#Freetype			       
+	freetype_env.ParseConfig('pkg-config --cflags --libs freetype2 || freetype-config --cflags --libs')
+	freetype_cflags = freetype_env.Dictionary()['CCFLAGS']
+	freetype_include = freetype_env.Dictionary()['CPPPATH']
+	freetype_libpath = freetype_env.Dictionary()['LIBPATH']
+	freetype_lib = freetype_env.Dictionary()['LIBS']
+	#OpenGL
+	opengl_lib = ['GL', 'GLU']
+	opengl_static = ['/usr/lib/libGL.a', '/usr/lib/libGLU.a']
+	opengl_libpath = ['/usr/lib', '/usr/X11R6/lib']
+	opengl_include = ['/usr/include', '/usr/X11R6/include']
+	#SDL_image
+	sdl_image_include = sdl_include
+	sdl_image_libpath = sdl_libpath
+	sdl_image_lib = ['SDL_image']
+	#z lib
+	z_lib = ['z']
+	z_libpath = ['/usr/lib']
+	z_include = ['/usr/include']
+	#Framework
+	framework_lib = ['frameworkGL']
+	framework_libpath = ['#lib']
+	framework_include = ['#include']
+
+env = Environment(CCFLAGS = '-g')
+env.Append(CPPPATH = framework_include+z_include+sdl_image_include+sdl_include+opengl_include+freetype_include)
+env.Append(LIBS = framework_lib+z_lib+sdl_image_lib+sdl_lib+opengl_lib+freetype_lib)
+env.Append(LIBPATH = framework_libpath+z_libpath+sdl_image_libpath+sdl_libpath+opengl_libpath+freetype_libpath)
+
+SConscript('framework/SConscript', build_dir='build')
+SConscript('reflection/SConscript', exports = 'env')
+SConscript('pbuffer/SConscript', exports = 'env')
+SConscript('ztest/SConscript', exports = 'env')
+SConscript('perpixellight/SConscript', exports = 'env')

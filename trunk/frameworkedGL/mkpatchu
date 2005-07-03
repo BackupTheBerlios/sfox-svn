@@ -1,0 +1,11 @@
+#!/bin/sh
+
+PATCHFILE=big.patch
+LINUXDIR=/home/gandalf/code/cpp/frameworkedGL
+WINDIR='/mnt/windows/Documents and Settings/gandalf/Bureau/frameworkedGL/frameworkedGL'
+
+rm -f "$PATCHFILE"
+for i in `find "$LINUXDIR" -type f \( -name "*.cpp" -o -name "*.h" \) | sed s,$LINUXDIR,,g`; do
+	diff -urN "$LINUXDIR/$i" "$WINDIR/$i" >> "$PATCHFILE"
+done
+dos2unix "$PATCHFILE"

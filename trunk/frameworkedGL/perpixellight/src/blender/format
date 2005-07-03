@@ -1,0 +1,17 @@
+#File Format
+#Object name\0
+#CHUNKNAME\0 LENGTH(uint without name and length) in octet DATA
+#CHUNKNAME=COLORS UV INDICES VERTICES NORMALS
+#DATA TYPE: uv=2float vertices,normals=3float indices=3uint colors(rgba)=1uint
+
+VERTICES
+ uint size
+w float x y z
+
+INDICES
+  uint size
+  uint i j k
+
+NORMALS\0
+ uint size
+ float nx ny nz

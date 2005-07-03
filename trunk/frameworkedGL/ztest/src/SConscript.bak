@@ -1,0 +1,13 @@
+env = Environment(CPPPATH=['../../include'])
+
+conf = Configure(env)
+env.ParseConfig('pkg-config --cflags --libs freetype2')
+env.ParseConfig('sdl-config --cflags --libs')
+env = conf.Finish()
+
+src="""main.cpp
+       testapp.cpp"""
+env.Append(LIBS = ['frameworkGL', 'GL', 'GLU', 'SDL_image'])
+env.Append(LIBPATH = '../../lib')
+
+env.Program('pbuffer', Split(src))

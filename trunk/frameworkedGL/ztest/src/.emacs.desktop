@@ -1,0 +1,27 @@
+;; -*- coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Jun 22 22:31:05 2005
+;; Emacs version 21.4.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/ztest/src/testapp.cpp"
+  "testapp.cpp"
+  'c-mode
+  '(abbrev-mode)
+  2683
+  '(nil nil)
+  nil
+  nil
+  nil)
+

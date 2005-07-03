@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+Import('env')
+
+src="""main.cpp
+       testapp.cpp"""
+
+env.Program('perpixel', Split(src))

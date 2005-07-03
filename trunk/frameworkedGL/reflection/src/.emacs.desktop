@@ -1,0 +1,49 @@
+;; -*- coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun May  1 12:06:13 2005
+;; Emacs version 21.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/reflection/src/shaders/bump.frag"
+  "bump.frag"
+  'c-mode
+  '(abbrev-mode)
+  362
+  '(242 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/reflection/src/testapp.cpp"
+  "testapp.cpp"
+  'c++-mode
+  '(lazy-lock-mode abbrev-mode)
+  2078
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/reflection/src/shaders/bump.vert"
+  "bump.vert"
+  'c-mode
+  '(abbrev-mode)
+  355
+  '(93 nil)
+  nil
+  nil
+  nil)
+

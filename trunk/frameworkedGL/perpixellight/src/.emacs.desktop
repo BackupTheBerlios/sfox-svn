@@ -1,0 +1,115 @@
+;; -*- coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun May  1 14:01:08 2005
+;; Emacs version 21.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("UV" "cam" "sphere"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/SConstruct"
+  "SConstruct"
+  'fundamental-mode
+  nil
+  22
+  '(22 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/src/SConscript"
+  "SConscript"
+  'fundamental-mode
+  nil
+  344
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/src/testapp.h"
+  "testapp.h"
+  'c++-mode
+  '(abbrev-mode)
+  498
+  '(460 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/usr/include/GL/gl.h"
+  "gl.h"
+  'c++-mode
+  '(abbrev-mode)
+  71036
+  '(nil nil)
+  t
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/object3d.cpp"
+  "object3d.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  1082
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/mesh.cpp"
+  "mesh.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  2251
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/src/shaders/pplight.vert"
+  "pplight.vert"
+  'c-mode
+  '(abbrev-mode)
+  729
+  '(729 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/src/shaders/pplight.frag"
+  "pplight.frag"
+  'c-mode
+  '(abbrev-mode)
+  315
+  '(315 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/perpixellight/src/testapp.cpp"
+  "testapp.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  2699
+  '(2637 nil)
+  nil
+  nil
+  nil)
+

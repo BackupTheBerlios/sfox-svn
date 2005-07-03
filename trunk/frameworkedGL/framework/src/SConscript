@@ -1,0 +1,27 @@
+env = Environment(CPPPATH=['.', 'math', 'framework', 'opengl'])
+
+conf = Configure(env)
+env.ParseConfig('pkg-config --cflags freetype2')
+env.ParseConfig('sdl-config --cflags')
+env = conf.Finish()
+
+src_opengl="""opengl/light.cpp
+       opengl/texture.cpp
+       opengl/font.cpp 
+       opengl/pbuffer.cpp 
+       opengl/camera.cpp
+       opengl/renderer.cpp
+       opengl/mesh.cpp 
+       opengl/vertexbuffer.cpp
+       opengl/glext.cpp 
+       opengl/object3d.cpp 
+       opengl/material.cpp 
+       opengl/shader.cpp"""
+
+src_framework="""framework/application.cpp
+              framework/application.h
+              framework/exception.h
+              framework/timer.cpp
+              framework/timer.h"""
+
+env.Library('frameworkGL', Split(src_framework)+Split(src_opengl))

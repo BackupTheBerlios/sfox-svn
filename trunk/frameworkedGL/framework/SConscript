@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+env = Environment()
+
+SConscript('src/SConscript', build_dir='build')
+
+env.Alias(target="install", source=env.Install(dir="../lib", source="build/libframeworkGL.a"))
+
+#Install include files
+src_math = """src/math/matrix.h
+              src/math/quaternion.h
+              src/math/utils.h
+              src/math/vector2.h
+              src/math/vector3.h"""
+
+src_opengl="""src/opengl/camera.h
+              src/opengl/mesh.h
+              src/opengl/texture.h
+              src/opengl/font.h
+              src/opengl/pbuffer.h
+              src/opengl/object3d.h
+              src/opengl/vertexbuffer.h
+              src/opengl/glext.h
+              src/opengl/vertex.h
+              src/opengl/light.h
+              src/opengl/renderer.h
+              src/opengl/material.h
+              src/opengl/shader.h"""
+
+src_framework="""src/framework/application.h
+                 src/framework/exception.h
+                 src/framework/timer.h"""
+
+env.Alias(target="install", source=env.Install(dir="../include/math", source=Split(src_math)))
+env.Alias(target="install", source=env.Install(dir="../include/opengl", source=Split(src_opengl)))
+env.Alias(target="install", source=env.Install(dir="../include/framework", source=Split(src_framework)))

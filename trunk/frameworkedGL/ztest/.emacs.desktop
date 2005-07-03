@@ -1,0 +1,137 @@
+;; -*- coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun Jun 26 21:40:41 2005
+;; Emacs version 21.4.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("height" "c2" "c" "glE" "bin" "progFp"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/texture.h"
+  "texture.h"
+  'c++-mode
+  '(abbrev-mode)
+  994
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/texture.cpp"
+  "texture.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  358
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/shader.h"
+  "shader.h"
+  'c++-mode
+  '(abbrev-mode)
+  512
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/shader.cpp"
+  "shader.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  4489
+  '(4489 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/ztest/src/shaders/calcnorm.frag"
+  "calcnorm.frag"
+  'fundamental-mode
+  '(abbrev-mode)
+  270
+  '(330 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/pbuffer/src/testapp.h"
+  "testapp.h<2>"
+  'c++-mode
+  '(abbrev-mode)
+  321
+  '(302 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/ztest/src/testapp.h"
+  "testapp.h"
+  'c++-mode
+  '(abbrev-mode)
+  304
+  '(286 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/pbuffer/src/testapp.cpp"
+  "testapp.cpp<2>"
+  'c++-mode
+  '(abbrev-mode)
+  3293
+  '(508 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/program.cpp"
+  "program.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  476
+  '(327 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/ztest/src/shaders/calcnorm.fp"
+  "calcnorm.fp"
+  'fundamental-mode
+  '(lazy-lock-mode)
+  653
+  '(571 t)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/ztest/src/testapp.cpp"
+  "testapp.cpp"
+  'c++-mode
+  '(lazy-lock-mode abbrev-mode)
+  2758
+  '(2560 t)
+  nil
+  nil
+  nil)
+

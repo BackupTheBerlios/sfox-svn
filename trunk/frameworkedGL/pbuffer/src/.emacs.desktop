@@ -1,0 +1,137 @@
+;; -*- coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed May 25 22:01:12 2005
+;; Emacs version 21.3.2
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("depth" "REPL" "bind" "subim"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/pbuffer/src/SConscript"
+  "SConscript"
+  'text-mode
+  '(auto-fill-mode)
+  92
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/pbuffer/src/testapp.h"
+  "testapp.h"
+  'c++-mode
+  '(abbrev-mode)
+  173
+  '(160 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/camera.cpp"
+  "camera.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/mesh.cpp"
+  "mesh.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  2547
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/object3d.h"
+  "object3d.h"
+  'c++-mode
+  '(abbrev-mode)
+  299
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/object3d.cpp"
+  "object3d.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  794
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/texture.h"
+  "texture.h"
+  'c++-mode
+  '(abbrev-mode)
+  1522
+  '(948 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/texture.cpp"
+  "texture.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  3633
+  '(1 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/pbuffer.h"
+  "pbuffer.h"
+  'c++-mode
+  '(abbrev-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/framework/src/opengl/pbuffer.cpp"
+  "pbuffer.cpp"
+  'c++-mode
+  '(abbrev-mode)
+  4003
+  '(3914 nil)
+  nil
+  nil
+  nil)
+
+(desktop-create-buffer 205
+  "/home/gandalf/code/cpp/frameworkedGL/pbuffer/src/testapp.cpp"
+  "testapp.cpp"
+  'c++-mode
+  '(lazy-lock-mode abbrev-mode)
+  4028
+  '(5023 nil)
+  nil
+  nil
+  nil)
+
