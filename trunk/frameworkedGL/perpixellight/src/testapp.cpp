@@ -17,7 +17,6 @@
 #include "opengl/light.h"
 #include "opengl/object3d.h"
 #include "opengl/material.h"
-#include "opengl/program.h"
 #include "opengl/shader.h"
 
 /*****************************************************************************/
