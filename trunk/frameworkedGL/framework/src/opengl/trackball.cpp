@@ -1,5 +1,9 @@
-#include "trackball.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <GL/gl.h>
+
+#include "trackball.h"
 
 namespace StarEngine {
   void
@@ -11,7 +15,7 @@ namespace StarEngine {
     v.y = 1-(2*v.y)/float(h-1);
     v.z = 0;
     if((len2 = v.length2())<INVSQRT2)
-      v.z = std::sqrt(1.0-len2); // We are on the sphere
+      v.z = std::sqrt(1.0f-len2); // We are on the sphere
     else
       v.z = 1.0f/(2*std::sqrt(len2)); // On the hyperbole
   }
@@ -22,7 +26,7 @@ namespace StarEngine {
     if ( !dragging )
       return;
     Quaternionf q;
-    Vec3f endVector(x, y, 0);
+    Vec3f endVector(float(x), float(y), 0);
 
     mapToSphere(endVector);
     q.toRotationArc(startVector, endVector);
@@ -33,7 +37,7 @@ namespace StarEngine {
   void
   Trackball::startRotation(int x, int y)
   {
-    startVector.setValues(x, y, 0);
+    startVector.setValues(float(x), float(y), 0);
     mapToSphere(startVector);
     dragging = true;
   }

@@ -1,5 +1,6 @@
-#include "image.h"
-#include "exception.h"
+#include <cassert>
+#include "opengl/image.h"
+#include "framework/exception.h"
 
 namespace StarEngine {
   Image::Image()

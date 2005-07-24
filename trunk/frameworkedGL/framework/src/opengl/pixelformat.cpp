@@ -1,4 +1,9 @@
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <cassert>
+#include <GL/gl.h>
+#include <GL/glext.h>
 
 #include "pixelformat.h"
 

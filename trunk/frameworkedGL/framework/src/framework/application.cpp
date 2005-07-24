@@ -7,7 +7,7 @@
 #include <cstring>
 
 #include "application.h"
-#include "texturemanager.h"
+#include "opengl/texturemanager.h"
 
 namespace StarEngine {
   using namespace std;

@@ -108,10 +108,19 @@
 				RelativePath="..\..\framework\src\opengl\camera.cpp">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\fbo.cpp">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\opengl\font.cpp">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\glext.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\image.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\imageloader.cpp">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\light.cpp">
@@ -129,7 +138,13 @@
 				RelativePath="..\..\framework\src\opengl\pbuffer.cpp">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\pixelformat.cpp">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\opengl\renderer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\ressourcemanager.cpp">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\shader.cpp">
@@ -138,7 +153,19 @@
 				RelativePath="..\..\framework\src\opengl\texture.cpp">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\texture2d.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\texturemanager.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\textureunit.cpp">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\framework\timer.cpp">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\trackball.cpp">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\vertexbuffer.cpp">
@@ -158,10 +185,19 @@
 				RelativePath="..\..\framework\src\framework\exception.h">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\fbo.h">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\opengl\font.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\glext.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\image.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\imageloader.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\light.h">
@@ -182,10 +218,16 @@
 				RelativePath="..\..\framework\src\opengl\pbuffer.h">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\pixelformat.h">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\math\quaternion.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\renderer.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\ressourcemanager.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\shader.h">
@@ -194,7 +236,19 @@
 				RelativePath="..\..\framework\src\opengl\texture.h">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\texture2d.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\texturemanager.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\textureunit.h">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\framework\timer.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\trackball.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\math\utils.h">

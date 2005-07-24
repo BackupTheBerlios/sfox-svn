@@ -2,14 +2,15 @@
 #include <windows.h>
 #endif
 
+#include <cassert>
 #include <ctype.h>
 #include <string>
 #include <algorithm>
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "imageloader.h"
-#include "exception.h"
+#include "opengl/imageloader.h"
+#include "framework/exception.h"
 
 namespace StarEngine {
   const char *ImageLoaderSDL_Image::supportedType[4] = { "png", "jpg",

@@ -136,7 +136,7 @@ public:
     if(l == 0)
       x=y=z=0;
     else
-      *this *= 1.0/l;
+      *this *= 1.0f/l;
   }
   
   T dot(const Vector3<T> &v) const {

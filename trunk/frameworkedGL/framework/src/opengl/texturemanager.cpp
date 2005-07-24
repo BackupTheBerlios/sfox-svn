@@ -8,7 +8,7 @@ namespace StarEngine {
   Texture *
   TextureManager::load(const std::string &filename, int numMipmaps)
   {
-    load(filename, filename, numMipmaps);
+    return load(filename, filename, numMipmaps);
   }
 
   Texture *

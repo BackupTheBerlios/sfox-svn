@@ -1,6 +1,7 @@
-#include "fbo.h"
-#include "texture.h"
-#include "exception.h"
+#include <cassert>
+#include "opengl/fbo.h"
+#include "opengl/texture.h"
+#include "framework/exception.h"
 
 namespace StarEngine {
   FramebufferObject::FramebufferObject()
@@ -39,6 +40,7 @@ namespace StarEngine {
     default:
       assert(0);
     }
+	return -1;
   }
 
   void
