@@ -19,6 +19,7 @@ src_opengl="""src/opengl/camera.h
               src/opengl/mesh.h
               src/opengl/image.h
               src/opengl/imageloader.h
+              src/opengl/imageloader_dat.h
               src/opengl/pixelformat.h
               src/opengl/fbo.h
               src/opengl/ressourcemanager.h

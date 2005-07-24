@@ -11,6 +11,7 @@ src_opengl="""opengl/light.cpp
        opengl/pixelformat.cpp
        opengl/image.cpp
        opengl/imageloader.cpp
+       opengl/imageloader_dat.cpp
        opengl/ressourcemanager.cpp
        opengl/texturemanager.cpp
        opengl/fbo.cpp

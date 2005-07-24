@@ -59,6 +59,7 @@ TestApp::init() {
 
 
   texture = g_TextureManager.load("test", "data/test.png");
+  Texture *texture = g_TextureManager.load("test2", "data/head256.dat");
 }
 
 

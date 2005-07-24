@@ -10,6 +10,7 @@
 #include <SDL_image.h>
 
 #include "opengl/imageloader.h"
+#include "opengl/imageloader_dat.h"
 #include "framework/exception.h"
 
 namespace StarEngine {
@@ -32,6 +33,8 @@ namespace StarEngine {
                doTolower() );
     if ( ImageLoaderSDL_Image::supportType( lowerCase ) )
       return new ImageLoaderSDL_Image;
+    else if ( ImageLoaderDat::supportType( lowerCase ) )
+      return new ImageLoaderDat;
     else {
       std::string mess("ImageLoader::getImageLoader: No support for file type: ");
       mess.append(ext);
