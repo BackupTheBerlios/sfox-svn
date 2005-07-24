@@ -13,28 +13,29 @@
 #include "math/vector3.h"
 #include "vertex.h"
 
-class Mesh {
-private:
-  std::ifstream fs;
-  std::string name;
+namespace StarEngine {
+  class Mesh {
+  private:
+    std::ifstream fs;
+    std::string name;
 
-  unsigned int findChunk(const char *chunkName);
+    unsigned int findChunk(const char *chunkName);
 
-public:
-  Mesh(const char *filename);
-  ~Mesh();
+  public:
+    Mesh(const char *filename);
+    ~Mesh();
 
-  Vec3f *getVertices();
-  Vec3f *getNormals();
-  Vec2f *getUV();
-  unsigned int *getFaces();
+    Vec3f *getVertices();
+    Vec3f *getNormals();
+    Vec2f *getUV();
+    unsigned int *getFaces();
 
-  unsigned int getNumNormals();
-  unsigned int getNumFaces();
-  unsigned int getNumVertices();
-  unsigned int getNumUV();
+    unsigned int getNumNormals();
+    unsigned int getNumFaces();
+    unsigned int getNumVertices();
+    unsigned int getNumUV();
 
-  Vertex * getVertex(unsigned int *size);
-};
-
+    Vertex * getVertex(unsigned int *size);
+  };
+}
 #endif

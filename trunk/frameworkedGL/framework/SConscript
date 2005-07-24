@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-env = Environment()
+#env = Environment()
+Import('env')
+Export('env')
 
 SConscript('src/SConscript', build_dir='build')
 
@@ -15,7 +17,17 @@ src_math = """src/math/matrix.h
 
 src_opengl="""src/opengl/camera.h
               src/opengl/mesh.h
+              src/opengl/image.h
+              src/opengl/imageloader.h
+              src/opengl/pixelformat.h
+              src/opengl/fbo.h
+              src/opengl/ressourcemanager.h
+              src/opengl/singleton.h
+              src/opengl/texturemanager.h
+              src/opengl/trackball.h
               src/opengl/texture.h
+              src/opengl/textureunit.h
+              src/opengl/texture2d.h
               src/opengl/font.h
               src/opengl/pbuffer.h
               src/opengl/object3d.h

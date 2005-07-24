@@ -8,21 +8,22 @@
 #include <iostream>
 #include <SDL.h>
 
-class Exception {
-protected:
-  std::string str;
-public:
-  Exception(const char *m) { str.assign(m); }
-  Exception(const std::string &m) { str.assign(m); }
-  
-  void show() { std::cerr << str << std::endl; }
-};
+namespace StarEngine {
+  class Exception {
+  protected:
+    std::string str;
+  public:
+    Exception(const char *m) { str.assign(m); }
+    Exception(const std::string &m) { str.assign(m); }
 
-class SDLException : public Exception {
-public:
-  SDLException(const char *m) : Exception(m) {
-    str.append(SDL_GetError());
-  }
-};
+    void show() { std::cerr << str << std::endl; }
+  };
 
+  class SDLException : public Exception {
+  public:
+    SDLException(const char *m) : Exception(m) {
+      str.append(SDL_GetError());
+    }
+  };
+}
 #endif

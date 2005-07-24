@@ -7,21 +7,22 @@
 
 #include <cmath>
 
-namespace Utils {
-  template<typename T>
-  T Deg2Rad(T x) { return (x*M_PI)/T(180); }
+namespace StarEngine {
+  namespace Utils {
+    template<typename T>
+    T Deg2Rad(T x) { return (x*M_PI)/T(180); }
 
-  // Clamp x into [a,b]
-  template<typename T>
-  T clamp(T x, T a, T b) {
-    return std::min(std::max(a, x), b);
-  }
+    // Clamp x into [a,b]
+    template<typename T>
+    T clamp(T x, T a, T b) {
+      return std::min(std::max(a, x), b);
+    }
 
-  template<typename T>
-  T Deg360Bound(T x) {
-    return ((x>=360)?x-360:((x<=-360)?x+360:x));
-  }
-  
-};
+    template<typename T>
+    T Deg360Bound(T x) {
+      return ((x>=360)?x-360:((x<=-360)?x+360:x));
+    }
 
+  };
+}
 #endif

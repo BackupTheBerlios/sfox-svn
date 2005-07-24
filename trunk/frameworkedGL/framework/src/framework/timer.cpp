@@ -3,19 +3,21 @@
 
 #include "timer.h"
 
-Timer::Timer()
-{
-  start();
-}
+namespace StarEngine {
+  Timer::Timer()
+  {
+    start();
+  }
 
-void
-Timer::start()
-{
-  startTime = SDL_GetTicks();
-}
+  void
+  Timer::start()
+  {
+    startTime = SDL_GetTicks();
+  }
 
-unsigned int
-Timer::getElapsed()
-{
-  return SDL_GetTicks()-startTime;
+  unsigned int
+  Timer::getElapsed()
+  {
+    return SDL_GetTicks()-startTime;
+  }
 }

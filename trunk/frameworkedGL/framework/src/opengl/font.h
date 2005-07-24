@@ -11,57 +11,60 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
-class Texture;
 
-class FontGL {
-public:
-  FontGL(const char *filename, int pixelSize = 14, int textureSize = 512);
-  ~FontGL();
+namespace StarEngine {
+  class Texture;
 
-  void setColor(float r, float g, float b);
-  /*MODEL_VIEW & PROJECTION are saved*/
-  void printf(float x, float y, const char *fmt, ...);
+  class FontGL {
+  public:
+    FontGL(const char *filename, int pixelSize = 14, int textureSize = 512);
+    ~FontGL();
 
-  //Need to be called at the end of the application.
-  static void exit();
+    void setColor(float r, float g, float b);
+    /*MODEL_VIEW & PROJECTION are saved*/
+    void printf(float x, float y, const char *fmt, ...);
 
-  void testRender();
+    //Need to be called at the end of the application.
+    static void exit();
 
-private:
-  FontGL() {}
-  static const int MAXSTRINGLEN = 1024;
+    void testRender();
 
-  static FT_Library ftLibrary;
-  void initLibrary();
+  private:
+    FontGL() {}
+    static const int MAXSTRINGLEN = 1024;
 
-  void generateTexture();
+    static FT_Library ftLibrary;
+    void initLibrary();
 
-  float color[3];
-  FT_Face face;
+    void generateTexture();
 
-  //This structure holds info about location and geometry of a letter
-  struct letter {
-    int texture;
-    float minU, minV, maxU, maxV; //pos of the letter in the texture
-    unsigned int width, height;
-    int left, top;
-    FT_Vector advance;
-    FT_BBox bbox;
+    float color[3];
+    FT_Face face;
+
+    //This structure holds info about location and geometry of a letter
+    struct letter {
+      int texture;
+      float minU, minV, maxU, maxV; //pos of the letter in the texture
+      unsigned int width, height;
+      int left, top;
+      FT_Vector advance;
+      FT_BBox bbox;
+    };
+    letter letters[256];
+    void addLetter(int c, FT_Glyph glyph, unsigned int width,
+                   unsigned int height, int u, int v);
+
+    /*This textures store all characters*/
+    int textureSize;
+    int currentTexture; //Helps to avoid state changes
+    std::vector<Texture *> textures;
+
+    void begin();
+    void end();
+
+    void drawChar(float x, float y, int c);
+    void drawLine(float x, float y, const char *str);
   };
-  letter letters[256];
-  void addLetter(int c, FT_Glyph glyph, unsigned int width,
-                 unsigned int height, int u, int v);
-
-  /*This textures store all characters*/
-  int textureSize;
-  int currentTexture; //Helps to avoid state changes
-  std::vector<Texture *> textures;
-
-  void begin();
-  void end();
-
-  void drawChar(float x, float y, int c);
-  void drawLine(float x, float y, const char *str);
 };
 
 #endif

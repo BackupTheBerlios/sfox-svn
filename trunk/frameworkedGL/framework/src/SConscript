@@ -1,4 +1,6 @@
-env = Environment(CPPPATH=['.', 'math', 'framework', 'opengl'])
+#env = Environment(CPPPATH=['.', 'math', 'framework', 'opengl'])
+Import('env')
+env.Append(CPPPATH=['.', 'math', 'framework', 'opengl'])
 
 conf = Configure(env)
 env.ParseConfig('pkg-config --cflags freetype2')
@@ -6,7 +8,16 @@ env.ParseConfig('sdl-config --cflags')
 env = conf.Finish()
 
 src_opengl="""opengl/light.cpp
+       opengl/pixelformat.cpp
+       opengl/image.cpp
+       opengl/imageloader.cpp
+       opengl/ressourcemanager.cpp
+       opengl/texturemanager.cpp
+       opengl/fbo.cpp
+       opengl/trackball.cpp
        opengl/texture.cpp
+       opengl/textureunit.cpp
+       opengl/texture2d.cpp
        opengl/font.cpp 
        opengl/pbuffer.cpp 
        opengl/camera.cpp
