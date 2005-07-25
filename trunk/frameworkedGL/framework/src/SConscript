@@ -19,6 +19,7 @@ src_opengl="""opengl/light.cpp
        opengl/texture.cpp
        opengl/textureunit.cpp
        opengl/texture2d.cpp
+       opengl/texture3d.cpp
        opengl/font.cpp 
        opengl/pbuffer.cpp 
        opengl/camera.cpp

@@ -14,6 +14,7 @@ namespace StarEngine {
       switch( imgData->pixelFormat ) {
       case PF_RGB:
       case PF_RGBA:
+      case PF_LUMINANCE:
       case PF_ALPHA8:
         delete[] ( unsigned char * )imgData->data;
         break;
@@ -50,14 +51,15 @@ namespace StarEngine {
     case PF_ALPHA8: {
       int bpp = PixelFormatUtils::getBytesPerPixel( imgData->pixelFormat );
       unsigned char *src = (unsigned char *)imgData->data;
-      unsigned char *tmpBuffer = new unsigned char[imgData->width*imgData->height*bpp];
+      unsigned char *tmpBuffer = new unsigned char[imgData->width*imgData->height*imgData->depth*bpp];
       int offsetSrc = 0;
-      int offsetDst = (imgData->height-1)*imgData->width*bpp;
-      for ( int j = 0; j < imgData->height; j++ ) {
-        memcpy( tmpBuffer+offsetDst, src+offsetSrc, imgData->width*bpp );
-        offsetSrc += imgData->width*bpp;
-        offsetDst -= imgData->width*bpp;
-      }
+      int offsetDst = (imgData->height-1)*imgData->width*imgData->depth*bpp;
+      for ( int k = 0; k < imgData->depth; k++ )
+        for ( int j = 0; j < imgData->height; j++ ) {
+          memcpy( tmpBuffer+offsetDst, src+offsetSrc, imgData->width*bpp );
+          offsetSrc += imgData->width*bpp;
+          offsetDst -= imgData->width*bpp;
+        }
       imgData->data = tmpBuffer;
       delete[] src;
       break;
@@ -78,11 +80,12 @@ namespace StarEngine {
     case PF_ALPHA8: {
       int bpp = PixelFormatUtils::getBytesPerPixel( imgData->pixelFormat );
       unsigned char *src = (unsigned char *)imgData->data;
-      unsigned char *tmpBuffer = new unsigned char[imgData->width*imgData->height*bpp];
-      for ( int j = 0; j < imgData->height; j++ )
-        for ( int i = 0; i < imgData->width*bpp; i+=bpp )
-          for ( int c = 0; c < bpp; c++ )
-            tmpBuffer[(imgData->width-1)*bpp-i+c+j*imgData->width*bpp] = src[i+j*imgData->width*bpp+c];
+      unsigned char *tmpBuffer = new unsigned char[imgData->width*imgData->height*imgData->depth*bpp];
+      for ( int k = 0; k < imgData->depth; k++ )
+        for ( int j = 0; j < imgData->height; j++ )
+          for ( int i = 0; i < imgData->width*bpp; i+=bpp )
+            for ( int c = 0; c < bpp; c++ )
+              tmpBuffer[(imgData->width-1)*bpp-i+c+j*imgData->width*bpp+k*imgData->height*imgData->width*bpp] = src[i+j*imgData->width*bpp+k*imgData->height*imgData->width*bpp+c];
       imgData->data = tmpBuffer;
       delete[] src;
       break;

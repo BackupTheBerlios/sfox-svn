@@ -92,6 +92,10 @@ PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
+//Texture3d
+PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT;
+PFNGLTEXSUBIMAGE3DEXTPROC glTexSubImage3DEXT;
+
 namespace GLext {
   void
   init() {
@@ -181,5 +185,9 @@ namespace GLext {
 	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glFramebufferRenderbufferEXT");
 	glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC)SDL_GL_GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
 	glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)SDL_GL_GetProcAddress("glGenerateMipmapEXT");
+	
+	//Texture3d
+	glTexImage3DEXT = (PFNGLTEXIMAGE3DEXTPROC)SDL_GL_GetProcAddress("glTexImage3DEXT");
+	glTexSubImage3DEXT = (PFNGLTEXSUBIMAGE3DEXTPROC)SDL_GL_GetProcAddress("glTexSubImage3DEXT");
   }
 }

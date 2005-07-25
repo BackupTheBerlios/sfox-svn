@@ -65,7 +65,7 @@ namespace StarEngine {
       }
       imgData->width = image->w;
       imgData->height = image->h;
-      imgData->depth = 0;
+      imgData->depth = 1;
 
       SDL_LockSurface(image);
       unsigned char *data = new unsigned char[image->w*image->h*bpp];

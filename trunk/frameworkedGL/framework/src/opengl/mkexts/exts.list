@@ -84,3 +84,7 @@ glFramebufferTexture3DEXT
 glFramebufferRenderbufferEXT
 glGetFramebufferAttachmentParameterivEXT
 glGenerateMipmapEXT
+
+//Texture3d
+glTexImage3DEXT
+glTexSubImage3DEXT

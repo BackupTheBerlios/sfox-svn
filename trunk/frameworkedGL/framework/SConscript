@@ -29,6 +29,7 @@ src_opengl="""src/opengl/camera.h
               src/opengl/texture.h
               src/opengl/textureunit.h
               src/opengl/texture2d.h
+              src/opengl/texture3d.h
               src/opengl/font.h
               src/opengl/pbuffer.h
               src/opengl/object3d.h

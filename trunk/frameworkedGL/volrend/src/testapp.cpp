@@ -73,24 +73,25 @@ TestApp::render() {
   trackball->toOpenGL();
 
   TextureUnits::activeUnit( 0 );
-  glEnable( GL_TEXTURE_2D );
+  glEnable( GL_TEXTURE_3D );
   TextureUnits::setEnvMode( TEM_REPLACE );
-  g_TextureManager.getByName( "test" )->bind();
+  g_TextureManager.getByName( "test2" )->bind();
+  glDisable(GL_CULL_FACE);
 
   glColor3f(1, 1, 0);
 
   glBegin( GL_QUADS );
 
-  glTexCoord2f(0., 1.);
+  glTexCoord3f(0., 1., 0.5);
   glVertex3f(-1, 1, 0);
 
-  glTexCoord2f(0., 0.);
+  glTexCoord3f(0., 0., 0.5);
   glVertex3f(-1, -1, 0);
 
-  glTexCoord2f(1., 0.);
+  glTexCoord3f(1., 0., 0.5);
   glVertex3f(1, -1, 0);
 
-  glTexCoord2f(1., 1.);
+  glTexCoord3f(1., 1., 0.5);
   glVertex3f(1, 1, 0);
   glEnd();
 

@@ -3,6 +3,7 @@
 #include "texturemanager.h"
 #include "image.h"
 #include "texture2d.h"
+#include "texture3d.h"
 
 namespace StarEngine {
   Texture *
@@ -24,6 +25,13 @@ namespace StarEngine {
       tex = new Texture2D( imgData->pixelFormat );
       tex->setData( imgData->data, imgData->pixelFormat, imgData->width,
                     imgData->height );
+      tex->setMinFilter( TF_LINEAR );
+      tex->setMagFilter( TF_LINEAR );
+    } else if ( img->getDimension() == 3 ) {
+      ImageLoader::ImageData *imgData = img->getImageData();
+      tex = new Texture3D( imgData->pixelFormat );
+      tex->setData( imgData->data, imgData->pixelFormat, imgData->width,
+                    imgData->height, imgData->depth );
       tex->setMinFilter( TF_LINEAR );
       tex->setMagFilter( TF_LINEAR );
     }

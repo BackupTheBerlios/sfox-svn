@@ -95,6 +95,10 @@ extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
+//Texture3d
+extern PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT;
+extern PFNGLTEXSUBIMAGE3DEXTPROC glTexSubImage3DEXT;
+
 namespace GLext {
   extern void init();
 }

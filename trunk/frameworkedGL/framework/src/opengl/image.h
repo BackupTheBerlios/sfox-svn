@@ -18,7 +18,7 @@ namespace StarEngine {
     void flipX();
     ImageLoader::ImageData *getImageData() { return imgData; }
     int getDimension() {
-      return (imgData->width!=0)+(imgData->height!=0 )+(imgData->depth!=0);
+      return (imgData->width>1)+(imgData->height>1)+(imgData->depth>1);
     }
 
   };

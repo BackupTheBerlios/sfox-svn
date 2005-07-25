@@ -17,17 +17,34 @@ namespace StarEngine {
   ImageLoader::ImageData *
   ImageLoaderDat::load( const std::string &filename )
   {
+    int w, h, d;
     ImageLoader::ImageData *imgData = new ImageData;
     char datafile[257];
     char tmp[257];
     FILE *file = fopen(filename.c_str(), "rt");
     fscanf(file, "ObjectFileName: %s\n", datafile);
     fscanf(file, "TaggedFileName: %s\n", tmp);
-    fscanf(file, "Resolution: %d %d %d", &imgData->width, &imgData->height,
-           &imgData->depth);
-    printf("filename=%s %d %d %d\n", datafile, imgData->width, imgData->height,
-           imgData->depth);
+    fscanf(file, "Resolution: %d %d %d\n", &w, &h, &d);
     fclose(file);
+
+    unsigned char *data = new unsigned char[w*h*d];
+    int i = filename.find_last_of('/');
+    if ( i != std::string::npos ) {
+      strcpy(tmp, filename.substr(0, i+1).c_str() );
+      strcat( tmp, datafile );
+      printf("fp=%s\n", tmp);
+    } else
+      strcpy(tmp, filename.c_str() );
+
+    file = fopen(tmp, "rb");
+    fread(data, 1, w*h*d, file);
+    fclose(file);
+
+    imgData->width = w;
+    imgData->height = h;
+    imgData->depth = d;
+    imgData->data = data;
+    imgData->pixelFormat = PF_LUMINANCE;
 
     return imgData;
   }

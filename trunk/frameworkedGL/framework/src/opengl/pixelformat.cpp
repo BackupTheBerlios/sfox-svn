@@ -58,6 +58,7 @@ namespace StarEngine {
     switch( pf ) {
     case PF_RGB:
     case PF_RGBA:
+    case PF_LUMINANCE:
     case PF_ALPHA8:
       return GL_UNSIGNED_BYTE;
     case PF_DEPTH16:
