@@ -14,14 +14,14 @@ namespace StarEngine {
   Texture2D::Texture2D(int width, int height, PixelFormat pf)
     :Texture(pf)
   {
-    setData( NULL, pf, width, height);
+    setData(NULL, pf, width, height);
   }
 
   void
   Texture2D::setData(const void *data, PixelFormat pfData,
                      int width, int height, int depth)
   {
-    GLint internalFormat = PixelFormatUtils::getGLFormat(pf);
+    GLint internalFormat = PixelFormatUtils::getGLInternalFormat(pf);
     GLint format = PixelFormatUtils::getGLFormat(pfData);
     GLint type = PixelFormatUtils::getGLType(pfData);
 

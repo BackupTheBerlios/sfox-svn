@@ -13,9 +13,14 @@ namespace StarEngine {
     PF_LUMINANCE,
     PF_RGB,
     PF_RGBA,
+    PF_DEPTH,
     PF_DEPTH16,
     PF_DEPTH24,
-    PF_DEPTH32
+    PF_DEPTH32,
+    PF_RGB16F,
+    PF_RGBA16F,
+    PF_RGB32F,
+    PF_RGBA32F
   };
 
   enum DataType {
@@ -26,6 +31,7 @@ namespace StarEngine {
 
   class PixelFormatUtils {
   public:
+    static GLint getGLInternalFormat( PixelFormat pf );
     static GLint getGLFormat( PixelFormat pf );
     static GLint getGLType( PixelFormat pf );
     static int getBytesPerPixel(PixelFormat pf);

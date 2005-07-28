@@ -13,6 +13,27 @@ namespace StarEngine {
   }
 
   Texture *
+  TextureManager::create( const std::string &name, PixelFormat pf, int width,
+                          int height, int depth)
+  {
+    Texture *tex;
+    int dim = ( width>1 )+( height>1 )+( depth>1 );
+    switch( dim ) {
+    case 2:
+      tex = new Texture2D(width, height, pf);
+      break;
+    case 3:
+      tex = new Texture3D(width, height, depth, pf);
+      break;
+    default:
+      assert( 0 );
+    }
+    tex->setName( name );
+    ressources[name] = tex;
+    return tex;
+  }
+
+  Texture *
   TextureManager::load(const std::string &name, const std::string &filename,
                        int numMipmaps)
   {

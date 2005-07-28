@@ -23,6 +23,7 @@
 #include "opengl/material.h"
 #include "opengl/shader.h"
 #include "opengl/trackball.h"
+#include "opengl/fbo.h"
 
 using namespace StarEngine;
 
@@ -59,7 +60,26 @@ TestApp::init() {
 
 
   texture = g_TextureManager.load("test", "data/test.png");
-  Texture *texture = g_TextureManager.load("test2", "data/head256.dat");
+  Texture *texture = g_TextureManager.load("tex3d", "data/head256.dat");
+
+  fbo = new FramebufferObject;
+  fbo->bind();
+  g_TextureManager.create("rttColor", PF_RGBA16F, width, height);
+  Renderer::printGLError();
+  g_TextureManager.create("rttDepth", PF_DEPTH24, width, height);
+  fbo->attachTexture( g_TextureManager.getByName( "rttColor" ),
+                      FramebufferObject::COLOR_ATTACHMENT0, 0 );
+  Renderer::printGLError();
+  fbo->attachTexture( g_TextureManager.getByName( "rttDepth" ),
+                      FramebufferObject::DEPTH_ATTACHMENT, 0 );
+  fbo->checkStatus();
+  Renderer::printGLError();
+
+  shaderPass1 = new Shader();
+  shaderPass1->setVertexShader("shaders/pass1.vert");
+  shaderPass1->setFragmentShader("shaders/pass1.frag");
+  shaderPass1->link();
+  shaderPass1->validate();
 }
 
 
@@ -67,7 +87,82 @@ TestApp::init() {
 /* Display                                                                   */
 /*****************************************************************************/
 void
+TestApp::drawCube(float sizex, float sizey, float sizez)
+{
+  sizex *= 0.5;
+  sizey *= 0.5;
+  sizez *= 0.5;
+
+  glEnable(GL_CULL_FACE);
+
+  glBegin( GL_QUADS );
+   //Front face
+   glTexCoord3f(0, 1., 1.);
+   glVertex3f(-sizex, sizey, sizez);
+   glTexCoord3f(0, 0., 1.);
+   glVertex3f(-sizex, -sizey, sizez);
+   glTexCoord3f(1, 0., 1.);
+   glVertex3f(sizex, -sizey, sizez);
+   glTexCoord3f(1, 1., 1.);
+   glVertex3f(sizex, sizey, sizez);
+
+   //Back face
+   glTexCoord3f(0, 1., 0.);
+   glVertex3f(-sizex, sizey, -sizez);
+   glTexCoord3f(1, 1., 0.);
+   glVertex3f(sizex, sizey, -sizez);
+   glTexCoord3f(1, 0., 0.);
+   glVertex3f(sizex, -sizey, -sizez);
+   glTexCoord3f(0, 0., 0.);
+   glVertex3f(-sizex, -sizey, -sizez);
+
+   //Left face
+   glTexCoord3f(0, 1., 0.);
+   glVertex3f(-sizex, sizey, -sizez);
+   glTexCoord3f(0, 0., 0.);
+   glVertex3f(-sizex, -sizey, -sizez);
+   glTexCoord3f(0, 0., 1.);
+   glVertex3f(-sizex, -sizey, sizez);
+   glTexCoord3f(0, 1., 1.);
+   glVertex3f(-sizex, sizey, sizez);
+
+   //Right face
+   glTexCoord3f(1, 1., 0.);
+   glVertex3f(sizex, sizey, -sizez);
+   glTexCoord3f(1, 1., 1.);
+   glVertex3f(sizex, sizey, sizez);
+   glTexCoord3f(1, 0., 1.);
+   glVertex3f(sizex, -sizey, sizez);
+   glTexCoord3f(1, 0., 0.);
+   glVertex3f(sizex, -sizey, -sizez);
+
+   //Top face
+   glTexCoord3f(1, 1., 0.);
+   glVertex3f(sizex, sizey, -sizez);
+   glTexCoord3f(0, 1., 0.);
+   glVertex3f(-sizex, sizey, -sizez);
+   glTexCoord3f(0, 1., 1.);
+   glVertex3f(-sizex, sizey, sizez);
+   glTexCoord3f(1, 1., 1.);
+   glVertex3f(sizex, sizey, sizez);
+
+   //Bottomop face
+   glTexCoord3f(1, 0., 0.);
+   glVertex3f(sizex, -sizey, -sizez);
+   glTexCoord3f(1, 0., 1.);
+   glVertex3f(sizex, -sizey, sizez);
+   glTexCoord3f(0, 0., 1.);
+   glVertex3f(-sizex, -sizey, sizez);
+   glTexCoord3f(0, 0., 0.);
+   glVertex3f(-sizex, -sizey, -sizez);
+
+   glEnd();
+
+}
+
+void
 TestApp::render() {
+  fbo->bind();
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   cam->toOpenGL();
   trackball->toOpenGL();
@@ -75,10 +170,14 @@ TestApp::render() {
   TextureUnits::activeUnit( 0 );
   glEnable( GL_TEXTURE_3D );
   TextureUnits::setEnvMode( TEM_REPLACE );
-  g_TextureManager.getByName( "test2" )->bind();
+  g_TextureManager.getByName( "tex3d" )->bind();
   glDisable(GL_CULL_FACE);
 
+  shaderPass1->bind();
   glColor3f(1, 1, 0);
+  drawCube(2, 2, 2);
+  glFlush();
+  Shader::useFixedPipeline();
 
   glBegin( GL_QUADS );
 
@@ -94,6 +193,44 @@ TestApp::render() {
   glTexCoord3f(1., 1., 0.5);
   glVertex3f(1, 1, 0);
   glEnd();
+
+  FramebufferObject::unbind();
+  Shader::useFixedPipeline();
+
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode( GL_PROJECTION );
+  glPushMatrix();
+  glLoadIdentity();
+  glOrtho(0, width-1, 0, height-1, 0, 10.);
+
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glLoadIdentity();
+
+  glEnable( GL_TEXTURE_2D );
+  glDisable( GL_TEXTURE_3D );
+  TextureUnits::setEnvMode( TEM_REPLACE );
+  g_TextureManager.getByName( "rttColor" )->bind();
+
+  glBegin( GL_QUADS );
+  glTexCoord2f(0., 1.);
+  glVertex2f(0, height-1);
+
+  glTexCoord2f(0., 0.);
+  glVertex2f(0, 0);
+
+  glTexCoord2f(1., 0.);
+  glVertex2f(width-1, 0);
+
+  glTexCoord2f(1., 1.);
+  glVertex2f(width-1, height-1);
+  glEnd();
+
+  glPopMatrix();
+  glMatrixMode( GL_PROJECTION );
+  glPopMatrix();
+  glMatrixMode( GL_MODELVIEW );
 
   Renderer::printGLError();
 

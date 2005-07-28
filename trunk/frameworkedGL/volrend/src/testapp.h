@@ -9,6 +9,8 @@ namespace StarEngine {
   class Camera;
   class Texture;
   class Trackball;
+  class FramebufferObject;
+  class Shader;
 }
 
 class TestApp : public StarEngine::Application {
@@ -17,8 +19,11 @@ private:
   StarEngine::FontGL *font;
   StarEngine::Camera *cam;
   StarEngine::Texture *texture;
+  StarEngine::FramebufferObject *fbo;
+  StarEngine::Shader *shaderPass1;
 
   void printInfos();
+  void drawCube(float sizex, float sizey, float sizez);
 
 public:
   TestApp();

@@ -41,7 +41,9 @@ namespace StarEngine {
     FramebufferObject();
     ~FramebufferObject();
 
-    void bind();
+    void bind() const;
+    static void unbind();
+
     void attachTexture(Texture *tex, AttachmentType attach, int level);
     void checkStatus();
 

@@ -14,6 +14,17 @@ namespace StarEngine {
     glDeleteFramebuffersEXT(1,  &id);
   }
 
+  void
+  FramebufferObject::bind() const
+  {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id);
+  }
+
+  void
+  FramebufferObject::unbind()
+  {
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  }
 
   void
   FramebufferObject::attachTexture(Texture *tex, AttachmentType attach,

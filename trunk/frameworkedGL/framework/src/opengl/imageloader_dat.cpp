@@ -32,7 +32,6 @@ namespace StarEngine {
     if ( i != std::string::npos ) {
       strcpy(tmp, filename.substr(0, i+1).c_str() );
       strcat( tmp, datafile );
-      printf("fp=%s\n", tmp);
     } else
       strcpy(tmp, filename.c_str() );
 
