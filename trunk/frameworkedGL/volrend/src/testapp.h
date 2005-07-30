@@ -21,9 +21,13 @@ private:
   StarEngine::Texture *texture;
   StarEngine::FramebufferObject *fbo;
   StarEngine::Shader *shaderPass1;
+  StarEngine::Shader *shaderPass2;
+  StarEngine::Shader *shaderPass3;
+  StarEngine::Shader *shaderPass4;
 
   void printInfos();
   void drawCube(float sizex, float sizey, float sizez);
+  void computeRays();
 
 public:
   TestApp();

@@ -36,6 +36,7 @@ TestApp::TestApp()
   hideCursor(false);
   grabInput(false);
 }
+/****************************************************************************/
 
 void
 TestApp::quit()
@@ -43,6 +44,7 @@ TestApp::quit()
   delete font;
   FontGL::exit();
 }
+/****************************************************************************/
 
 void
 TestApp::init() {
@@ -56,7 +58,7 @@ TestApp::init() {
   cam = new Camera(60.f, 0.001f, 50.f);
   cam->setPos(0, 0, 4);
 
-  trackball = new Trackball(width,  height);
+  trackball = new Trackball(width, height);
 
 
   texture = g_TextureManager.load("test", "data/test.png");
@@ -64,6 +66,9 @@ TestApp::init() {
 
   fbo = new FramebufferObject;
   fbo->bind();
+  g_TextureManager.create("rttTmp", PF_RGBA16F, width, height);
+  g_TextureManager.create("rttRays", PF_RGBA16F, width, height);
+  g_TextureManager.create("rttColor", PF_RGBA16F, width, height);
   g_TextureManager.create("rttColor", PF_RGBA16F, width, height);
   Renderer::printGLError();
   g_TextureManager.create("rttDepth", PF_DEPTH24, width, height);
@@ -80,6 +85,17 @@ TestApp::init() {
   shaderPass1->setFragmentShader("shaders/pass1.frag");
   shaderPass1->link();
   shaderPass1->validate();
+
+  shaderPass2 = new Shader();
+  shaderPass2->setVertexShader("shaders/pass2.vert");
+  shaderPass2->setFragmentShader("shaders/pass2.frag");
+  shaderPass2->link();
+  shaderPass2->validate();
+
+  //Set texture units
+  shaderPass2->bind();
+  shaderPass2->setUniform("frontFace", 0);
+  shaderPass2->setUniform("winScale", 1./width,  1./height);
 }
 
 
@@ -159,6 +175,55 @@ TestApp::drawCube(float sizex, float sizey, float sizez)
    glEnd();
 
 }
+/****************************************************************************/
+
+void
+TestApp::computeRays()
+{
+  fbo->bind();
+  TextureUnits::activeUnit( 0 );
+
+  Texture * texRays = g_TextureManager.getByName("rttRays");
+  Texture * texTmp = g_TextureManager.getByName("rttTmp");
+  texTmp->bind();
+  texTmp->setMinFilter(TF_NEAREST);
+  texTmp->setMagFilter(TF_NEAREST);
+
+  texRays->bind();
+  texRays->setMinFilter(TF_NEAREST);
+  texRays->setMagFilter(TF_NEAREST);
+
+  fbo->attachTexture( texTmp, FramebufferObject::COLOR_ATTACHMENT0, 0 );
+  fbo->detachTexture( g_TextureManager.getByName( "rttDepth" ),
+                      FramebufferObject::DEPTH_ATTACHMENT, 0 );
+  fbo->checkStatus();
+
+  // Render front faces
+  glClear(GL_COLOR_BUFFER_BIT);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+
+  shaderPass1->bind();
+  drawCube(2, 2, 2);
+  glFlush();
+
+  // Render back faces and compute rays
+  fbo->attachTexture( texRays, FramebufferObject::COLOR_ATTACHMENT0, 0 );
+  glClear(GL_COLOR_BUFFER_BIT);
+  texTmp->bind();
+  glCullFace(GL_FRONT);
+  shaderPass2->bind();
+  drawCube(2, 2, 2);
+
+  Shader::useFixedPipeline();
+}
+/****************************************************************************/
+
+void
+TestApp::moveOnRay(float dt)
+{
+}
+/****************************************************************************/
 
 void
 TestApp::render() {
@@ -167,37 +232,15 @@ TestApp::render() {
   cam->toOpenGL();
   trackball->toOpenGL();
 
-  TextureUnits::activeUnit( 0 );
-  glEnable( GL_TEXTURE_3D );
-  TextureUnits::setEnvMode( TEM_REPLACE );
-  g_TextureManager.getByName( "tex3d" )->bind();
-  glDisable(GL_CULL_FACE);
+  computeRays();
 
-  shaderPass1->bind();
-  glColor3f(1, 1, 0);
-  drawCube(2, 2, 2);
   glFlush();
-  Shader::useFixedPipeline();
-
-  glBegin( GL_QUADS );
-
-  glTexCoord3f(0., 1., 0.5);
-  glVertex3f(-1, 1, 0);
-
-  glTexCoord3f(0., 0., 0.5);
-  glVertex3f(-1, -1, 0);
-
-  glTexCoord3f(1., 0., 0.5);
-  glVertex3f(1, -1, 0);
-
-  glTexCoord3f(1., 1., 0.5);
-  glVertex3f(1, 1, 0);
-  glEnd();
 
   FramebufferObject::unbind();
-  Shader::useFixedPipeline();
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glDisable( GL_CULL_FACE );
+  glDisable( GL_DEPTH_TEST );
 
   glMatrixMode( GL_PROJECTION );
   glPushMatrix();
@@ -209,9 +252,9 @@ TestApp::render() {
   glLoadIdentity();
 
   glEnable( GL_TEXTURE_2D );
-  glDisable( GL_TEXTURE_3D );
   TextureUnits::setEnvMode( TEM_REPLACE );
-  g_TextureManager.getByName( "rttColor" )->bind();
+  //g_TextureManager.getByName( "rttTmp" )->bind();
+  g_TextureManager.getByName( "rttRays" )->bind();
 
   glBegin( GL_QUADS );
   glTexCoord2f(0., 1.);
@@ -236,6 +279,7 @@ TestApp::render() {
 
   printInfos();
 }
+/****************************************************************************/
 
 void
 TestApp::printInfos()
@@ -246,11 +290,11 @@ TestApp::printInfos()
   font->setColor(1, 0, 0);
   font->printf(0, 16, "OpenGL error: %s", Renderer::getGLErrorString());
 }
+/****************************************************************************/
 
 void
 TestApp::idle() {
 }
-
 /*****************************************************************************/
 /* Keyboard Input                                                            */
 /*****************************************************************************/
@@ -278,6 +322,7 @@ TestApp::mouseMotion(const SDL_MouseMotionEvent &motion)
 {
   trackball->computeOrientation(motion.x, motion.y);
 }
+/****************************************************************************/
 
 void
 TestApp::mouseButtonDown(const SDL_MouseButtonEvent &m)
@@ -285,6 +330,7 @@ TestApp::mouseButtonDown(const SDL_MouseButtonEvent &m)
   if(m.button==SDL_BUTTON_LEFT)
     trackball->startRotation( m.x,  m.y );
 }
+/****************************************************************************/
 
 void
 TestApp::mouseButtonUp(const SDL_MouseButtonEvent &m)
@@ -292,3 +338,4 @@ TestApp::mouseButtonUp(const SDL_MouseButtonEvent &m)
   if(m.button==SDL_BUTTON_LEFT)
     trackball->stopRotation();
 }
+/****************************************************************************/
