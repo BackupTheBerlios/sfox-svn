@@ -53,7 +53,7 @@ TestApp::init() {
 
   font = new FontGL("data/vera.ttf", 16, 128);
 
-  cam = new Camera(60, 0.001, 50);
+  cam = new Camera(60.f, 0.001f, 50.f);
   cam->setPos(0, 0, 4);
 
   trackball = new Trackball(width,  height);
