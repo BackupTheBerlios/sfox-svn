@@ -37,6 +37,17 @@ namespace StarEngine {
 
   }
 
+  void
+  FramebufferObject::detachTexture(Texture *tex, AttachmentType attach,
+                                   int level)
+  {
+    GLenum texType = tex->getGLTarget();
+    GLenum attachType = getGLAttachmentType( attach );
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, attachType, texType,
+                              0, level);
+
+  }
+
   GLenum
   FramebufferObject::getGLAttachmentType( AttachmentType attach )
   {

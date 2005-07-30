@@ -32,6 +32,7 @@ namespace StarEngine {
 
     //Uniforms
     void setUniform(const char *name, float a);
+    void setUniform(const char *name, float a, float b);
     void setUniform(const char *name, float a, float b, float c);
     void setUniform(const char *name, int a);
 

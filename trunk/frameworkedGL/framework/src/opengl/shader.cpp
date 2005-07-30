@@ -166,6 +166,12 @@ namespace StarEngine {
   }
 
   void
+  Shader::setUniform(const char *name, float a, float b)
+  {
+    glUniform2fARB(getUniform(name), a, b);
+  }
+
+  void
   Shader::setUniform(const char *name, float a, float b, float c)
   {
     glUniform3fARB(getUniform(name), a, b, c);

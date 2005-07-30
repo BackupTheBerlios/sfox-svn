@@ -45,6 +45,7 @@ namespace StarEngine {
     static void unbind();
 
     void attachTexture(Texture *tex, AttachmentType attach, int level);
+    void detachTexture(Texture *tex, AttachmentType attach, int level);
     void checkStatus();
 
   private:
