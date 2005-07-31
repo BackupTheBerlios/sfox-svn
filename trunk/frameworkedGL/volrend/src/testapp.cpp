@@ -62,13 +62,13 @@ TestApp::init() {
 
 
   texture = g_TextureManager.load("test", "data/test.png");
-  Texture *texture = g_TextureManager.load("tex3d", "data/head256.dat");
+  Texture *texture = g_TextureManager.load("volData", "data/head256.dat");
 
   fbo = new FramebufferObject;
   fbo->bind();
   g_TextureManager.create("rttTmp", PF_RGBA16F, width, height);
   g_TextureManager.create("rttRays", PF_RGBA16F, width, height);
-  g_TextureManager.create("rttColor", PF_RGBA16F, width, height);
+  g_TextureManager.create("rttRes", PF_RGBA16F, width, height);
   g_TextureManager.create("rttColor", PF_RGBA16F, width, height);
   Renderer::printGLError();
   g_TextureManager.create("rttDepth", PF_DEPTH24, width, height);
@@ -92,10 +92,19 @@ TestApp::init() {
   shaderPass2->link();
   shaderPass2->validate();
 
+  shaderPass3 = new Shader();
+  shaderPass3->setVertexShader("shaders/pass1.vert");
+  shaderPass3->setFragmentShader("shaders/pass3.frag");
+  shaderPass3->link();
+  shaderPass3->validate();
+
   //Set texture units
-  shaderPass2->bind();
-  shaderPass2->setUniform("frontFace", 0);
-  shaderPass2->setUniform("winScale", 1./width,  1./height);
+  shaderPass3->bind();
+  shaderPass3->setUniform("volData", 0);
+  shaderPass3->setUniform("raysDir", 1);
+  shaderPass3->setUniform("resTex", 2);
+  shaderPass3->setUniform("winScale", 1./width,  1./height);
+  shaderPass3->setUniform("dt23", 0.1f);
 }
 
 
@@ -222,6 +231,37 @@ TestApp::computeRays()
 void
 TestApp::moveOnRay(float dt)
 {
+  fbo->bind();
+  Texture * texRays = g_TextureManager.getByName("rttRays");
+  Texture * texRes = g_TextureManager.getByName("rttRes");
+  Texture * texVolData = g_TextureManager.getByName("volData");
+
+  TextureUnits::activeUnit( 2 );
+  texRes->bind();
+  texRays->setMinFilter( TF_NEAREST );
+  texRays->setMagFilter( TF_NEAREST );
+  TextureUnits::activeUnit( 1 );
+  texRays->bind();
+  texRays->setMinFilter( TF_NEAREST );
+  texRays->setMagFilter( TF_NEAREST );
+  TextureUnits::activeUnit( 0 );
+  texVolData->bind();
+  texVolData->setWrapS( TW_CLAMP_TO_EDGE );
+  texVolData->setWrapT( TW_CLAMP_TO_EDGE );
+  texVolData->setWrapR( TW_CLAMP_TO_EDGE );
+
+  fbo->attachTexture( texRes, FramebufferObject::COLOR_ATTACHMENT0, 0 );
+
+  shaderPass3->bind();
+  shaderPass3->setUniform("dt23", 0.1f);
+  float t = 0.0f;
+  for ( int i = 0; i < 8; i++ ) {
+    //shaderPass3->setUniform("t", t);
+    glCullFace( GL_BACK );
+    drawCube( 2,  2,  2 );
+    t += 4*0.1;
+  }
+
 }
 /****************************************************************************/
 
@@ -233,8 +273,8 @@ TestApp::render() {
   trackball->toOpenGL();
 
   computeRays();
-
   glFlush();
+  moveOnRay( 0.01f );
 
   FramebufferObject::unbind();
 

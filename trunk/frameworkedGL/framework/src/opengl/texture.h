@@ -23,6 +23,12 @@ namespace StarEngine {
     TF_LINEAR_MIPMAP_LINEAR
   };
 
+  enum TextureWrap {
+    TW_CLAMP,
+    TW_CLAMP_TO_EDGE,
+    TW_REPEAT
+  };
+
   class Texture : public Ressource {
   public:
     Texture();
@@ -44,6 +50,9 @@ namespace StarEngine {
 
     virtual void setMinFilter(const TextureFilter tf) = 0;
     virtual void setMagFilter(const TextureFilter tf) = 0;
+    virtual void setWrapS(const TextureWrap tf);
+    virtual void setWrapT(const TextureWrap tf);
+    virtual void setWrapR(const TextureWrap tf);
     virtual int getDimension() = 0;
     virtual GLenum getGLTarget() = 0;
     virtual GLuint getGLName() { return glName; }
@@ -54,6 +63,7 @@ namespace StarEngine {
     int border;
 
     GLint getGLTextureFilter(TextureFilter tf);
+    GLenum getGLTextureWrap(TextureWrap tw);
   };
 };
 

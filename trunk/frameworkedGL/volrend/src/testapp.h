@@ -28,6 +28,7 @@ private:
   void printInfos();
   void drawCube(float sizex, float sizey, float sizez);
   void computeRays();
+  void moveOnRay(float dt);
 
 public:
   TestApp();
