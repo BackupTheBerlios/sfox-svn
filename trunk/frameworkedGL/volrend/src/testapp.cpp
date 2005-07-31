@@ -115,9 +115,9 @@ TestApp::init() {
   shaderPass4->link();
   shaderPass4->validate();
 
-  shaderPass4->bind();  
+  shaderPass4->bind();
   shaderPass4->setUniform("resTex", 2);
-  shaderPass4->setUniform("winScale", 1./width,  1./height);  
+  shaderPass4->setUniform("winScale", 1./width,  1./height);
 }
 
 
@@ -278,14 +278,15 @@ TestApp::moveOnRay(float dt)
   shaderPass3->bind();
   shaderPass3->setUniform("dt", 0.01f);
   float t = 0.0f;
-  
+
   glCullFace( GL_BACK );
-  for ( int i = 0; i < sqrtf(3)*100/1; i++ ) {
-    glDepthMask(GL_FALSE);
+  shaderPass3->bind();
+  for ( int i = 0; i < sqrtf(3)*10/1; i++ ) {
     shaderPass3->bind();
-    shaderPass3->setUniform("t", t);    
+    glDepthMask(GL_FALSE);
+    shaderPass3->setUniform("t", t);
     drawCube( 2,  2,  2 );
-    t += 1;    
+    t += 10;
     glDepthMask(GL_TRUE);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     shaderPass4->bind();
