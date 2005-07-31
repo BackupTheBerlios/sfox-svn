@@ -276,11 +276,11 @@ TestApp::moveOnRay(float dt)
   glDepthFunc(GL_LESS);
 
   shaderPass3->bind();
-  shaderPass3->setUniform("dt", 0.02f);
+  shaderPass3->setUniform("dt", 0.01f);
   float t = 0.0f;
   
   glCullFace( GL_BACK );
-  for ( int i = 0; i < sqrtf(3)*50/1; i++ ) {
+  for ( int i = 0; i < sqrtf(3)*100/1; i++ ) {
     glDepthMask(GL_FALSE);
     shaderPass3->bind();
     shaderPass3->setUniform("t", t);    
