@@ -92,6 +92,10 @@ TestApp::init() {
   shaderPass2->link();
   shaderPass2->validate();
 
+  shaderPass2->bind();
+  shaderPass2->setUniform("frontFace", 0);
+  shaderPass2->setUniform("winScale", 1./width,  1./height);
+
   shaderPass3 = new Shader();
   shaderPass3->setVertexShader("shaders/pass1.vert");
   shaderPass3->setFragmentShader("shaders/pass3.frag");
@@ -104,7 +108,7 @@ TestApp::init() {
   shaderPass3->setUniform("raysDir", 1);
   shaderPass3->setUniform("resTex", 2);
   shaderPass3->setUniform("winScale", 1./width,  1./height);
-  shaderPass3->setUniform("dt23", 0.1f);
+  shaderPass3->setUniform("t", 0.f);
 }
 
 
@@ -218,6 +222,7 @@ TestApp::computeRays()
 
   // Render back faces and compute rays
   fbo->attachTexture( texRays, FramebufferObject::COLOR_ATTACHMENT0, 0 );
+  fbo->checkStatus();
   glClear(GL_COLOR_BUFFER_BIT);
   texTmp->bind();
   glCullFace(GL_FRONT);
@@ -225,6 +230,7 @@ TestApp::computeRays()
   drawCube(2, 2, 2);
 
   Shader::useFixedPipeline();
+  FramebufferObject::unbind();
 }
 /****************************************************************************/
 
@@ -251,17 +257,19 @@ TestApp::moveOnRay(float dt)
   texVolData->setWrapR( TW_CLAMP_TO_EDGE );
 
   fbo->attachTexture( texRes, FramebufferObject::COLOR_ATTACHMENT0, 0 );
+  glClear(GL_COLOR_BUFFER_BIT);
 
   shaderPass3->bind();
-  shaderPass3->setUniform("dt23", 0.1f);
+  shaderPass3->setUniform("dt", 0.1f);
   float t = 0.0f;
   for ( int i = 0; i < 8; i++ ) {
-    //shaderPass3->setUniform("t", t);
+    shaderPass3->setUniform("t", t);
     glCullFace( GL_BACK );
     drawCube( 2,  2,  2 );
-    t += 4*0.1;
+    t += 4;
   }
-
+  Shader::useFixedPipeline();
+  FramebufferObject::unbind();
 }
 /****************************************************************************/
 
@@ -274,9 +282,7 @@ TestApp::render() {
 
   computeRays();
   glFlush();
-  moveOnRay( 0.01f );
-
-  FramebufferObject::unbind();
+  //moveOnRay( 0.01f );
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glDisable( GL_CULL_FACE );
@@ -294,7 +300,8 @@ TestApp::render() {
   glEnable( GL_TEXTURE_2D );
   TextureUnits::setEnvMode( TEM_REPLACE );
   //g_TextureManager.getByName( "rttTmp" )->bind();
-  g_TextureManager.getByName( "rttRays" )->bind();
+  //g_TextureManager.getByName( "rttRays" )->bind();
+  g_TextureManager.getByName( "rttRes" )->bind();
 
   glBegin( GL_QUADS );
   glTexCoord2f(0., 1.);
