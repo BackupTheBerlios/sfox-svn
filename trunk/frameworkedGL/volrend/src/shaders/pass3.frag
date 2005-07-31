@@ -9,16 +9,19 @@ void main() {
   vec2 tcoord = gl_FragCoord.xy*winScale;
   vec4 ray = texture2D(raysDir, tcoord);
   ray.xyz = gl_Color.xyz+dt*t*ray.xyz;
-  vec4 res = 0.;
+  vec4 res = vec4(0., 0., 0., 0.);
 
-  for(float i = 0.; i < 4.; i++) {
+  for(float i = 0.; i < 1.; i++) {
     if(ray.w <= length(gl_Color.xyz-ray.xyz))
       res.w = 1.;
-    float s = texture3D(volData, ray.xyz).w;
-    res = res+(1.-res.w)*s*vec4(s, s, s, s);
-    ray.xyz = dt*i*ray.xyz;
+    float s = texture3D(volData, ray.xyz).x;
+    if(s<0.1)
+      s=0;
+    res.xyz = res.xyz+(1.-res.w)*s*0.9*vec3(s, s, s);
+    res.w = res.w+(1.-res.w)*s*0.9;
+    ray.xyz += dt*i*ray.xyz;
   }
   vec4 dest = texture2D(resTex, tcoord);
-  gl_FragColor = dest+(1.-dest.w)*res.w*res;
-  gl_FragColor = res;
+  gl_FragColor.xyz = dest.xyz+(1.-dest.w)*res.w*0.9*res.xyz;
+  gl_FragColor.w = dest.w+(1.-dest.w)*res.w*0.9;
 }

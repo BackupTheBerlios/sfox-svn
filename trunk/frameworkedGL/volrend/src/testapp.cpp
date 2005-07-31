@@ -60,7 +60,6 @@ TestApp::init() {
 
   trackball = new Trackball(width, height);
 
-
   texture = g_TextureManager.load("test", "data/test.png");
   Texture *texture = g_TextureManager.load("volData", "data/head256.dat");
 
@@ -109,6 +108,16 @@ TestApp::init() {
   shaderPass3->setUniform("resTex", 2);
   shaderPass3->setUniform("winScale", 1./width,  1./height);
   shaderPass3->setUniform("t", 0.f);
+
+  shaderPass4 = new Shader();
+  shaderPass4->setVertexShader("shaders/pass1.vert");
+  shaderPass4->setFragmentShader("shaders/pass4.frag");
+  shaderPass4->link();
+  shaderPass4->validate();
+
+  shaderPass4->bind();  
+  shaderPass4->setUniform("resTex", 2);
+  shaderPass4->setUniform("winScale", 1./width,  1./height);  
 }
 
 
@@ -252,22 +261,41 @@ TestApp::moveOnRay(float dt)
   texRays->setMagFilter( TF_NEAREST );
   TextureUnits::activeUnit( 0 );
   texVolData->bind();
+  texRays->setMinFilter( TF_LINEAR );
+  texRays->setMagFilter( TF_LINEAR );
   texVolData->setWrapS( TW_CLAMP_TO_EDGE );
   texVolData->setWrapT( TW_CLAMP_TO_EDGE );
   texVolData->setWrapR( TW_CLAMP_TO_EDGE );
 
   fbo->attachTexture( texRes, FramebufferObject::COLOR_ATTACHMENT0, 0 );
-  glClear(GL_COLOR_BUFFER_BIT);
+  fbo->attachTexture( g_TextureManager.getByName( "rttDepth" ),
+                      FramebufferObject::DEPTH_ATTACHMENT, 0 );
+  fbo->checkStatus();
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
 
   shaderPass3->bind();
-  shaderPass3->setUniform("dt", 0.1f);
+  shaderPass3->setUniform("dt", 0.02f);
   float t = 0.0f;
-  for ( int i = 0; i < 8; i++ ) {
-    shaderPass3->setUniform("t", t);
-    glCullFace( GL_BACK );
+  
+  glCullFace( GL_BACK );
+  for ( int i = 0; i < sqrtf(3)*50/1; i++ ) {
+    glDepthMask(GL_FALSE);
+    shaderPass3->bind();
+    shaderPass3->setUniform("t", t);    
     drawCube( 2,  2,  2 );
-    t += 4;
+    t += 1;    
+    glDepthMask(GL_TRUE);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    shaderPass4->bind();
+    drawCube( 2,  2,  2 );
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   }
+
+  //glCullFace( GL_BACK );
+  //drawCube( 2,  2,  2 );
+
   Shader::useFixedPipeline();
   FramebufferObject::unbind();
 }
@@ -282,7 +310,7 @@ TestApp::render() {
 
   computeRays();
   glFlush();
-  //moveOnRay( 0.01f );
+  moveOnRay( 0.01f );
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   glDisable( GL_CULL_FACE );

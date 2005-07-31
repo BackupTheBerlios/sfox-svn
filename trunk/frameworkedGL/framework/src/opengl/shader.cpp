@@ -183,7 +183,7 @@ namespace StarEngine {
     map<const char*, GLint>::iterator it = uniforms.find(name);
     if(it == uniforms.end()) {
       uniforms[name] = glGetUniformLocationARB(program, name);
-      assert(uniforms[name]!=-1);
+      assert(uniforms[name]!=-1);	  	  
     }
     return uniforms[name];
   }
