@@ -1,6 +1,5 @@
 uniform sampler3D volData;
 uniform sampler2D raysDir;
-uniform sampler2D resTex;
 uniform float t;
 uniform float dt;
 uniform vec2 winScale;
@@ -11,16 +10,22 @@ void main() {
   vec4 ray;
   vec4 res = vec4(0., 0., 0., 0.);
 
-  for(float i = 0.; i < 10.; i++) {
-    ray.xyz = gl_Color.xyz+dt*(t+i)*rayDir.xyz;
-    if(rayDir.w <= dt*(t+i))
-      res.w = 1.;
-    float s = texture3D(volData, ray.xyz).x;
-    res.xyz = res.xyz+(1.-res.w)*s*.6*vec3(s, s, s);
-    res.w = res.w+(1.-res.w)*s*.6;
-  }
-
-  vec4 dest = texture2D(resTex, tcoord);
-  gl_FragColor.xyz = dest.xyz+(1.-dest.w)*res.w*.6*res.xyz;
-  gl_FragColor.w = dest.w+(1.-dest.w)*res.w*.6;
+  ray.xyz = gl_Color.xyz+dt*t*rayDir.xyz;
+  float rayLen = 0.;
+  for(float i = 0.; i < 173.; i++) {
+    if(res.w>=0.95)
+      break;    
+    if(rayDir.w <= rayLen) {
+      res.w = 1.;           
+    } else {
+      float s = texture3D(volData, ray.xyz).x;
+      if(s<0.1||s>0.7)
+        s=0.;
+      res.xyz = res.xyz+(1.-res.w)*s*0.4*vec3(s, s, s);
+      res.w = res.w+(1.-res.w)*s*0.4;
+    }
+    ray.xyz += dt*rayDir.xyz;
+    rayLen += dt;
+  }  
+  gl_FragColor = res;  
 }

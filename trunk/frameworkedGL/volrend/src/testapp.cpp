@@ -61,7 +61,7 @@ TestApp::init() {
   trackball = new Trackball(width, height);
 
   texture = g_TextureManager.load("test", "data/test.png");
-  Texture *texture = g_TextureManager.load("volData", "data/head256.dat");
+  Texture *texture = g_TextureManager.load("volData", "data/bonsai.dat");
 
   fbo = new FramebufferObject;
   fbo->bind();
@@ -105,7 +105,7 @@ TestApp::init() {
   shaderPass3->bind();
   shaderPass3->setUniform("volData", 0);
   shaderPass3->setUniform("raysDir", 1);
-  shaderPass3->setUniform("resTex", 2);
+  //shaderPass3->setUniform("resTex", 2);
   shaderPass3->setUniform("winScale", 1./width,  1./height);
   shaderPass3->setUniform("t", 0.f);
 
@@ -226,7 +226,7 @@ TestApp::computeRays()
   glCullFace(GL_BACK);
 
   shaderPass1->bind();
-  drawCube(2, 2, 2);
+  drawCube(cubeX, cubeY, cubeZ);
   glFlush();
 
   // Render back faces and compute rays
@@ -236,7 +236,7 @@ TestApp::computeRays()
   texTmp->bind();
   glCullFace(GL_FRONT);
   shaderPass2->bind();
-  drawCube(2, 2, 2);
+  drawCube(cubeX, cubeY, cubeZ);
 
   Shader::useFixedPipeline();
   FramebufferObject::unbind();
@@ -268,12 +268,8 @@ TestApp::moveOnRay(float dt)
   texVolData->setWrapR( TW_CLAMP_TO_EDGE );
 
   fbo->attachTexture( texRes, FramebufferObject::COLOR_ATTACHMENT0, 0 );
-  fbo->attachTexture( g_TextureManager.getByName( "rttDepth" ),
-                      FramebufferObject::DEPTH_ATTACHMENT, 0 );
   fbo->checkStatus();
-  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
+  glClear(GL_COLOR_BUFFER_BIT);
 
   shaderPass3->bind();
   shaderPass3->setUniform("dt", 0.01f);
@@ -281,21 +277,8 @@ TestApp::moveOnRay(float dt)
 
   glCullFace( GL_BACK );
   shaderPass3->bind();
-  for ( int i = 0; i < sqrtf(3)*10/1; i++ ) {
-    shaderPass3->bind();
-    glDepthMask(GL_FALSE);
-    shaderPass3->setUniform("t", t);
-    drawCube( 2,  2,  2 );
-    t += 10;
-    glDepthMask(GL_TRUE);
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    shaderPass4->bind();
-    drawCube( 2,  2,  2 );
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  }
-
-  //glCullFace( GL_BACK );
-  //drawCube( 2,  2,  2 );
+  shaderPass3->setUniform("t", t);
+  drawCube(cubeX, cubeY, cubeZ);
 
   Shader::useFixedPipeline();
   FramebufferObject::unbind();

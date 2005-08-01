@@ -25,6 +25,10 @@ private:
   StarEngine::Shader *shaderPass3;
   StarEngine::Shader *shaderPass4;
 
+  static const int cubeX = 2;
+  static const int cubeY = 2;
+  static const int cubeZ = 1;
+
   void printInfos();
   void drawCube(float sizex, float sizey, float sizez);
   void computeRays();
