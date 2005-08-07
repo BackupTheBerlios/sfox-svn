@@ -29,6 +29,7 @@ src_opengl="""opengl/light.cpp
        opengl/glext.cpp 
        opengl/object3d.cpp 
        opengl/material.cpp 
+       opengl/shaderCG.cpp 
        opengl/shader.cpp"""
 
 src_framework="""framework/application.cpp

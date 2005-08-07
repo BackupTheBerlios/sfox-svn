@@ -19,8 +19,8 @@ void main() {
       res.w = 1.;           
     } else {
       float s = texture3D(volData, ray.xyz).x;
-      if(s<0.1||s>0.7)
-        s=0.;
+      //if(s<0.1||s>0.7)
+      //  s=0.;
       res.xyz = res.xyz+(1.-res.w)*s*0.4*vec3(s, s, s);
       res.w = res.w+(1.-res.w)*s*0.4;
     }

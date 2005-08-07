@@ -8,6 +8,7 @@
 
 #include "application.h"
 #include "opengl/texturemanager.h"
+#include "opengl/shaderCG.h"
 
 namespace StarEngine {
   using namespace std;
@@ -51,6 +52,7 @@ namespace StarEngine {
   Application::run()
   {
     SDL_Event event;
+    ShaderCG::init();
     init();
     while(!finish) {
       while(SDL_PollEvent(&event)) {
@@ -86,6 +88,7 @@ namespace StarEngine {
       SDL_GL_SwapBuffers();
     }
     quit();
+    ShaderCG::quit();
     SDL_WM_GrabInput(SDL_GRAB_OFF);
     SDL_ShowCursor(SDL_ENABLE);
     SDL_Quit();
