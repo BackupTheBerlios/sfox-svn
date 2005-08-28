@@ -1,7 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 

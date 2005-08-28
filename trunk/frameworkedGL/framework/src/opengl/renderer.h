@@ -11,6 +11,7 @@ namespace StarEngine {
     static bool printGLError2(const char *i, int l);
 
     static const char * getGLErrorString();
+    static const char * getCGErrorString();  
   };
 }
 #endif

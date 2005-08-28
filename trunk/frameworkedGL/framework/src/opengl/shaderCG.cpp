@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 #include <cassert>
@@ -9,7 +9,6 @@
 #include <Cg/cgGL.h>
 
 #include "shaderCG.h"
-#include "glext.h"
 #include "framework/exception.h"
 
 namespace StarEngine {
@@ -44,7 +43,7 @@ namespace StarEngine {
   ShaderCG::loadSourceFromFile(const char *filename, ProfileType profile,
                                const char *entry,  const char **args)
   {
-    CGprofile profileCG = cgGLGetLatestProfile( getProfileCGGL( profile ) );
+    profileCG = cgGLGetLatestProfile( getProfileCGGL( profile ) );
     if( profileCG == CG_PROFILE_UNKNOWN )
       throw new Exception("ShaderCG::loadSourceFromFile(): Can't find " \
                           "appropriate profile");
@@ -58,6 +57,19 @@ namespace StarEngine {
     cgGLLoadProgram( program );
   }
 
+  void
+  ShaderCG::bind()
+  {
+    cgGLEnableProfile(profileCG);
+    cgGLBindProgram(program);
+  }
+
+  void
+  ShaderCG::unbind()
+  {
+    cgGLDisableProfile(profileCG);    
+  }
+
   CGGLenum
   ShaderCG::getProfileCGGL( ProfileType profile )
   {
@@ -69,6 +81,7 @@ namespace StarEngine {
     default:
       assert( 0 );
     }
+    assert(0);
   }
 
 };

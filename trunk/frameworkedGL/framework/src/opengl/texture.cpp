@@ -1,5 +1,6 @@
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
+#include <GL/gl.h>
 #endif
 
 #include <iostream>
@@ -7,11 +8,11 @@
 #include <cassert>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glext.h>
 #include <SDL.h>
 
 #include "texture.h"
 #include "framework/exception.h"
+#include "glext.h"
 
 namespace StarEngine {
   Texture::Texture()

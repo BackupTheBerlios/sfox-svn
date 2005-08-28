@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 

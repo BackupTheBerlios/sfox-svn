@@ -7,7 +7,7 @@
 namespace StarEngine {
   class PBuffer {
   private:
-#ifndef _WIN32
+#ifndef WIN32
     Display *display;
     GLXPbuffer pbuffer;
     GLXContext context;

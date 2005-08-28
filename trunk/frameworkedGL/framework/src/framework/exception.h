@@ -1,7 +1,7 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 #include <string>

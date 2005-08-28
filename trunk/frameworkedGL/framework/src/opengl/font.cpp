@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #define vsnprintf(b, n, f, l) vsprintf(b, f, l)
 #endif

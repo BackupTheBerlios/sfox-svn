@@ -1,8 +1,10 @@
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <Cg/cg.h>
+#include <Cg/cgGL.h>
 #include <iostream>
 
 #include "renderer.h"
@@ -55,6 +57,16 @@ namespace StarEngine {
     GLenum errcode;
     if((errcode = glGetError()) != GL_NO_ERROR)
       return (const char *)gluErrorString(errcode);
+    else
+      return "No error";
+  }
+
+  const char *
+  Renderer::getCGErrorString()
+  {
+    CGerror error = cgGetError();
+    if(error != CG_NO_ERROR)
+      return (const char*)cgGetErrorString(error);
     else
       return "No error";
   }

@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #else
 #include <GL/glx.h>
@@ -17,7 +17,7 @@
 namespace StarEngine {
   PBuffer::PBuffer(int width, int height, const std::string &format)
   {
-#ifndef _WIN32
+#ifndef WIN32
     using namespace std;
     const vector<int> configs = extractFormat(format);
     int n, i;
@@ -66,7 +66,7 @@ namespace StarEngine {
   void
   PBuffer::enable()
   {
-#ifndef _WIN32
+#ifndef WIN32
     oldContext = glXGetCurrentContext();
     oldDrawable = glXGetCurrentDrawable();
     if(glXMakeCurrent(display, pbuffer, context) == False)
@@ -77,7 +77,7 @@ namespace StarEngine {
   void
   PBuffer::disable()
   {
-#ifndef _WIN32
+#ifndef WIN32
     if(glXMakeCurrent(display, oldDrawable, oldContext) == False)
       throw new Exception("Can't disable pbuffer!");
 #endif
@@ -85,7 +85,7 @@ namespace StarEngine {
 
   PBuffer::~PBuffer()
   {
-#ifndef _WIN32
+#ifndef WIN32
     if(glXGetCurrentContext() == context)
       glXMakeCurrent(display, oldDrawable, oldContext);
     glXDestroyPbuffer(display, pbuffer);
@@ -101,7 +101,7 @@ namespace StarEngine {
     vector<int> fbAttribs;
     string tmp;
 
-#ifndef _WIN32
+#ifndef WIN32
     // Extract each word from the string "xxx yy ..."
     for(i = format.begin(); i != format.end(); i++) {
       char c = *i;

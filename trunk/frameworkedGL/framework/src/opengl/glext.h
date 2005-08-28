@@ -1,8 +1,9 @@
 #ifndef MYGLEXT_H
 #define MYGLEXT_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
+#include <GL/wglext.h>
 #endif
 
 #include <GL/gl.h>

@@ -1,7 +1,7 @@
 #ifndef FBO_H
 #define FBO_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 #include <GL/gl.h>
