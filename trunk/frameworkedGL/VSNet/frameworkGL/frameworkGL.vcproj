@@ -153,6 +153,9 @@
 				RelativePath="..\..\framework\src\opengl\shader.cpp">
 			</File>
 			<File
+				RelativePath="..\..\framework\src\opengl\shaderCG.cpp">
+			</File>
+			<File
 				RelativePath="..\..\framework\src\opengl\texture.cpp">
 			</File>
 			<File
@@ -240,6 +243,9 @@
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\shader.h">
+			</File>
+			<File
+				RelativePath="..\..\framework\src\opengl\shaderCG.h">
 			</File>
 			<File
 				RelativePath="..\..\framework\src\opengl\texture.h">
