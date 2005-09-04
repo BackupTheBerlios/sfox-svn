@@ -1,0 +1,21 @@
+struct vertin {
+  float4 position : POSITION;
+  float4 texCoord : TEXCOORD0;
+};
+
+struct vertout {
+  float4 hpos : POSITION;
+  float4 color : COLOR;
+  float4 texCoord : TEXCOORD0;
+};
+
+vertout main(vertin IN,
+	     uniform float4x4 mvp)
+{
+  vertout OUT;
+  OUT.hpos = mul(mvp, IN.position);
+  OUT.color = float4(1, 0, 0, 0);
+  OUT.texCoord = IN.texCoord;
+  
+  return OUT;
+}
