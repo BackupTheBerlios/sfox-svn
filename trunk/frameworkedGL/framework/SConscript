@@ -4,9 +4,9 @@
 Import('env')
 Export('env')
 
-SConscript('src/SConscript', build_dir='build')
+SConscript('src/SConscript')
 
-env.Alias(target="install", source=env.Install(dir="../lib", source="build/libframeworkGL.a"))
+env.Alias(target="install", source=env.Install(dir="../lib", source="src/libframeworkGL.a"))
 
 #Install include files
 src_math = """src/math/matrix.h
@@ -39,6 +39,7 @@ src_opengl="""src/opengl/camera.h
               src/opengl/light.h
               src/opengl/renderer.h
               src/opengl/material.h
+              src/opengl/shaderCG.h
               src/opengl/shader.h"""
 
 src_framework="""src/framework/application.h

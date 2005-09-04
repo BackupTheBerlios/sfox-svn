@@ -1,11 +1,15 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef SHADERCG_H
+#define SHADERCG_H
 #ifdef WIN32
 #include <windows.h>
 #endif
 #include <GL/gl.h>
 #include <Cg/cg.h>
 #include <Cg/cgGL.h>
+
+namespace StarEngine {
+  class Texture;
+};
 
 namespace StarEngine {
   class ShaderCG {
@@ -31,6 +35,13 @@ namespace StarEngine {
                             const char **args = NULL);
     void bind();
     void unbind();
+
+    CGparameter getNamedParameter(const char *name);
+    void setGLMVPMatrix( const char *name );
+
+    void setTextureParameter(const char *name, Texture *tex);
+    void enableTextureParameter(const char *name);
+    void disableTextureParameter(const char *name);
   };
 }
 #endif

@@ -42,9 +42,10 @@ env.Append(CPPPATH = framework_include+z_include+sdl_image_include+sdl_include+o
 env.Append(LIBS = framework_lib+z_lib+sdl_image_lib+sdl_lib+opengl_lib+freetype_lib+cg_lib)
 env.Append(LIBPATH = framework_libpath+z_libpath+sdl_image_libpath+sdl_libpath+opengl_libpath+freetype_libpath)
 
-SConscript('framework/SConscript', build_dir='build', exports = 'env')
+SConscript('framework/SConscript', exports = 'env')
 #SConscript('reflection/SConscript', exports = 'env')
 #SConscript('pbuffer/SConscript', exports = 'env')
 #SConscript('perpixellight/SConscript', exports = 'env')
 SConscript('testTexture/SConscript', exports = 'env')
+SConscript('testCG/SConscript', exports = 'env')
 SConscript('volrend/SConscript', exports = 'env')

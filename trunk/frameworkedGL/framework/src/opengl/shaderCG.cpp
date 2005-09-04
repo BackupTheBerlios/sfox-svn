@@ -10,6 +10,7 @@
 
 #include "shaderCG.h"
 #include "framework/exception.h"
+#include "opengl/texture.h"
 
 namespace StarEngine {
   CGcontext ShaderCG::context = 0;
@@ -51,8 +52,11 @@ namespace StarEngine {
     program = cgCreateProgramFromFile( context, CG_SOURCE, filename, profileCG,
                                        entry, args );
     if ( !program ) {
-      throw new Exception("ShaderCG::loadSourceFromFile(): Can't load " \
-                          "file");
+      std::string mess("ShaderCG::loadSourceFromFile(): Can't load " \
+                       "file \"");
+      mess.append(filename);
+      mess.append("\"");
+      throw new Exception(mess);
     }
     cgGLLoadProgram( program );
   }
@@ -67,7 +71,7 @@ namespace StarEngine {
   void
   ShaderCG::unbind()
   {
-    cgGLDisableProfile(profileCG);    
+    cgGLDisableProfile(profileCG);
   }
 
   CGGLenum
@@ -82,6 +86,38 @@ namespace StarEngine {
       assert( 0 );
     }
     assert(0);
+  }
+
+  CGparameter
+  ShaderCG::getNamedParameter(const char *name)
+  {
+    return cgGetNamedParameter(program, name);
+  }
+
+  void
+  ShaderCG::setGLMVPMatrix( const char *name )
+  {
+    CGparameter mvp = getNamedParameter( name );
+    cgGLSetStateMatrixParameter( mvp, CG_GL_MODELVIEW_PROJECTION_MATRIX,
+                                 CG_GL_MATRIX_IDENTITY );
+  }
+
+  void
+  ShaderCG::setTextureParameter(const char *name, Texture *tex)
+  {
+    cgGLSetTextureParameter(getNamedParameter( name ), tex->getGLName());
+  }
+
+  void
+  ShaderCG::enableTextureParameter(const char *name)
+  {
+    cgGLEnableTextureParameter(getNamedParameter( name ));
+  }
+
+  void
+  ShaderCG::disableTextureParameter(const char *name)
+  {
+    cgGLDisableTextureParameter(getNamedParameter( name ));
   }
 
 };
