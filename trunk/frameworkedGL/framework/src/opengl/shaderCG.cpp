@@ -95,6 +95,21 @@ namespace StarEngine {
   }
 
   void
+  ShaderCG::enableTextureParameter(const char *name)
+  {
+    cgGLEnableTextureParameter(getNamedParameter( name ));
+  }
+
+  void
+  ShaderCG::disableTextureParameter(const char *name)
+  {
+    cgGLDisableTextureParameter(getNamedParameter( name ));
+  }
+
+/*****************************************************************************/
+/* Uniforms setters                                                          */
+/*****************************************************************************/
+  void
   ShaderCG::setGLMVPMatrix( const char *name )
   {
     CGparameter mvp = getNamedParameter( name );
@@ -109,15 +124,134 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::enableTextureParameter(const char *name)
+  ShaderCG::setParameter1f(const char *name,
+                           float x)
   {
-    cgGLEnableTextureParameter(getNamedParameter( name ));
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter1f( param,  x );
   }
 
   void
-  ShaderCG::disableTextureParameter(const char *name)
+  ShaderCG::setParameter2f(const char *name,
+                           float x,
+                           float y)
   {
-    cgGLDisableTextureParameter(getNamedParameter( name ));
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter2f( param,  x, y );
   }
 
+  void
+  ShaderCG::setParameter3f(const char *name,
+                           float x,
+                           float y,
+                           float z)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter3f( param,  x, y, z );
+  }
+
+  void
+  ShaderCG::setParameter4f(const char *name,
+                           float x,
+                           float y,
+                           float z,
+                           float w)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter4f( param,  x, y, z, w );
+  }
+
+  void
+  ShaderCG::setParameter1fv(const char *name, const float *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter1fv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter2fv(const char *name, const float *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter2fv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter3fv(const char *name, const float *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter3fv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter4fv(const char *name, const float *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter4fv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter1d(const char *name,
+                           double x)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter1d( param,  x );
+  }
+
+  void
+  ShaderCG::setParameter2d(const char *name,
+                           double x,
+                           double y)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter2d( param,  x, y );
+  }
+
+  void
+  ShaderCG::setParameter3d(const char *name,
+                           double x,
+                           double y,
+                           double z)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter3d( param,  x, y, z );
+  }
+
+  void
+  ShaderCG::setParameter4d(const char *name,
+                           double x,
+                           double y,
+                           double z,
+                           double w)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter4d( param,  x, y, z, w );
+  }
+
+  void
+  ShaderCG::setParameter1dv(const char *name, const double *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter1dv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter2dv(const char *name, const double *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter2dv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter3dv(const char *name, const double *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter3dv( param,  v );
+  }
+
+  void
+  ShaderCG::setParameter4dv(const char *name, const double *v)
+  {
+    CGparameter param = getNamedParameter( name );
+    cgGLSetParameter4dv( param,  v );
+  }
 };
