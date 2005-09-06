@@ -13,6 +13,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volrend", "volrend\volrend.
 		{71646124-A094-4E8A-AE0A-B2826DE2D86C} = {71646124-A094-4E8A-AE0A-B2826DE2D86C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCG", "testCG\testCG.vcproj", "{BE2B8590-E670-4E0A-985A-02D4A70C8627}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volrendCG", "volrendCG\volrendCG.vcproj", "{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -31,6 +39,14 @@ Global
 		{818C81C9-003E-4F0E-8A95-88042407F034}.Debug.Build.0 = Debug|Win32
 		{818C81C9-003E-4F0E-8A95-88042407F034}.Release.ActiveCfg = Release|Win32
 		{818C81C9-003E-4F0E-8A95-88042407F034}.Release.Build.0 = Release|Win32
+		{BE2B8590-E670-4E0A-985A-02D4A70C8627}.Debug.ActiveCfg = Debug|Win32
+		{BE2B8590-E670-4E0A-985A-02D4A70C8627}.Debug.Build.0 = Debug|Win32
+		{BE2B8590-E670-4E0A-985A-02D4A70C8627}.Release.ActiveCfg = Release|Win32
+		{BE2B8590-E670-4E0A-985A-02D4A70C8627}.Release.Build.0 = Release|Win32
+		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Debug.ActiveCfg = Debug|Win32
+		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Debug.Build.0 = Debug|Win32
+		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Release.ActiveCfg = Release|Win32
+		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

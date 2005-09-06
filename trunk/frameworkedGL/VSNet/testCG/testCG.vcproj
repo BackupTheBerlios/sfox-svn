@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="testTexture"
-	ProjectGUID="{9BF0D7C1-E64E-4A10-A17E-C3B5800AA0A9}"
+	Name="testCG"
+	ProjectGUID="{BE2B8590-E670-4E0A-985A-02D4A70C8627}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -33,13 +33,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="frameworkGL.lib opengl32.lib glu32.lib libfreetype.lib SDL.lib SDL_image.lib SDLmain.lib cg.lib cgGL.lib"
-				OutputFile="$(OutDir)/testTexture.exe"
+				OutputFile="$(OutDir)/testCG.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\frameworkGL\Debug"
 				IgnoreAllDefaultLibraries="FALSE"
-				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib"
+				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib msvcprtd.lib MSVCRTD.lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/testTexture.pdb"
+				ProgramDatabaseFile="$(OutDir)/testCG.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -83,10 +83,10 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="frameworkGL.lib opengl32.lib glu32.lib libfreetype.lib SDL.lib SDL_image.lib SDLmain.lib cg.lib cgGL.lib"
-				OutputFile="$(OutDir)/testTexture.exe"
+				OutputFile="$(OutDir)/testCG.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\frameworkGL\Release"
-				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib"
+				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib msvcprtd.lib"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -122,10 +122,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\testTexture\src\main.cpp">
+				RelativePath="..\..\testCG\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\..\testTexture\src\testapp.cpp">
+				RelativePath="..\..\testCG\src\testapp.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -133,13 +133,23 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\testTexture\src\testapp.h">
+				RelativePath="..\..\testCG\src\testapp.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+		</Filter>
+		<Filter
+			Name="shaders"
+			Filter="">
+			<File
+				RelativePath="..\..\common\shaders\testCG\simple_frag.cg">
+			</File>
+			<File
+				RelativePath="..\..\common\shaders\testCG\simple_vert.cg">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

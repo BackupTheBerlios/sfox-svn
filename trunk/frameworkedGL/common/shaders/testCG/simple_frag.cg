@@ -3,5 +3,5 @@ float4 main(in float4 color : COLOR,
 	    in float4 texCoord : TEXCOORD0,
 	    uniform sampler2D baseTexture) : COLOR
 { 
-  return tex2D(baseTexture, texCoord.xy)*10.0;
+  return tex2D(baseTexture, texCoord.xy)*0.5;
 }

@@ -1,5 +1,7 @@
 #ifdef WIN32
 #include <windows.h>
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif
 #include <SDL.h>
 
