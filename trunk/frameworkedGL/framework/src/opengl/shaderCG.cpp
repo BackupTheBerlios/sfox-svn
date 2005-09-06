@@ -11,6 +11,7 @@
 #include "shaderCG.h"
 #include "framework/exception.h"
 #include "opengl/texture.h"
+#include "opengl/renderer.h"
 
 namespace StarEngine {
   CGcontext ShaderCG::context = 0;
@@ -42,6 +43,7 @@ namespace StarEngine {
 
   void
   ShaderCG::loadSourceFromFile(const char *filename, ProfileType profile,
+                               const CGenum program_type,
                                const char *entry,  const char **args)
   {
     profileCG = cgGLGetLatestProfile( getProfileCGGL( profile ) );
@@ -51,6 +53,8 @@ namespace StarEngine {
     cgGLSetOptimalOptions( profileCG );
     program = cgCreateProgramFromFile( context, CG_SOURCE, filename, profileCG,
                                        entry, args );
+    Renderer::printCGError();
+
     if ( !program ) {
       std::string mess("ShaderCG::loadSourceFromFile(): Can't load " \
                        "file \"");
@@ -58,7 +62,9 @@ namespace StarEngine {
       mess.append("\"");
       throw new Exception(mess);
     }
+    cgGLEnableProfile(profileCG);
     cgGLLoadProgram( program );
+    Renderer::printCGError();
   }
 
   void

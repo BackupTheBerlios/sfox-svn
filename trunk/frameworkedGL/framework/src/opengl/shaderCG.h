@@ -31,6 +31,7 @@ namespace StarEngine {
     static void quit();
 
     void loadSourceFromFile(const char *filename, ProfileType profile,
+                            const CGenum program_type = CG_SOURCE,
                             const char *entry = NULL,
                             const char **args = NULL);
     void bind();

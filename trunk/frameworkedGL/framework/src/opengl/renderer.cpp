@@ -51,6 +51,19 @@ namespace StarEngine {
     return false;
   }
 
+  bool
+  Renderer::printCGError2(const char *i, int l)
+  {
+#ifndef NDEBUG
+    CGerror error = cgGetError();
+    if(error != CG_NO_ERROR) {
+      cerr <<  "***cgError: " << i << ":" << l << " " << cgGetErrorString(error) << endl;
+      return true;
+    }
+#endif
+    return false;
+  }
+
   const char *
   Renderer::getGLErrorString()
   {
