@@ -1,4 +1,4 @@
-void main()
-{
-  gl_FragColor = gl_Color;
+float4 main(in float4 color : COLOR) : COLOR
+{ 
+  return color;
 }
