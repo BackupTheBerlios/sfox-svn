@@ -23,7 +23,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -131,11 +131,33 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\..\volrendCG\src\testapp.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+		</Filter>
+		<Filter
+			Name="shaders"
+			Filter="">
+			<File
+				RelativePath="..\..\volrendCG\src\shaders\pass1.frag">
+			</File>
+			<File
+				RelativePath="..\..\volrendCG\src\shaders\pass1.vert">
+			</File>
+			<File
+				RelativePath="..\..\volrendCG\src\shaders\pass2.frag">
+			</File>
+			<File
+				RelativePath="..\..\volrendCG\src\shaders\pass3.frag">
+			</File>
+			<File
+				RelativePath="..\..\volrendCG\src\shaders\pass4.frag">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

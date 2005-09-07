@@ -2,6 +2,7 @@
 #define TESTAPP_H
 
 #include "framework/application.h"
+#include "opengl/image.h"
 
 
 namespace StarEngine {
@@ -31,12 +32,14 @@ private:
 
   static const int cubeX = 2;
   static const int cubeY = 2;
-  static const int cubeZ = 1;
+  static const int cubeZ = 2;
 
   void printInfos();
   void drawCube(float sizex, float sizey, float sizez);
   void computeRays();
   void moveOnRay(float dt);
+
+ // unsigned char* genPreIntegrated(Image *img);
 
 public:
   TestApp();

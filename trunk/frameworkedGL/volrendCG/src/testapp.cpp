@@ -47,6 +47,53 @@ TestApp::quit()
   FontGL::exit();
 }
 /****************************************************************************/
+#if 0
+unsigned char*
+TestApp::genPreIntegrated(Image *img)
+{ 
+  ImageLoader::ImageData imgData = img->getImageData();
+  unsigned char *colMap = (unsigned char *)imgData->data;
+  int K[256*4];
+  unsigned char *res = new unsigned char[256*256*4];  
+  K[0] = colMap[0];
+  K[1] = colMap[1];
+  K[2] = colMap[2];
+  K[3] = colMap[3];    
+  for(int i = 1; i < 256; i++) {
+    K[i*4] = K[(i-1)*4]+colMap[i*4];
+    K[i*4+1] = K[(i-1)*4]+colMap[i*4+1];
+    K[i*4+2] = K[(i-1)*4]+colMap[i*4+2];
+    K[i*4+3] = K[(i-1)*4]+colMap[i*4+3];
+  }
+
+  float rr, rg, rb, ra;
+  for(int sf = 0; sf < 256; sf++)
+    for(int sb = 0; sb < 256; sb++) {
+      if(sf != sb) {
+        float k = 1./(sb-sf);
+        rr = k*(K[sf*4]-K[sb*4]);
+        rg = k*(K[sf*4+1]-K[sb*4+1]);
+        rb = k*(K[sf*4+2]-K[sb*4+2]);        
+        ra = 1.-exp(-k*(K[sf*4+3]-K[sb*4+3]));
+      } else {
+        rr = colMap[sf*4];
+        rg = colMap[sf*4+1];
+        rb = colMap[sf*4+2];
+        ra = 1.-exp(-colMap[sf*4+3]);
+      }
+      rr = min(rr, 255);
+      rb = min(rg, 255);
+      rg = min(rb, 255);
+      ra= min(ra, 255);
+      res[(sf*256+sb)*4] = rr;
+      res[(sf*256+sb)*4+1] = rg;
+      res[(sf*256+sb)*4+2] = rb;
+      res[(sf*256+sb)*4+3] = ra;
+    }
+  return res;
+}
+#endif
+/****************************************************************************/
 
 void
 TestApp::init() {
@@ -63,10 +110,11 @@ TestApp::init() {
   trackball = new Trackball(width, height);
 
   Texture *texture = g_TextureManager.load("volData",
-                                           DATAPATH"/media/volume/bonsai.dat");
+                                           DATAPATH"/media/volume/head256.dat");
 
   fbo = new FramebufferObject;
   fbo->bind();
+  g_TextureManager.load("colorMap", DATAPATH"/media/volume/colormap/bonsai.png");
   g_TextureManager.create("rttTmp", PF_RGBA16F, width, height);
   g_TextureManager.create("rttRays", PF_RGBA16F, width, height);
   g_TextureManager.create("rttRes", PF_RGBA16F, width, height);
@@ -197,7 +245,7 @@ TestApp::computeRays()
                        FramebufferObject::DEPTH_ATTACHMENT, 0 );
    fbo->checkStatus();
 
-//   // Render front faces
+   // Render front faces
    glClear(GL_COLOR_BUFFER_BIT);
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
@@ -205,7 +253,7 @@ TestApp::computeRays()
    shaderVertPass1->bind();
    shaderVertPass1->setGLMVPMatrix("mvp");
    shaderFragPass1->bind();
-   drawCube(cubeX, cubeY, cubeZ);
+   drawCube(float(cubeX), float(cubeY), float(cubeZ));
    shaderFragPass1->unbind();
    glFlush();
 
@@ -237,6 +285,11 @@ TestApp::moveOnRay(float dt)
    Texture * texRays = g_TextureManager.getByName("rttRays");
    Texture * texRes = g_TextureManager.getByName("rttRes");
    Texture * texVolData = g_TextureManager.getByName("volData");
+   Texture * texColorMap = g_TextureManager.getByName("colorMap");
+
+   texColorMap->bind();
+   texColorMap->setMinFilter( TF_NEAREST );
+   texColorMap->setMagFilter( TF_NEAREST );
 
    TextureUnits::activeUnit( 2 );
    texRes->bind();
@@ -268,11 +321,14 @@ TestApp::moveOnRay(float dt)
    shaderFragPass3->setParameter2f("winScale", 1./width, 1./height);
    shaderFragPass3->setTextureParameter("raysDir", texRays);
    shaderFragPass3->setTextureParameter("volData", texVolData);
+   shaderFragPass3->setTextureParameter("colorMap", texColorMap);
    shaderFragPass3->enableTextureParameter("volData");
    shaderFragPass3->enableTextureParameter("raysDir");
+   shaderFragPass3->enableTextureParameter("colorMap");
    drawCube(cubeX, cubeY, cubeZ);
    shaderFragPass3->disableTextureParameter("volData");
    shaderFragPass3->disableTextureParameter("raysDir");
+   shaderFragPass3->disableTextureParameter("colorMap");
    shaderFragPass3->unbind();
    shaderVertPass1->unbind();
 
