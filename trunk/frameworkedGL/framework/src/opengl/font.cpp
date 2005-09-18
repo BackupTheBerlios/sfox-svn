@@ -40,7 +40,7 @@ namespace StarEngine {
       throw new Exception("FontGL: Can't set char size.");
 
     generateTexture();
-    setlocale(LC_ALL, "");
+    //setlocale(LC_ALL, "");
   }
 
   FontGL::~FontGL()
