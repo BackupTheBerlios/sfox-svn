@@ -25,6 +25,7 @@ src_opengl="""src/opengl/camera.h
               src/opengl/ressourcemanager.h
               src/opengl/singleton.h
               src/opengl/texturemanager.h
+              src/opengl/shadermanager.h
               src/opengl/trackball.h
               src/opengl/texture.h
               src/opengl/textureunit.h

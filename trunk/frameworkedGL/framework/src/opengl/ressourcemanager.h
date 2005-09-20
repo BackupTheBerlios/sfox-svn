@@ -15,6 +15,7 @@ namespace StarEngine {
   class RessourceManager {
   public:
     Ressource *getByName( const std::string &name );
+    void releaseRessource( const std::string &name );
 
   protected:
     typedef std::map<std::string, Ressource *> RessourceMap;

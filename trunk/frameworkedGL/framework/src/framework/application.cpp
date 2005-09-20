@@ -8,6 +8,7 @@
 
 #include "application.h"
 #include "opengl/texturemanager.h"
+#include "opengl/shadermanager.h"
 #include "opengl/shaderCG.h"
 
 namespace StarEngine {
@@ -32,6 +33,7 @@ namespace StarEngine {
 
     // Create ressources managers
     new TextureManager;
+    new ShaderManager;
   }
 
   void

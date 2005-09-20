@@ -14,6 +14,7 @@ src_opengl="""opengl/light.cpp
        opengl/imageloader_dat.cpp
        opengl/ressourcemanager.cpp
        opengl/texturemanager.cpp
+       opengl/shadermanager.cpp
        opengl/fbo.cpp
        opengl/trackball.cpp
        opengl/texture.cpp

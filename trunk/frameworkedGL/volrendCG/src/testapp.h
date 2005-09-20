@@ -23,11 +23,8 @@ private:
   StarEngine::FramebufferObject *fbo;
   StarEngine::ShaderCG *shaderVertPass1;
   StarEngine::ShaderCG *shaderFragPass1;
-  StarEngine::ShaderCG *shaderVertPass2;
   StarEngine::ShaderCG *shaderFragPass2;
-  StarEngine::ShaderCG *shaderVertPass3;
   StarEngine::ShaderCG *shaderFragPass3;
-  StarEngine::ShaderCG *shaderVertPass4;
   StarEngine::ShaderCG *shaderFragPass4;
 
   static const int cubeX = 2;

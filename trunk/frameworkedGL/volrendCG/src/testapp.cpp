@@ -12,6 +12,7 @@
 #include "testapp.h"
 #include "opengl/texture.h"
 #include "opengl/texturemanager.h"
+#include "opengl/shadermanager.h"
 #include "opengl/textureunit.h"
 #include "opengl/texture2d.h"
 #include "opengl/camera.h"
@@ -129,19 +130,11 @@ TestApp::init() {
   fbo->checkStatus();
   Renderer::printGLError();
 
-  shaderVertPass1 = new ShaderCG();
-  shaderVertPass1->loadSourceFromFile("shaders/pass1.vert", ShaderCG::VERTEX);
-
-  shaderFragPass1 = new ShaderCG();
-  shaderFragPass1->loadSourceFromFile("shaders/pass1.frag",
-                                      ShaderCG::FRAGMENT);
-
-  shaderFragPass2 = new ShaderCG();
-  shaderFragPass2->loadSourceFromFile("shaders/pass2.frag",
-                                      ShaderCG::FRAGMENT);
-  shaderFragPass3 = new ShaderCG();
-  shaderFragPass3->loadSourceFromFile("shaders/pass3.frag",
-                                      ShaderCG::FRAGMENT);
+  shaderVertPass1 = g_ShaderManager.loadVertex("pass1Vert", "shaders/pass1.vert");
+  shaderFragPass1 = g_ShaderManager.loadFragment("pass1Frag", "shaders/pass1.frag");
+  shaderFragPass2 = g_ShaderManager.loadFragment("pass2Frag", "shaders/pass2.frag");
+  shaderFragPass3 = g_ShaderManager.loadFragment("pass3Frag", "shaders/pass3.frag");
+  
   Renderer::printCGError();
 }
 
@@ -267,9 +260,9 @@ TestApp::computeRays()
    shaderFragPass2->bind();
 
    shaderFragPass2->setTextureParameter("frontFace", texTmp);
-   shaderFragPass2->setParameter2f("winScale", 1./width, 1./height);
+   shaderFragPass2->setParameter2f("winScale", 1.f/width, 1.f/height);
    shaderFragPass2->enableTextureParameter("frontFace");
-   drawCube(cubeX, cubeY, cubeZ);
+   drawCube(float(cubeX), float(cubeY), float(cubeZ));
    shaderFragPass2->disableTextureParameter("frontFace");
    shaderVertPass1->unbind();
    shaderFragPass2->unbind();
@@ -318,14 +311,14 @@ TestApp::moveOnRay(float dt)
 
    glCullFace( GL_BACK );
    shaderFragPass3->setParameter1f("t", t);
-   shaderFragPass3->setParameter2f("winScale", 1./width, 1./height);
+   shaderFragPass3->setParameter2f("winScale", 1.f/width, 1.f/height);
    shaderFragPass3->setTextureParameter("raysDir", texRays);
    shaderFragPass3->setTextureParameter("volData", texVolData);
    shaderFragPass3->setTextureParameter("colorMap", texColorMap);
    shaderFragPass3->enableTextureParameter("volData");
    shaderFragPass3->enableTextureParameter("raysDir");
    shaderFragPass3->enableTextureParameter("colorMap");
-   drawCube(cubeX, cubeY, cubeZ);
+   drawCube(float(cubeX), float(cubeY), float(cubeZ));
    shaderFragPass3->disableTextureParameter("volData");
    shaderFragPass3->disableTextureParameter("raysDir");
    shaderFragPass3->disableTextureParameter("colorMap");
@@ -368,17 +361,17 @@ TestApp::render() {
   g_TextureManager.getByName( "rttRes" )->bind();
 
   glBegin( GL_QUADS );
-  glTexCoord2f(0., 1.);
-  glVertex2f(0, height-1);
+  glTexCoord2f(0.f, 1.f);
+  glVertex2f(0.f, float(height-1));
 
-  glTexCoord2f(0., 0.);
-  glVertex2f(0, 0);
+  glTexCoord2f(0.f, 0.f);
+  glVertex2f(0.f, 0.f);
 
-  glTexCoord2f(1., 0.);
-  glVertex2f(width-1, 0);
+  glTexCoord2f(1.f, 0.f);
+  glVertex2f(float(width-1), 0.f);
 
-  glTexCoord2f(1., 1.);
-  glVertex2f(width-1, height-1);
+  glTexCoord2f(1.f, 1.f);
+  glVertex2f(float(width-1), float(height-1));
   glEnd();
 
   glPopMatrix();

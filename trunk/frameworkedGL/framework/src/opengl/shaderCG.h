@@ -7,12 +7,14 @@
 #include <Cg/cg.h>
 #include <Cg/cgGL.h>
 
+#include "ressourcemanager.h"
+
 namespace StarEngine {
   class Texture;
 };
 
 namespace StarEngine {
-  class ShaderCG {
+  class ShaderCG : public Ressource {
   public:
     enum ProfileType { VERTEX, FRAGMENT };
 
