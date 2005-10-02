@@ -324,8 +324,8 @@ TestApp::moveOnRay(float dt)
    shaderFragPass3->setParameter2f("winScale", 1.f/width, 1.f/height);
    shaderFragPass3->setTextureParameter("raysDir", texRays);
    shaderFragPass3->setTextureParameter("volData", texVolData);
-   //shaderFragPass3->setTextureParameter("colorMap", texColorMap);
-   shaderFragPass3->setTextureParameter("colorMap", texPreInt);
+   shaderFragPass3->setTextureParameter("colorMap", texColorMap);
+   //shaderFragPass3->setTextureParameter("colorMap", texPreInt);
    shaderFragPass3->enableTextureParameter("volData");
    shaderFragPass3->enableTextureParameter("raysDir");
    shaderFragPass3->enableTextureParameter("colorMap");
@@ -369,10 +369,10 @@ TestApp::render() {
   TextureUnits::setEnvMode( TEM_REPLACE );
   //g_TextureManager.getByName( "rttTmp" )->bind();
   //g_TextureManager.getByName( "rttRays" )->bind();
-  //g_TextureManager.getByName( "rttRes" )->bind();
-  g_TextureManager.getByName( "preint" )->bind();
+  g_TextureManager.getByName( "rttRes" )->bind();
+  //g_TextureManager.getByName( "preint" )->bind();
 
-  glBegin( GL_QUADS );
+  /*glBegin( GL_QUADS );
   glTexCoord2f(0.f, 1.f);
   glVertex2f(0.f, float(height-1));
 
@@ -385,20 +385,20 @@ TestApp::render() {
   glTexCoord2f(1., 1.);
   glVertex2f(height-1, height-1);
   glEnd();
+*/
+   glBegin( GL_QUADS );
+   glTexCoord2f(0., 1.);
+   glVertex2f(0, height-1);
 
-//   glBegin( GL_QUADS );
-//   glTexCoord2f(0., 1.);
-//   glVertex2f(0, height-1);
+   glTexCoord2f(0., 0.);
+   glVertex2f(0, 0);
 
-//   glTexCoord2f(0., 0.);
-//   glVertex2f(0, 0);
+   glTexCoord2f(1., 0.);
+   glVertex2f(width-1, 0);
 
-//   glTexCoord2f(1., 0.);
-//   glVertex2f(width-1, 0);
-
-//   glTexCoord2f(1., 1.);
-//   glVertex2f(width-1, height-1);
-//   glEnd();
+   glTexCoord2f(1., 1.);
+   glVertex2f(width-1, height-1);
+   glEnd();
 
   glPopMatrix();
   glMatrixMode( GL_PROJECTION );

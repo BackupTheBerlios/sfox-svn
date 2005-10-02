@@ -23,8 +23,8 @@ float4 main(in float4 color : COLOR,
        res.w = 1.; 
      } else { 
        float s = tex3D(volData, ray.xyz).x;       
-       //float4 col = tex2D(colorMap, float2(s, 0));
-       float4 col = tex2D(colorMap, float2(s, prevS));
+       float4 col = tex2D(colorMap, float2(s, 0));
+       //float4 col = tex2D(colorMap, float2(s, prevS));
        res.xyz = res.xyz+(1.-res.w)*col.w*0.4*col.xyz;
        res.w = res.w+(1.-res.w)*col.w*0.4;
        prevS = s;
