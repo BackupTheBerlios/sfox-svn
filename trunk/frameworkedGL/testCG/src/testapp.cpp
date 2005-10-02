@@ -62,10 +62,11 @@ TestApp::init() {
 
 
   texture = g_TextureManager.load("test", DATAPATH"/media/testCG/plasma.jpg");
-  vertexShader = new ShaderCG();
-  vertexShader->loadSourceFromFile( DATAPATH"/shaders/testCG/simple_vert.cg", ShaderCG::VERTEX );
+  /// vertexShader = new ShaderCG();
+  //vertexShader->loadSourceFromFile( DATAPATH"/shaders/testCG/simple_vert.cg", ShaderCG::VERTEX );
   pixelShader = new ShaderCG();
-  pixelShader->loadSourceFromFile( DATAPATH"/shaders/testCG/simple_frag.cg", ShaderCG::FRAGMENT );
+  pixelShader->loadSourceFromFile( DATAPATH"/shaders/testCG/simple_frag.cg",
+                                   ShaderCG::FRAGMENT );
 
 }
 
@@ -79,17 +80,11 @@ TestApp::render() {
   cam->toOpenGL();
   trackball->toOpenGL();
 
-  TextureUnits::activeUnit( 0 );
-  glEnable( GL_TEXTURE_2D );
-  TextureUnits::setEnvMode( TEM_REPLACE );
-  g_TextureManager.getByName( "test" )->bind();
-
   glColor3f(1, 1, 0);
 
-  glDisable( GL_TEXTURE_2D );
   pixelShader->bind();
-  vertexShader->bind();
-  vertexShader->setGLMVPMatrix("mvp");
+  // vertexShader->bind();
+  //vertexShader->setGLMVPMatrix("mvp");
 
   pixelShader->setTextureParameter("baseTexture",
                                    g_TextureManager.getByName( "test" ));
@@ -112,7 +107,7 @@ TestApp::render() {
   glEnd();
   pixelShader->disableTextureParameter("baseTexture");
 
-  vertexShader->unbind();
+  //vertexShader->unbind();
   pixelShader->unbind();
 
   Renderer::printGLError();

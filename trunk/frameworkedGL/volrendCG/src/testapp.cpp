@@ -48,48 +48,48 @@ TestApp::quit()
   FontGL::exit();
 }
 /****************************************************************************/
-#if 0
+#if 1
 unsigned char*
 TestApp::genPreIntegrated(Image *img)
-{ 
-  ImageLoader::ImageData imgData = img->getImageData();
+{
+  ImageLoader::ImageData *imgData = img->getImageData();
   unsigned char *colMap = (unsigned char *)imgData->data;
   int K[256*4];
-  unsigned char *res = new unsigned char[256*256*4];  
+  unsigned char *res = new unsigned char[256*256*4];
   K[0] = colMap[0];
   K[1] = colMap[1];
   K[2] = colMap[2];
-  K[3] = colMap[3];    
+  K[3] = colMap[3];
   for(int i = 1; i < 256; i++) {
     K[i*4] = K[(i-1)*4]+colMap[i*4];
-    K[i*4+1] = K[(i-1)*4]+colMap[i*4+1];
-    K[i*4+2] = K[(i-1)*4]+colMap[i*4+2];
-    K[i*4+3] = K[(i-1)*4]+colMap[i*4+3];
+    K[i*4+1] = K[(i-1)*4+1]+colMap[i*4+1];
+    K[i*4+2] = K[(i-1)*4+2]+colMap[i*4+2];
+    K[i*4+3] = K[(i-1)*4+3]+colMap[i*4+3];
   }
 
   float rr, rg, rb, ra;
-  for(int sf = 0; sf < 256; sf++)
-    for(int sb = 0; sb < 256; sb++) {
+  for(int sb = 0; sb < 256; sb++)
+    for(int sf = 0; sf < 256; sf++) {
       if(sf != sb) {
         float k = 1./(sb-sf);
-        rr = k*(K[sf*4]-K[sb*4]);
-        rg = k*(K[sf*4+1]-K[sb*4+1]);
-        rb = k*(K[sf*4+2]-K[sb*4+2]);        
-        ra = 1.-exp(-k*(K[sf*4+3]-K[sb*4+3]));
+        rr = k*(K[sb*4]-K[sf*4]);
+        rg = k*(K[sb*4+1]-K[sf*4+1]);
+        rb = k*(K[sb*4+2]-K[sf*4+2]);
+        ra = 1.-exp(-k*(K[sb*4+3]-K[sf*4+3]));
       } else {
         rr = colMap[sf*4];
         rg = colMap[sf*4+1];
         rb = colMap[sf*4+2];
         ra = 1.-exp(-colMap[sf*4+3]);
       }
-      rr = min(rr, 255);
-      rb = min(rg, 255);
-      rg = min(rb, 255);
-      ra= min(ra, 255);
-      res[(sf*256+sb)*4] = rr;
-      res[(sf*256+sb)*4+1] = rg;
-      res[(sf*256+sb)*4+2] = rb;
-      res[(sf*256+sb)*4+3] = ra;
+      rr = std::min(rr, 255.f);
+      rb = std::min(rg, 255.f);
+      rg = std::min(rb, 255.f);
+      ra= std::min(ra, 255.f);
+      res[(sf*256+sb)*4] = (unsigned char)rr;
+      res[(sf*256+sb)*4+1] = (unsigned char)rg;
+      res[(sf*256+sb)*4+2] = (unsigned char)rb;
+      res[(sf*256+sb)*4+3] = (unsigned char)ra;
     }
   return res;
 }
@@ -134,8 +134,17 @@ TestApp::init() {
   shaderFragPass1 = g_ShaderManager.loadFragment("pass1Frag", "shaders/pass1.frag");
   shaderFragPass2 = g_ShaderManager.loadFragment("pass2Frag", "shaders/pass2.frag");
   shaderFragPass3 = g_ShaderManager.loadFragment("pass3Frag", "shaders/pass3.frag");
-  
+
   Renderer::printCGError();
+
+
+  Image *tf = new Image();
+  tf->load(DATAPATH"/media/volume/colormap/bonsai.png");
+  unsigned char *preIntTable = genPreIntegrated( tf );
+
+  g_TextureManager.create("preint", PF_RGBA, 256, 256);
+  Texture * texPreInt = g_TextureManager.getByName("preint");
+  texPreInt->setData(preIntTable, PF_RGBA, 256, 256);
 }
 
 
@@ -279,6 +288,7 @@ TestApp::moveOnRay(float dt)
    Texture * texRes = g_TextureManager.getByName("rttRes");
    Texture * texVolData = g_TextureManager.getByName("volData");
    Texture * texColorMap = g_TextureManager.getByName("colorMap");
+   Texture * texPreInt = g_TextureManager.getByName("preint");
 
    texColorMap->bind();
    texColorMap->setMinFilter( TF_NEAREST );
@@ -314,7 +324,8 @@ TestApp::moveOnRay(float dt)
    shaderFragPass3->setParameter2f("winScale", 1.f/width, 1.f/height);
    shaderFragPass3->setTextureParameter("raysDir", texRays);
    shaderFragPass3->setTextureParameter("volData", texVolData);
-   shaderFragPass3->setTextureParameter("colorMap", texColorMap);
+   //shaderFragPass3->setTextureParameter("colorMap", texColorMap);
+   shaderFragPass3->setTextureParameter("colorMap", texPreInt);
    shaderFragPass3->enableTextureParameter("volData");
    shaderFragPass3->enableTextureParameter("raysDir");
    shaderFragPass3->enableTextureParameter("colorMap");
@@ -358,7 +369,8 @@ TestApp::render() {
   TextureUnits::setEnvMode( TEM_REPLACE );
   //g_TextureManager.getByName( "rttTmp" )->bind();
   //g_TextureManager.getByName( "rttRays" )->bind();
-  g_TextureManager.getByName( "rttRes" )->bind();
+  //g_TextureManager.getByName( "rttRes" )->bind();
+  g_TextureManager.getByName( "preint" )->bind();
 
   glBegin( GL_QUADS );
   glTexCoord2f(0.f, 1.f);
@@ -367,12 +379,26 @@ TestApp::render() {
   glTexCoord2f(0.f, 0.f);
   glVertex2f(0.f, 0.f);
 
-  glTexCoord2f(1.f, 0.f);
-  glVertex2f(float(width-1), 0.f);
+  glTexCoord2f(1., 0.);
+  glVertex2f(height-1, 0);
 
-  glTexCoord2f(1.f, 1.f);
-  glVertex2f(float(width-1), float(height-1));
+  glTexCoord2f(1., 1.);
+  glVertex2f(height-1, height-1);
   glEnd();
+
+//   glBegin( GL_QUADS );
+//   glTexCoord2f(0., 1.);
+//   glVertex2f(0, height-1);
+
+//   glTexCoord2f(0., 0.);
+//   glVertex2f(0, 0);
+
+//   glTexCoord2f(1., 0.);
+//   glVertex2f(width-1, 0);
+
+//   glTexCoord2f(1., 1.);
+//   glVertex2f(width-1, height-1);
+//   glEnd();
 
   glPopMatrix();
   glMatrixMode( GL_PROJECTION );

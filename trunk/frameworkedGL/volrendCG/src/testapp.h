@@ -12,6 +12,7 @@ namespace StarEngine {
   class Trackball;
   class FramebufferObject;
   class ShaderCG;
+  class Image;
 }
 
 class TestApp : public StarEngine::Application {
@@ -36,7 +37,7 @@ private:
   void computeRays();
   void moveOnRay(float dt);
 
- // unsigned char* genPreIntegrated(Image *img);
+  unsigned char *genPreIntegrated(StarEngine::Image *img);
 
 public:
   TestApp();

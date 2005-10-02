@@ -3,7 +3,7 @@ float4 main(in float4 color : COLOR,
 	    in float4 fragcoord : WPOS,
 	    uniform sampler3D volData,
 	    uniform sampler2D raysDir,
-      uniform sampler2D colorMap,
+	    uniform sampler2D colorMap,
 	    uniform float t,
 	    uniform float dt,
 	    uniform float2 winScale) : COLOR
