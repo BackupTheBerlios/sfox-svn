@@ -15,17 +15,17 @@ def generate(env):
         )
         opts.Update(env)
 
-	if 'configure' in env['TARGS'] or not env.has_key('SDL_IMAGE_FLAGS'):
+	if 'configure' in env['TARGS'] or not env.has_key('SDL_IMAGE_CPPPATH'):
                 conf = SCons.SConf.SConf( env )
 		if not conf.CheckLib('SDL_image', symbol="IMG_Load"):
                         print 'We really need the SDL_image library !'
 			print 'Get SDL_image'
 			import sys
 			sys.exit(1)
-		env['SDL_IMAGE_CPPPATH']=[]
-		env['SDL_IMAGE_LIBPATH']=[]
+		env['SDL_IMAGE_CPPPATH']=['']
+		env['SDL_IMAGE_LIBPATH']=['']
 		opts.Save(cachefile, env)
-	env.AppendUnique(LIBS='SDL_image',
+	env.AppendUnique(LIBS=['SDL_image'],
 			 LIBPATH=env['SDL_IMAGE_LIBPATH'],
 			 CPPPATH=env['SDL_IMAGE_CPPPATH']
 			)
