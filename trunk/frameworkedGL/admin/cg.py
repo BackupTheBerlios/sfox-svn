@@ -1,7 +1,6 @@
 # Inspired by:
 # Julien Antille, Thomas Nagy, 2005
 # BSD license (see COPYING)
-import SCons.SConf
 
 def exists(env):
 	return true
@@ -18,6 +17,7 @@ def generate(env):
         opts.Update(env)
 
 	if 'configure' in env['TARGS'] or not env.has_key('HASCG'):
+		import SCons.SConf
 		conf = SCons.SConf.SConf( env )
 		if not conf.CheckCHeader('Cg/cg.h'):
 			print 'We really need the cg library !'
@@ -27,4 +27,4 @@ def generate(env):
 		env['HASCG']=1
 		env = conf.Finish()
 		opts.Save(cachefile, env)
-	env.AppendUnique(LIBS = ['Cg', 'CgGL'])
+	env.AppendUnique(LIBS = ['Cg', 'CgGL', 'GL'])

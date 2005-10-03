@@ -2,10 +2,10 @@
 Import('env')
 env.Append(CPPPATH=['.', 'math', 'framework', 'opengl'])
 
-conf = Configure(env)
-env.ParseConfig('pkg-config --cflags freetype2')
-env.ParseConfig('sdl-config --cflags')
-env = conf.Finish()
+#conf = Configure(env)
+#env.ParseConfig('pkg-config --cflags freetype2')
+#env.ParseConfig('sdl-config --cflags')
+#env = conf.Finish()
 
 src_opengl="""opengl/light.cpp
        opengl/pixelformat.cpp
