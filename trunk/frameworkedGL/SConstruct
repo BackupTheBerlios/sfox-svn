@@ -14,7 +14,7 @@ if sys.platform == 'linux2' or sys.platform == 'linux-i386':
 	framework_libpath = ['#lib']
 	framework_include = ['#include']
 
-env = Environment(CXXFLAGS = '-g', TARGS=COMMAND_LINE_TARGETS,
+env = Environment(TARGS=COMMAND_LINE_TARGETS,
 		  tools=['default', 'generic', 'opengl', 'cg', 
 			 'sdl', 'sdl_image', 'freetype'],
 		  toolpath=['.', 'admin']
@@ -31,3 +31,5 @@ SConscript('testTexture/SConscript', exports = 'env')
 SConscript('testCG/SConscript', exports = 'env')
 SConscript('volrend/SConscript', exports = 'env')
 SConscript('volrendCG/SConscript', exports = 'env')
+
+print env['ARGS']['prefix']
