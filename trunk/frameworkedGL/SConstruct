@@ -31,5 +31,3 @@ SConscript('testTexture/SConscript', exports = 'env')
 SConscript('testCG/SConscript', exports = 'env')
 SConscript('volrend/SConscript', exports = 'env')
 SConscript('volrendCG/SConscript', exports = 'env')
-
-print env['ARGS']['prefix']
