@@ -8,11 +8,17 @@ namespace StarEngine {
   class GeometricBatch {
   public:
     GeometricBatch();
-    void setVertexFormat(std::string format);
+    void setVertexFormat(const std::string &format);
   private:
     int stride;
     std::vector<int> attribsOffset;
     std::vector<std::string> attribsNames;
+
+    typedef std::pair<std::string, std::string> FormatPair;
+    std::vector<FormatPair> extractFormat(const std::string &format);
+    void getTypeDescription(const std::string &type, int &numComponents,
+                            int &typeIndice);
+
   };
 }
 

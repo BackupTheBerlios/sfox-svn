@@ -1,6 +1,6 @@
-#env = Environment(CPPPATH=['.', 'math', 'framework', 'opengl'])
+#!/usr/bin/env python
 Import('env')
-env.Append(CPPPATH=['.', 'math', 'framework', 'opengl'])
+env.AppendUnique(CPPPATH=['.', 'math', 'framework', 'opengl'])
 
 #conf = Configure(env)
 #env.ParseConfig('pkg-config --cflags freetype2')

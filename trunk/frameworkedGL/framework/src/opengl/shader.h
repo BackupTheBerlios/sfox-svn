@@ -13,8 +13,8 @@ namespace StarEngine {
 
   private:
     std::map<const char*, GLint> uniforms;
-    GLuint program, vertexProgramARB, fragmentProgramARB;
     ShaderType type;
+    GLuint program, vertexProgramARB, fragmentProgramARB;
 
     void setShader(const char *filename, GLenum type);
     char *load(const char *filename);
