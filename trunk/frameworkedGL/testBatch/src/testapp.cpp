@@ -60,8 +60,18 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
+  static float vertices[] = {
+    -1, 1, 0,
+    -1, -1, 0,
+    1, -1, 0,
+    1, 1, 0
+  };
+
   geomBatch = new GeometricBatch();
-  geomBatch->setVertexFormat("vertex:float3 normal:float3 texcoord0:float3");
+  //geomBatch->setVertexFormat("vertex:float3 normal:float3 texcoord0:float3");
+  geomBatch->setVertexFormat("vertex:float3");
+  geomBatch->setPrimitiveMode(PM_QUADS);
+  geomBatch->setVertices(sizeof(vertices), vertices, GL_STATIC_DRAW_ARB);
 }
 
 
@@ -73,6 +83,15 @@ TestApp::render() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   cam->toOpenGL();
   trackball->toOpenGL();
+
+  glColor3f(1,0,0);
+  geomBatch->drawArrays(0,1);
+//   glBegin(GL_QUADS);
+//   glVertex3f( -1, 1, 0);
+//   glVertex3f(  -1, -1, 0);
+//   glVertex3f( 1, -1, 0);
+//   glVertex3f(  1, 1, 0);
+//   glEnd();
 
   Renderer::printGLError();
 

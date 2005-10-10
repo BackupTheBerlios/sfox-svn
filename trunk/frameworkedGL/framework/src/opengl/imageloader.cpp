@@ -86,7 +86,7 @@ namespace StarEngine {
   bool
   ImageLoaderSDL_Image::supportType( const std::string &lowerCase )
   {
-    for ( int i = 0; i < sizeof( supportedType )/sizeof( char* ); i++ )
+    for ( size_t i = 0; i < sizeof( supportedType )/sizeof( char* ); i++ )
       if ( lowerCase.compare( supportedType[i] ) == 0 )
         return true;
     return false;

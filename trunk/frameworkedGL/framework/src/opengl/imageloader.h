@@ -15,6 +15,7 @@ namespace StarEngine {
     };
     static ImageLoader *getImageLoader( const std::string &ext );
     virtual ImageData *load( const std::string &filename ) = 0;
+    virtual ~ImageLoader() {}
   };
 
   class ImageLoaderSDL_Image : public ImageLoader {
