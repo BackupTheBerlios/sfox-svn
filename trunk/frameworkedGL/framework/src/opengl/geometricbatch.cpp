@@ -3,6 +3,7 @@
 #endif
 
 #include <string>
+#include <cassert>
 #include <vector>
 #include <map>
 #include <GL/gl.h>

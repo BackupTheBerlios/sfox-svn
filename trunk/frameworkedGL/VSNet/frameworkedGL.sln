@@ -21,6 +21,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volrendCG", "volrendCG\volr
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testBatch", "testBatch\testBatch.vcproj", "{E0423419-6FF3-4560-8B16-C0E2ED7D28F7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71646124-A094-4E8A-AE0A-B2826DE2D86C} = {71646124-A094-4E8A-AE0A-B2826DE2D86C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -47,6 +52,10 @@ Global
 		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Debug.Build.0 = Debug|Win32
 		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Release.ActiveCfg = Release|Win32
 		{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}.Release.Build.0 = Release|Win32
+		{E0423419-6FF3-4560-8B16-C0E2ED7D28F7}.Debug.ActiveCfg = Debug|Win32
+		{E0423419-6FF3-4560-8B16-C0E2ED7D28F7}.Debug.Build.0 = Debug|Win32
+		{E0423419-6FF3-4560-8B16-C0E2ED7D28F7}.Release.ActiveCfg = Release|Win32
+		{E0423419-6FF3-4560-8B16-C0E2ED7D28F7}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
