@@ -1,7 +1,5 @@
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
-#include <GL/gl.h>
-#include <GL/glext.h>
 #endif
 #include <SDL.h>
 
@@ -98,6 +96,9 @@ PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT;
 PFNGLTEXSUBIMAGE3DEXTPROC glTexSubImage3DEXT;
 
+//Misc
+PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
+
 namespace GLext {
   void
   init() {
@@ -191,5 +192,8 @@ namespace GLext {
 	//Texture3d
 	glTexImage3DEXT = (PFNGLTEXIMAGE3DEXTPROC)SDL_GL_GetProcAddress("glTexImage3DEXT");
 	glTexSubImage3DEXT = (PFNGLTEXSUBIMAGE3DEXTPROC)SDL_GL_GetProcAddress("glTexSubImage3DEXT");
+	
+	//Misc
+	glSecondaryColorPointerEXT = (PFNGLSECONDARYCOLORPOINTEREXTPROC)SDL_GL_GetProcAddress("glSecondaryColorPointerEXT");
   }
 }

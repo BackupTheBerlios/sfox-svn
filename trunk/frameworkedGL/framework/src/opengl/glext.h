@@ -1,9 +1,8 @@
 #ifndef MYGLEXT_H
 #define MYGLEXT_H
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
-#include <GL/wglext.h>
 #endif
 
 #include <GL/gl.h>
@@ -99,6 +98,9 @@ extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 //Texture3d
 extern PFNGLTEXIMAGE3DEXTPROC glTexImage3DEXT;
 extern PFNGLTEXSUBIMAGE3DEXTPROC glTexSubImage3DEXT;
+
+//Misc
+extern PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
 
 namespace GLext {
   extern void init();

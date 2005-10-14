@@ -88,3 +88,6 @@ glGenerateMipmapEXT
 //Texture3d
 glTexImage3DEXT
 glTexSubImage3DEXT
+
+//Misc
+glSecondaryColorPointerEXT

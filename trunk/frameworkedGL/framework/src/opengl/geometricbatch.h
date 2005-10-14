@@ -36,6 +36,7 @@ namespace StarEngine {
     PrimitiveMode primitiveMode;
     unsigned int numVertices;
     unsigned int numIndices;
+    unsigned int enabledPointers;
     std::string vertexFormat;
 
     typedef std::pair<std::string, std::string> FormatPair;

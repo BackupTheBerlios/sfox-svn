@@ -86,10 +86,51 @@ namespace StarEngine {
   {
     assert(verticesBufferId != 0 && primitiveMode != PM_UNKNOWN &&
            numVertices != 0);
+
+    //enable appropriate attribs with vertex format
+    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    for(int i = 0; i < 16; i++) {
+      if(enabledPointers&(1<<i)) {
+        switch(i) {
+        case 0:
+          glEnableClientState(GL_VERTEX_ARRAY);
+          break;
+        case 2:
+          glEnableClientState(GL_NORMAL_ARRAY);
+          break;
+        case 3:
+          glEnableClientState(GL_COLOR_ARRAY);
+          break;
+        case 4:
+          glEnableClientState(GL_SECONDARY_COLOR_ARRAY_EXT);
+          break;
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+          glActiveTextureARB(GL_TEXTURE0+i-8);
+          glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+          glActiveTextureARB(GL_TEXTURE0);
+          break;
+        case 1:
+        case 5:
+        case 6:
+        case 7:
+          glEnableVertexAttribArrayARB(i);
+          break;
+        }
+      }
+    }
     count = count == -1?numVertices:count;
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
+
     glDrawArrays(getGLPrimitiveMode(primitiveMode), first, count);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    glPopClientAttrib();
   }
 
 /****************************************************************************/
@@ -97,7 +138,6 @@ namespace StarEngine {
   GeometricBatch::setVertices(int size, void *data, GLenum usage)
   {
     numVertices = size/computeStride(extractFormat(vertexFormat));
-    printf("%d\n", numVertices);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, data, usage);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -127,11 +167,45 @@ namespace StarEngine {
     int ind;
     int stride = computeStride(vf);
     char *offset = 0;
+    enabledPointers = 0;
     for(size_t i = 0; i < vf.size(); i++) {
       getTypeDescription(vf[i].second, numComponent, ind);
       int pos = getAttribDefaultPos(vf[i].first);
-      glVertexAttribPointerARB(pos, numComponent, typeDesc[ind].type,
-                               GL_FALSE, stride, offset);
+      enabledPointers |= 1 << pos;
+      switch(pos) {
+      case 0:
+        glVertexPointer(numComponent, typeDesc[ind].type, stride, offset);
+        break;
+      case 1:
+      case 5:
+      case 6:
+      case 7:
+        glVertexAttribPointerARB(pos, numComponent, typeDesc[ind].type,
+                                 GL_FALSE, stride, offset);
+        break;
+      case 2:
+        glNormalPointer(typeDesc[ind].type, stride, offset);
+        break;
+      case 3:
+        glColorPointer(numComponent, typeDesc[ind].type, stride, offset);
+        break;
+      case 4:
+        glSecondaryColorPointerEXT(numComponent, typeDesc[ind].type, stride,
+                                   offset);
+        break;
+      case 8:
+      case 9:
+      case 10:
+      case 11:
+      case 12:
+      case 13:
+      case 14:
+      case 15:
+        glActiveTextureARB(GL_TEXTURE0+pos-8);
+        glColorPointer(numComponent, typeDesc[ind].type, stride, offset);
+        glActiveTextureARB(GL_TEXTURE0);
+        break;
+      };
       offset += numComponent*typeDesc[ind].size;
     }
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
