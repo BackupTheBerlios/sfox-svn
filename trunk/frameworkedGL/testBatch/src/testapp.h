@@ -19,6 +19,7 @@ private:
   StarEngine::Camera *cam;
   StarEngine::Texture *texture;
   StarEngine::GeometricBatch *geomBatch;
+  StarEngine::GeometricBatch *geomBatch2;
 
   void printInfos();
 

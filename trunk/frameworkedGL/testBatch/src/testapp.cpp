@@ -71,10 +71,26 @@ TestApp::init() {
     1,1,0
   };
 
+  static float vertices2[] = {
+    0, 2, 0,
+    0,1,0,
+    0, 0, 0,
+    0,1,0,
+    2, 0, 0,
+    0,1,0,
+    2, 2, 0,
+    0,1,0
+  };
+
   geomBatch = new GeometricBatch();
   geomBatch->setVertexFormat("vertex:float3 color0:float3");
   geomBatch->setPrimitiveMode(PM_QUADS);
   geomBatch->setVertices(sizeof(vertices), vertices, GL_STATIC_DRAW_ARB);
+
+  geomBatch2 = new GeometricBatch();
+  geomBatch2->setVertexFormat("vertex:float3 color0:float3");
+  geomBatch2->setPrimitiveMode(PM_QUADS);
+  geomBatch2->setVertices(sizeof(vertices), vertices2, GL_STATIC_DRAW_ARB);
 }
 
 
@@ -89,6 +105,7 @@ TestApp::render() {
 
   glColor3f(1,0,0);
   geomBatch->drawArrays(0);
+  geomBatch2->drawArrays(0);
 
   Renderer::printGLError();
 

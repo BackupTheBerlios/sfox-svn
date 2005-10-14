@@ -89,6 +89,7 @@ namespace StarEngine {
 
     //enable appropriate attribs with vertex format
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    setVertexFormat(vertexFormat);
     for(int i = 0; i < 16; i++) {
       if(enabledPointers&(1<<i)) {
         switch(i) {
