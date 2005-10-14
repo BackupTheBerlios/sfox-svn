@@ -137,6 +137,7 @@ namespace StarEngine {
   void
   GeometricBatch::setVertices(int size, void *data, GLenum usage)
   {
+    assert(verticesBufferId);
     numVertices = size/computeStride(extractFormat(vertexFormat));
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, data, usage);
@@ -147,6 +148,9 @@ namespace StarEngine {
   void
   GeometricBatch::setIndices(int size, void *data, GLenum usage)
   {
+    assert(indicesBufferId);
+    if(!indicesBufferId)
+      glGenBuffersARB(1, &indicesBufferId);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indicesBufferId);
     glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, size, data, usage);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -160,7 +164,8 @@ namespace StarEngine {
     vector<FormatPair> vf = extractFormat( format );
     vertexFormat = format;
 
-    glGenBuffersARB(1, &verticesBufferId);
+    if(!verticesBufferId)
+      glGenBuffersARB(1, &verticesBufferId);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
 
     int numComponent;
