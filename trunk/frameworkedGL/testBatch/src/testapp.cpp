@@ -89,12 +89,6 @@ TestApp::render() {
 
   glColor3f(1,0,0);
   geomBatch->drawArrays(0);
-//   glBegin(GL_QUADS);
-//   glVertex3f( -1, 1, 0);
-//   glVertex3f(  -1, -1, 0);
-//   glVertex3f( 1, -1, 0);
-//   glVertex3f(  1, 1, 0);
-//   glEnd();
 
   Renderer::printGLError();
 
