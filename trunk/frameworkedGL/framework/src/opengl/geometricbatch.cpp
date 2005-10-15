@@ -66,29 +66,21 @@ namespace StarEngine {
 
 /****************************************************************************/
   GeometricBatch::GeometricBatch()
-    :verticesBufferId(0), indicesBufferId(0), numVertices(0)
+    :indices(0), verticesBufferId(0), numVertices(0)
   {
   }
 
 /****************************************************************************/
   GeometricBatch::~GeometricBatch()
   {
-    if(indicesBufferId)
-      glDeleteBuffersARB(1, &verticesBufferId);
-
     if(verticesBufferId)
-      glDeleteBuffersARB(1, &indicesBufferId);
+      glDeleteBuffersARB(1, &verticesBufferId);
   }
 
 /****************************************************************************/
   void
-  GeometricBatch::drawArrays(int first, int count)
+  GeometricBatch::enablePointers()
   {
-    assert(verticesBufferId != 0 && primitiveMode != PM_UNKNOWN &&
-           numVertices != 0);
-
-    //enable appropriate attribs with vertex format
-    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
     setVertexFormat(vertexFormat);
     for(int i = 0; i < 16; i++) {
       if(enabledPointers&(1<<i)) {
@@ -126,10 +118,39 @@ namespace StarEngine {
         }
       }
     }
+  }
+
+/****************************************************************************/
+  void
+  GeometricBatch::drawArrays(int first, int count)
+  {
+    assert(verticesBufferId != 0 && primitiveMode != PM_UNKNOWN &&
+           numVertices != 0);
+
+    //enable appropriate attribs with vertex format
+    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    enablePointers();
     count = count == -1?numVertices:count;
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
 
     glDrawArrays(getGLPrimitiveMode(primitiveMode), first, count);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    glPopClientAttrib();
+  }
+
+  void
+  GeometricBatch::drawElements(int count)
+  {
+    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    enablePointers();
+    count = count == -1?numVertices:count;
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, indices->getBufferObject());
+
+    glDrawElements(getGLPrimitiveMode(primitiveMode), count,
+                   indices->getType(), 0);
+
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     glPopClientAttrib();
   }
@@ -147,14 +168,9 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  GeometricBatch::setIndices(int size, void *data, GLenum usage)
+  GeometricBatch::setIndices(IndicesBatch *indices)
   {
-    assert(indicesBufferId);
-    if(!indicesBufferId)
-      glGenBuffersARB(1, &indicesBufferId);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indicesBufferId);
-    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, size, data, usage);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    this->indices = indices;
   }
 
 /****************************************************************************/
@@ -334,6 +350,46 @@ namespace StarEngine {
     mess.append(name);
     mess.append("\"");
     throw new Exception(mess);
+    return -1;
+  }
+
+/****************************************************************************/
+/* IndicesBatch class                                                       */
+/****************************************************************************/
+  IndicesBatch::IndicesBatch()
+  {
+    glGenBuffersARB(1, &indicesBufferId);
+  }
+
+  IndicesBatch::~IndicesBatch()
+  {
+    glDeleteBuffersARB(1, &indicesBufferId);
+  }
+
+  void
+  IndicesBatch::setIndices(int numIndices, Type type, GLenum usage, void *data)
+  {
+    this->type = type;
+    this->numIndices = numIndices;
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indicesBufferId);
+    glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB,
+                    getSizeOfType(type)*numIndices, data, usage);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+  }
+
+  int getSizeOfType(Type type)
+  {
+    switch(type) {
+    case SE_UNSIGNED_BYTE:
+      return sizeof(char);
+    case SE_UNSIGNED_SHORT:
+      return sizeof(unsigned short);
+    case SE_UNSIGNED_INT:
+      return sizeof(unsigned int);
+    default:
+      assert(0);
+      break;
+    }
     return -1;
   }
 }
