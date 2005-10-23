@@ -10,7 +10,6 @@
 #include <GL/glew.h>
 
 #include "pixelformat.h"
-#include "glext.h"
 #include "ressourcemanager.h"
 
 namespace StarEngine {
