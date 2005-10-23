@@ -41,9 +41,9 @@ namespace StarEngine {
   };
 
   enum AccessType {
-    UT_READ_ONLY = GL_READ_ONLY_ARB,
-    UT_WRITE_ONLY = GL_WRITE_ONLY_ARB,
-    UT_READ_WRITE = GL_READ_WRITE_ARB
+    AT_READ_ONLY = GL_READ_ONLY_ARB,
+    AT_WRITE_ONLY = GL_WRITE_ONLY_ARB,
+    AT_READ_WRITE = GL_READ_WRITE_ARB
   };
 
   int getSizeOfType(Type type);

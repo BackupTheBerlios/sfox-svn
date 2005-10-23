@@ -67,7 +67,11 @@ TestApp::init() {
   geomBatch = new GeometricBatch();
   geomBatch->setVertexFormat("vertex:float3 color0:float3");
   geomBatch->setPrimitiveMode(PM_QUADS);
-  geomBatch->setVertices(sizeof(vertices), vertices, UT_STATIC_DRAW);
+//   geomBatch->setVertices(sizeof(vertices), vertices, UT_STATIC_DRAW);
+  geomBatch->setVertices(4*6*sizeof(float), NULL, UT_STATIC_DRAW);
+  float *tmp = (float *)geomBatch->lock(AT_WRITE_ONLY);
+  memcpy(tmp, vertices, sizeof(vertices));
+  geomBatch->unlock();
   geomBatch->setIndicesBatch(ind);
 
   geomBatch2 = new GeometricBatch();

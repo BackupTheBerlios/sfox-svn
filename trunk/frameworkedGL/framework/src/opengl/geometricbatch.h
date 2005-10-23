@@ -21,7 +21,7 @@ namespace StarEngine {
     void drawArrays(int first = 0, int count = -1);
     void drawElements(int count = -1);
     void *lock(AccessType access);
-    void unlock(AccessType access);
+    void unlock();
 
   private:
     IndicesBatch *indices;
@@ -52,7 +52,7 @@ namespace StarEngine {
     Type getType() { return type; }
 
     void *lock(AccessType access);
-    void unlock(AccessType access);
+    void unlock();
 
   private:
     Type type;

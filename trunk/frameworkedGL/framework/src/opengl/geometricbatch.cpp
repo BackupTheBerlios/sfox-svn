@@ -363,7 +363,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  GeometricBatch::unlock(AccessType access)
+  GeometricBatch::unlock()
   {
     glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -408,7 +408,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  IndicesBatch::unlock(AccessType access)
+  IndicesBatch::unlock()
   {
     glUnmapBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
