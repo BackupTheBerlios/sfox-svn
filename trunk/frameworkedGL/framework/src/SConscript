@@ -19,6 +19,7 @@ src_opengl="""opengl/light.cpp
        opengl/fbo.cpp
        opengl/trackball.cpp
        opengl/texture.cpp
+       opengl/startypes.cpp
        opengl/textureunit.cpp
        opengl/texture2d.cpp
        opengl/texture3d.cpp

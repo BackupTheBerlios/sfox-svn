@@ -1,29 +1,4 @@
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#include <GL/gl.h>
-#include <GL/glext.h>
-#include <GL/glu.h>
-
-#include "opengl/glext.h"
-#include "math/quaternion.h"
-#include "opengl/font.h"
-#include "opengl/image.h"
 #include "testapp.h"
-#include "opengl/texture.h"
-#include "opengl/texturemanager.h"
-#include "opengl/textureunit.h"
-#include "opengl/texture2d.h"
-#include "opengl/camera.h"
-#include "opengl/renderer.h"
-#include "opengl/mesh.h"
-#include "opengl/vertexbuffer.h"
-#include "opengl/light.h"
-#include "opengl/object3d.h"
-#include "opengl/material.h"
-#include "opengl/shader.h"
-#include "opengl/trackball.h"
-#include "opengl/geometricbatch.h"
 
 #define DATAPATH "../../common"
 
@@ -82,15 +57,23 @@ TestApp::init() {
     0,1,0
   };
 
+  static unsigned int indices[] = {
+    0, 1, 2, 3
+  };
+
+  IndicesBatch *ind = new IndicesBatch();
+  ind->setIndices(4, SE_UNSIGNED_INT, indices, UT_STATIC_DRAW);
+
   geomBatch = new GeometricBatch();
   geomBatch->setVertexFormat("vertex:float3 color0:float3");
   geomBatch->setPrimitiveMode(PM_QUADS);
-  geomBatch->setVertices(sizeof(vertices), vertices, GL_STATIC_DRAW_ARB);
+  geomBatch->setVertices(sizeof(vertices), vertices, UT_STATIC_DRAW);
+  geomBatch->setIndicesBatch(ind);
 
   geomBatch2 = new GeometricBatch();
   geomBatch2->setVertexFormat("vertex:float3 color0:float3");
   geomBatch2->setPrimitiveMode(PM_QUADS);
-  geomBatch2->setVertices(sizeof(vertices), vertices2, GL_STATIC_DRAW_ARB);
+  geomBatch2->setVertices(sizeof(vertices), vertices2, UT_STATIC_DRAW);
 }
 
 
@@ -104,8 +87,9 @@ TestApp::render() {
   trackball->toOpenGL();
 
   glColor3f(1,0,0);
-  geomBatch->drawArrays(0);
-  geomBatch2->drawArrays(0);
+  //geomBatch->drawArrays(0);
+  //geomBatch2->drawArrays(0);
+  geomBatch->drawElements(4);
 
   Renderer::printGLError();
 

@@ -29,6 +29,7 @@ src_opengl="""src/opengl/camera.h
               src/opengl/ressourcemanager.h
               src/opengl/singleton.h
               src/opengl/texturemanager.h
+              src/opengl/startypes.h
               src/opengl/shadermanager.h
               src/opengl/trackball.h
               src/opengl/texture.h
@@ -59,3 +60,5 @@ env.Alias(target="install",
           source=Split(src_opengl)))
 env.Alias(target="install",
  	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/framework"), source=Split(src_framework)))
+env.Alias(target="install",
+ 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include"), source=Split("""src/starengine.h""")))

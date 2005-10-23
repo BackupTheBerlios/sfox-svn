@@ -145,10 +145,10 @@ namespace StarEngine {
     enablePointers();
     count = count == -1?numVertices:count;
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, indices->getBufferObject());
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indices->getBufferObject());
 
-    glDrawElements(getGLPrimitiveMode(primitiveMode), count,
-                   indices->getType(), 0);
+     glDrawElements(getGLPrimitiveMode(primitiveMode), count,
+                    indices->getType(), 0);
 
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -157,7 +157,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  GeometricBatch::setVertices(int size, void *data, GLenum usage)
+  GeometricBatch::setVertices(int size, void *data, UsageType usage)
   {
     assert(verticesBufferId);
     numVertices = size/computeStride(extractFormat(vertexFormat));
@@ -168,7 +168,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  GeometricBatch::setIndices(IndicesBatch *indices)
+  GeometricBatch::setIndicesBatch(IndicesBatch *indices)
   {
     this->indices = indices;
   }
@@ -354,20 +354,41 @@ namespace StarEngine {
   }
 
 /****************************************************************************/
-/* IndicesBatch class                                                       */
+  void *
+  GeometricBatch::lock(AccessType access)
+  {
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
+    return glMapBufferARB(GL_ARRAY_BUFFER_ARB, access);
+  }
+
 /****************************************************************************/
+  void
+  GeometricBatch::unlock(AccessType access)
+  {
+    glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+  }
+
+/*==========================================================================*/
+/*                                                                          */
+/* IndicesBatch class                                                       */
+/*                                                                          */
+/*==========================================================================*/
   IndicesBatch::IndicesBatch()
   {
     glGenBuffersARB(1, &indicesBufferId);
   }
 
+/****************************************************************************/
   IndicesBatch::~IndicesBatch()
   {
     glDeleteBuffersARB(1, &indicesBufferId);
   }
 
+/****************************************************************************/
   void
-  IndicesBatch::setIndices(int numIndices, Type type, GLenum usage, void *data)
+  IndicesBatch::setIndices(int numIndices, Type type, void *data,
+                           UsageType usage)
   {
     this->type = type;
     this->numIndices = numIndices;
@@ -377,19 +398,19 @@ namespace StarEngine {
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   }
 
-  int getSizeOfType(Type type)
+/****************************************************************************/
+  void *
+  IndicesBatch::lock(AccessType access)
   {
-    switch(type) {
-    case SE_UNSIGNED_BYTE:
-      return sizeof(char);
-    case SE_UNSIGNED_SHORT:
-      return sizeof(unsigned short);
-    case SE_UNSIGNED_INT:
-      return sizeof(unsigned int);
-    default:
-      assert(0);
-      break;
-    }
-    return -1;
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indicesBufferId);
+    return glMapBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, access);
+  }
+
+/****************************************************************************/
+  void
+  IndicesBatch::unlock(AccessType access)
+  {
+    glUnmapBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   }
 }
