@@ -53,12 +53,12 @@ src_framework="""src/framework/application.h
                  src/framework/timer.h"""
 
 env.Alias(target="install", 
-          source=env.Install(dir=os.path.join(env['PREFIX'],"include/math"),
+          source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine/math"),
 	  source=Split(src_math)))
 env.Alias(target="install",
- 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/opengl"),
+ 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine/opengl"),
           source=Split(src_opengl)))
 env.Alias(target="install",
- 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/framework"), source=Split(src_framework)))
+ 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine//framework"), source=Split(src_framework)))
 env.Alias(target="install",
- 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include"), source=Split("""src/starengine.h""")))
+ 	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine"), source=Split("""src/starengine.h""")))

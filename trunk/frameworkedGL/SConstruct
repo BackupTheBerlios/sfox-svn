@@ -18,7 +18,7 @@ env = Environment(TARGS=COMMAND_LINE_TARGETS,
 #Framework installation path
 framework_lib = ['frameworkGL']
 framework_libpath = [os.path.join(env['PREFIX'],'lib')]
-framework_include = [os.path.join(env['PREFIX'],'include')]
+framework_include = [os.path.join(env['PREFIX'],'include/starengine')]
 
 env.AppendUnique(CPPPATH = framework_include+z_include)
 env.PrependUnique(LIBS = framework_lib+z_lib)

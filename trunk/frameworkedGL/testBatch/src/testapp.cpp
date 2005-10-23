@@ -88,7 +88,7 @@ TestApp::render() {
 
   glColor3f(1,0,0);
   //geomBatch->drawArrays(0);
-  //geomBatch2->drawArrays(0);
+  geomBatch2->drawArrays(0);
   geomBatch->drawElements(4);
 
   Renderer::printGLError();
