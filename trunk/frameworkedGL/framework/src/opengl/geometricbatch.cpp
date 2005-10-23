@@ -6,8 +6,8 @@
 #include <cassert>
 #include <vector>
 #include <map>
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GL/glew.h>
+
 
 #include "geometricbatch.h"
 #include "framework/exception.h"

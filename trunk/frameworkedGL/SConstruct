@@ -16,7 +16,7 @@ env = Environment(TARGS=COMMAND_LINE_TARGETS,
 		  toolpath=['.', 'admin']
 		 )
 #Framework installation path
-framework_lib = ['frameworkGL']
+framework_lib = ['frameworkGL', 'GLEW']
 framework_libpath = [os.path.join(env['PREFIX'],'lib')]
 framework_include = [os.path.join(env['PREFIX'],'include/starengine')]
 

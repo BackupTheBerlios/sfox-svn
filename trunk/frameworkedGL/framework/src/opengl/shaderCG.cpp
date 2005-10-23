@@ -4,7 +4,7 @@
 #include <cassert>
 #include <fstream>
 #include <string>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <Cg/cg.h>
 #include <Cg/cgGL.h>
 

@@ -30,7 +30,6 @@
 #include "opengl/textureunit.h"
 #include "opengl/shader.h"
 #include "opengl/singleton.h"
-#include "opengl/glext.h"
 #include "opengl/ressourcemanager.h"
 #include "opengl/object3d.h"
 #include "opengl/fbo.h"

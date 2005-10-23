@@ -3,7 +3,7 @@
 #define vsnprintf(b, n, f, l) vsprintf(b, f, l)
 #endif
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glu.h>
 #include <string>
 #include <cassert>

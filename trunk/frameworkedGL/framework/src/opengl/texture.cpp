@@ -1,12 +1,12 @@
 #ifdef WIN32
 #include <windows.h>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #endif
 
 #include <iostream>
 #include <string>
 #include <cassert>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glu.h>
 #include <SDL.h>
 

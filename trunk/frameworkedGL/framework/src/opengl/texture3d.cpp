@@ -3,7 +3,7 @@
 #endif
 #include <cassert>
 #include <iostream>
-#include <GL/gl.h>
+#include <GL/glew.h>
 
 #include "texture3d.h"
 #include "renderer.h"

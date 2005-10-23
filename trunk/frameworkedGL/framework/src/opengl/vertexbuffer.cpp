@@ -1,8 +1,8 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GL/glew.h>
+
 #include <cassert>
 
 #include "glext.h"

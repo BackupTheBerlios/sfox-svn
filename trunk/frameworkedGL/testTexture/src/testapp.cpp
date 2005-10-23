@@ -1,11 +1,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <GL/gl.h>
-#include <GL/glext.h>
-#include <GL/glu.h>
 
-#include "opengl/glext.h"
 #include "math/quaternion.h"
 #include "opengl/font.h"
 #include "opengl/image.h"
@@ -45,7 +41,6 @@ TestApp::quit()
 
 void
 TestApp::init() {
-  GLext::init();
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glClearColor(0, 0, 0, 0);

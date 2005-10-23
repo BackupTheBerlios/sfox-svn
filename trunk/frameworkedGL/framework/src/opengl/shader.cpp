@@ -4,8 +4,8 @@
 #include <cassert>
 #include <fstream>
 #include <string>
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GL/glew.h>
+
 
 #include "shader.h"
 #include "glext.h"

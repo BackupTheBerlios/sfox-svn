@@ -2,8 +2,8 @@
 #include <windows.h>
 #endif
 #include <cassert>
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GL/glew.h>
+
 
 #include "pixelformat.h"
 

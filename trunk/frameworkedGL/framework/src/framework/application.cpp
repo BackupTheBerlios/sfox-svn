@@ -2,7 +2,7 @@
 #include <windows.h>
 #endif
 #include <iostream>
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <SDL.h>
 #include <cstring>
 
@@ -29,7 +29,14 @@ namespace StarEngine {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     setFullscreen(fs);
+
     SDL_WM_SetCaption(name, NULL);
+
+    GLenum err = glewInit();
+    if(GLEW_OK != err) {
+      std::string mess("Application::Application: Can't init GLEW: ");
+      throw new Exception(mess.append((char *)glewGetErrorString(err)));
+    }
 
     // Create ressources managers
     new TextureManager;

@@ -40,7 +40,6 @@ src_opengl="""src/opengl/camera.h
               src/opengl/pbuffer.h
               src/opengl/object3d.h
               src/opengl/vertexbuffer.h
-              src/opengl/glext.h
               src/opengl/vertex.h
               src/opengl/light.h
               src/opengl/renderer.h
@@ -62,3 +61,15 @@ env.Alias(target="install",
  	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine//framework"), source=Split(src_framework)))
 env.Alias(target="install",
  	  source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine"), source=Split("""src/starengine.h""")))
+
+#install glew
+glew_include="""src/glew/include/GL/glew.h
+                src/glew/include/GL/glxew.h
+		src/glew/include/GL/wglew.h"""
+
+env.Alias(target="install", 
+          source=env.Install(dir=os.path.join(env['PREFIX'],"include/starengine/GL"),
+	  source=Split(glew_include)))
+env.Alias(target="install", 
+	  source=env.Install(dir=os.path.join(env['PREFIX'], "lib"),
+			     source="src/glew/lib/libGLEW.a"))

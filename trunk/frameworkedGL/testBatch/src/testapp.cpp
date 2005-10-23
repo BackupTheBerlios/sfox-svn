@@ -1,4 +1,5 @@
 #include "testapp.h"
+#include "GL/glew.h"
 
 #define DATAPATH "../../common"
 
@@ -23,7 +24,6 @@ TestApp::quit()
 
 void
 TestApp::init() {
-  GLext::init();
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
   glClearColor(0, 0, 0, 0);
