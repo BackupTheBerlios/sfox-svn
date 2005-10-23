@@ -1,7 +1,7 @@
 #ifndef TESTAPP_H
 #define TESTAPP_H
 
-#include "framework/application.h"
+#include "starengine.h"
 
 
 namespace StarEngine {

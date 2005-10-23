@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="frameworkGL"
 	ProjectGUID="{71646124-A094-4E8A-AE0A-B2826DE2D86C}"
+	RootNamespace="frameworkGL"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -20,7 +21,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\framework\src\"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="GLEW_STATIC;WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -37,7 +38,15 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				CommandLine="mkdir c:\starengine\include\opengl
+mkdir c:\starengine\include\math
+mkdir c:\starengine\include\framework
+xcopy &quot;$(InputDir)\..\..\framework\src\*.h&quot;  c:\starengine\include /Y
+xcopy &quot;$(InputDir)\..\..\framework\src\framework\*.h&quot; c:\starengine\include\framework /Y
+xcopy &quot;$(InputDir)\..\..\framework\src\opengl\*.h&quot; c:\starengine\include\opengl /Y
+xcopy &quot;$(InputDir)\..\..\framework\src\math\*.h&quot; c:\starengine\include\math /Y
+xcopy &quot;$(OutDir)\*.lib&quot; c:\starengine\lib /Y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -62,7 +71,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\..\framework\src\"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="GLEW_STATIC;WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -117,9 +126,6 @@
 					RelativePath="..\..\framework\src\opengl\geometricbatch.cpp">
 				</File>
 				<File
-					RelativePath="..\..\framework\src\opengl\glext.cpp">
-				</File>
-				<File
 					RelativePath="..\..\framework\src\opengl\image.cpp">
 				</File>
 				<File
@@ -162,6 +168,9 @@
 					RelativePath="..\..\framework\src\opengl\shadermanager.cpp">
 				</File>
 				<File
+					RelativePath="..\..\framework\src\opengl\startypes.cpp">
+				</File>
+				<File
 					RelativePath="..\..\framework\src\opengl\texture.cpp">
 				</File>
 				<File
@@ -198,6 +207,9 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="..\..\framework\src\starengine.h">
+			</File>
 			<Filter
 				Name="opengl"
 				Filter="">
@@ -212,9 +224,6 @@
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\geometricbatch.h">
-				</File>
-				<File
-					RelativePath="..\..\framework\src\opengl\glext.h">
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\image.h">
@@ -257,6 +266,9 @@
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\shadermanager.h">
+				</File>
+				<File
+					RelativePath="..\..\framework\src\opengl\startypes.h">
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\texture.h">

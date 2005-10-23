@@ -2,25 +2,9 @@
 #include <windows.h>
 #endif
 
-#include "math/quaternion.h"
-#include "opengl/font.h"
-#include "opengl/image.h"
 #include "testapp.h"
-#include "opengl/texture.h"
-#include "opengl/texturemanager.h"
-#include "opengl/shadermanager.h"
-#include "opengl/textureunit.h"
-#include "opengl/texture2d.h"
-#include "opengl/camera.h"
-#include "opengl/renderer.h"
-#include "opengl/mesh.h"
-#include "opengl/vertexbuffer.h"
-#include "opengl/light.h"
-#include "opengl/object3d.h"
-#include "opengl/material.h"
-#include "opengl/shaderCG.h"
-#include "opengl/trackball.h"
-#include "opengl/fbo.h"
+
+#include <cmath>
 
 #define DATAPATH "../../common"
 
@@ -76,7 +60,7 @@ TestApp::genPreIntegrated(Image *img)
         rr = colMap[sf*4];
         rg = colMap[sf*4+1];
         rb = colMap[sf*4+2];
-        ra = 1.-exp(-colMap[sf*4+3]);
+        ra = 1.-exp(-float(colMap[sf*4+3]));
       }
       rr = std::min(rr, 255.f);
       rb = std::min(rg, 255.f);

@@ -8,7 +8,7 @@
 
 
 #include "shader.h"
-#include "glext.h"
+#include <GL/glew.h>
 #include "framework/exception.h"
 
 namespace StarEngine {

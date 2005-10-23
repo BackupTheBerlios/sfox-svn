@@ -1,9 +1,7 @@
 #ifndef TESTAPP_H
 #define TESTAPP_H
 
-#include "framework/application.h"
-#include "opengl/image.h"
-
+#include "starengine.h"
 
 namespace StarEngine {
   class FontGL;

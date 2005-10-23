@@ -7,7 +7,7 @@
 
 #include "texture3d.h"
 #include "renderer.h"
-#include "glext.h"
+#include <GL/glew.h>
 
 namespace StarEngine {
 

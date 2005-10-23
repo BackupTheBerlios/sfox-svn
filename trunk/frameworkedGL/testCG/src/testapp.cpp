@@ -2,24 +2,7 @@
 #include <windows.h>
 #endif
 
-#include "math/quaternion.h"
-#include "opengl/font.h"
-#include "opengl/image.h"
 #include "testapp.h"
-#include "opengl/texture.h"
-#include "opengl/texturemanager.h"
-#include "opengl/textureunit.h"
-#include "opengl/texture2d.h"
-#include "opengl/camera.h"
-#include "opengl/renderer.h"
-#include "opengl/mesh.h"
-#include "opengl/vertexbuffer.h"
-#include "opengl/light.h"
-#include "opengl/object3d.h"
-#include "opengl/material.h"
-#include "opengl/shader.h"
-#include "opengl/trackball.h"
-#include "opengl/shaderCG.h"
 
 #define DATAPATH "../../common"
 

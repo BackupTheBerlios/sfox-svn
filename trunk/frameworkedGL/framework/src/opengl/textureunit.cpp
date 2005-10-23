@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "textureunit.h"
-#include "glext.h"
+#include <GL/glew.h>
 
 namespace StarEngine {
   void

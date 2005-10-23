@@ -1,6 +1,18 @@
 #ifndef STARENGINE_H
 #define STARENGINE_H
 
+#pragma comment (lib, "frameworkGL.lib")
+#pragma comment (lib, "opengl32.lib")
+#pragma comment (lib, "glu32.lib")
+#pragma comment (lib, "libfreetype.lib")
+#pragma comment (lib, "SDL.lib")
+#pragma comment (lib, "SDL_image.lib")
+#pragma comment (lib, "SDLmain.lib")
+#pragma comment (lib, "cg.lib")
+#pragma comment (lib, "cgGL.lib")
+#pragma comment (lib, "glew32s.lib")
+#define GLEW_STATIC
+
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "math/vector3.h"

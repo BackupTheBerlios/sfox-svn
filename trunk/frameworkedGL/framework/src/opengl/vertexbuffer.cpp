@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-#include "glext.h"
+#include <GL/glew.h>
 #include "vertexbuffer.h"
 
 #define OFFSET(x) ((char *)NULL + (x))

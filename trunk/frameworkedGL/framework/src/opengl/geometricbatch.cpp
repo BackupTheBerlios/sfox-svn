@@ -11,7 +11,7 @@
 
 #include "geometricbatch.h"
 #include "framework/exception.h"
-#include "glext.h"
+#include <GL/glew.h>
 
 namespace StarEngine {
 
