@@ -36,10 +36,13 @@ src_opengl="""opengl/light.cpp
        opengl/shaderCG.cpp 
        opengl/shader.cpp"""
 
+#src_framework="""framework/application.cpp
+#              framework/application.h
+#              framework/exception.h
+#              framework/timer.cpp
+#              framework/timer.h"""
 src_framework="""framework/application.cpp
-              framework/application.h
-              framework/exception.h
-              framework/timer.cpp
-              framework/timer.h"""
+              framework/timer.cpp"""
 
-tmpEnv.Library('frameworkGL', Split(src_framework)+Split(src_opengl))
+#tmpEnv.Library('frameworkGL', Split(src_framework)+Split(src_opengl))
+tmpEnv.SharedLibrary('frameworkGL', Split(src_framework)+Split(src_opengl))

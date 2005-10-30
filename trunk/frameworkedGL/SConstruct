@@ -21,10 +21,14 @@ framework_libpath = [os.path.join(env['PREFIX'],'lib')]
 framework_include = [os.path.join(env['PREFIX'],'include/starengine')]
 
 env.AppendUnique(CPPPATH = framework_include+z_include)
-env.PrependUnique(LIBS = framework_lib+z_lib)
 env.AppendUnique(LIBPATH = framework_libpath+z_libpath)
+env.AppendUnique(LIBS = z_lib+['GLEW'])
 
+#Create library
 SConscript('framework/SConscript', exports = 'env')
+
+#Create test programs
+env.PrependUnique(LIBS = framework_lib+z_lib)
 SConscript('tests/testTexture/SConscript', exports = 'env')
 SConscript('tests/testCG/SConscript', exports = 'env')
 SConscript('tests/volrend/SConscript', exports = 'env')
