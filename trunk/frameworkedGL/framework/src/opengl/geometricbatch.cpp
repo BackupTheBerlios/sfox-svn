@@ -66,7 +66,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   GeometricBatch::GeometricBatch()
-    :indices(0), verticesBufferId(0), numVertices(0)
+    :verticesBufferId(0), numVertices(0)
   {
   }
 
@@ -81,7 +81,6 @@ namespace StarEngine {
   void
   GeometricBatch::enablePointers()
   {
-    setVertexFormat(vertexFormat);
     for(int i = 0; i < 16; i++) {
       if(enabledPointers&(1<<i)) {
         switch(i) {
@@ -122,6 +121,21 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
+  GeometricBatch::bind()
+  {
+    assert(verticesBufferId);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
+  }
+
+/****************************************************************************/
+  void
+  GeometricBatch::unbind()
+  {
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+  }
+
+/****************************************************************************/
+  void
   GeometricBatch::drawArrays(int first, int count)
   {
     assert(verticesBufferId != 0 && primitiveMode != PM_UNKNOWN &&
@@ -129,29 +143,30 @@ namespace StarEngine {
 
     //enable appropriate attribs with vertex format
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    setPointers();
     enablePointers();
     count = count == -1?numVertices:count;
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
 
     glDrawArrays(getGLPrimitiveMode(primitiveMode), first, count);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    //glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     glPopClientAttrib();
   }
 
   void
-  GeometricBatch::drawElements(int count)
+  GeometricBatch::drawElements(IndicesBatch *indices, int count)
   {
     glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    //glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
+    setPointers();
     enablePointers();
     count = count == -1?numVertices:count;
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indices->getBufferObject());
+    //glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indices->getBufferObject());
 
-     glDrawElements(getGLPrimitiveMode(primitiveMode), count,
-                    indices->getType(), 0);
+    glDrawElements(getGLPrimitiveMode(primitiveMode), count,
+                   indices->getType(), 0);
 
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+    //glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    //glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     glPopClientAttrib();
   }
 
@@ -168,13 +183,6 @@ namespace StarEngine {
 
 /****************************************************************************/
   void
-  GeometricBatch::setIndicesBatch(IndicesBatch *indices)
-  {
-    this->indices = indices;
-  }
-
-/****************************************************************************/
-  void
   GeometricBatch::setVertexFormat(const std::string &format)
   {
     using namespace std;
@@ -185,35 +193,52 @@ namespace StarEngine {
       glGenBuffersARB(1, &verticesBufferId);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
 
-    int numComponent;
-    int ind;
-    int stride = computeStride(vf);
+    m_stride = computeStride(vf);
+    enabledPointers = 0;
+    size_t len = vf.size();
+    m_pointerParam.clear();
+    for(size_t i = 0; i < len; i++) {
+      PointerParam param;
+      getTypeDescription(vf[i].second, param.numComponents, param.descIndex);
+      param.pos = getAttribDefaultPos(vf[i].first);
+      m_pointerParam.push_back(param);
+    }
+  }
+
+/****************************************************************************/
+  void
+  GeometricBatch::setPointers()
+  {
     char *offset = 0;
     enabledPointers = 0;
-    for(size_t i = 0; i < vf.size(); i++) {
-      getTypeDescription(vf[i].second, numComponent, ind);
-      int pos = getAttribDefaultPos(vf[i].first);
+    size_t len = m_pointerParam.size();
+    for(size_t i = 0; i < len; i++) {
+      const PointerParam &pointerParam =  m_pointerParam[i];
+      const TypeDescription &desc = typeDesc[pointerParam.descIndex];
+      int pos = pointerParam.pos;
       enabledPointers |= 1 << pos;
       switch(pos) {
       case 0:
-        glVertexPointer(numComponent, typeDesc[ind].type, stride, offset);
+        glVertexPointer(pointerParam.numComponents, desc.type, m_stride,
+                        offset);
         break;
       case 1:
       case 5:
       case 6:
       case 7:
-        glVertexAttribPointerARB(pos, numComponent, typeDesc[ind].type,
-                                 GL_FALSE, stride, offset);
+        glVertexAttribPointerARB(pointerParam.pos, pointerParam.numComponents,
+                                 desc.type, GL_FALSE, m_stride, offset);
         break;
       case 2:
-        glNormalPointer(typeDesc[ind].type, stride, offset);
+        glNormalPointer(desc.type, m_stride, offset);
         break;
       case 3:
-        glColorPointer(numComponent, typeDesc[ind].type, stride, offset);
+        glColorPointer(pointerParam.numComponents, desc.type, m_stride,
+                       offset);
         break;
       case 4:
-        glSecondaryColorPointerEXT(numComponent, typeDesc[ind].type, stride,
-                                   offset);
+        glSecondaryColorPointerEXT(pointerParam.numComponents, desc.type,
+                                   m_stride, offset);
         break;
       case 8:
       case 9:
@@ -224,13 +249,12 @@ namespace StarEngine {
       case 14:
       case 15:
         glActiveTextureARB(GL_TEXTURE0+pos-8);
-        glColorPointer(numComponent, typeDesc[ind].type, stride, offset);
+        glColorPointer(pointerParam.numComponents, desc.type, m_stride, offset);
         glActiveTextureARB(GL_TEXTURE0);
         break;
       };
-      offset += numComponent*typeDesc[ind].size;
+      offset += pointerParam.numComponents*desc.size;
     }
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
   }
 
 /****************************************************************************/
@@ -411,6 +435,21 @@ namespace StarEngine {
   IndicesBatch::unlock()
   {
     glUnmapBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+  }
+
+/****************************************************************************/
+  void
+  IndicesBatch::bind()
+  {
+    assert(indicesBufferId);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indicesBufferId);
+  }
+
+/****************************************************************************/
+  void
+  IndicesBatch::unbind()
+  {
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   }
 }

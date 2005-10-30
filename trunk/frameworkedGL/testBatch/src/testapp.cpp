@@ -61,8 +61,8 @@ TestApp::init() {
     0, 1, 2, 3
   };
 
-  IndicesBatch *ind = new IndicesBatch();
-  ind->setIndices(4, SE_UNSIGNED_INT, indices, UT_STATIC_DRAW);
+  indBatch = new IndicesBatch();
+  indBatch->setIndices(4, SE_UNSIGNED_INT, indices, UT_STATIC_DRAW);
 
   geomBatch = new GeometricBatch();
   geomBatch->setVertexFormat("vertex:float3 color0:float3");
@@ -72,7 +72,7 @@ TestApp::init() {
   float *tmp = (float *)geomBatch->lock(AT_WRITE_ONLY);
   memcpy(tmp, vertices, sizeof(vertices));
   geomBatch->unlock();
-  geomBatch->setIndicesBatch(ind);
+  //geomBatch->setIndicesBatch(ind);
 
   geomBatch2 = new GeometricBatch();
   geomBatch2->setVertexFormat("vertex:float3 color0:float3");
@@ -91,9 +91,15 @@ TestApp::render() {
   trackball->toOpenGL();
 
   glColor3f(1,0,0);
-  //geomBatch->drawArrays(0);
+
+  geomBatch2->bind();
   geomBatch2->drawArrays(0);
-  geomBatch->drawElements(4);
+
+  geomBatch->bind();
+  indBatch->bind();
+  geomBatch->drawElements(indBatch, 4);
+  indBatch->unbind();
+  geomBatch->unbind();
 
   Renderer::printGLError();
 

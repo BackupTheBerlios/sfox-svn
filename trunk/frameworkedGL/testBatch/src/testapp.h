@@ -9,6 +9,7 @@ namespace StarEngine {
   class Texture;
   class Trackball;
   class GeometricBatch;
+  class IndicesBatch;
 }
 
 class TestApp : public StarEngine::Application {
@@ -19,6 +20,7 @@ private:
   StarEngine::Texture *texture;
   StarEngine::GeometricBatch *geomBatch;
   StarEngine::GeometricBatch *geomBatch2;
+  StarEngine::IndicesBatch *indBatch;
 
   void printInfos();
 

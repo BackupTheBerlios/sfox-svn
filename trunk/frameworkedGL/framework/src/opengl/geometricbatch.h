@@ -16,15 +16,16 @@ namespace StarEngine {
 
     void setVertexFormat(const std::string &format);
     void setPrimitiveMode(PrimitiveMode pt);
-    void setIndicesBatch(IndicesBatch *indices);
     void setVertices(int size, void *data, UsageType usage);
     void drawArrays(int first = 0, int count = -1);
-    void drawElements(int count = -1);
+    void drawElements(IndicesBatch *indices, int count = -1);
     void *lock(AccessType access);
     void unlock();
 
+    void bind();
+    void unbind();
+
   private:
-    IndicesBatch *indices;
     GLuint verticesBufferId;
     GLuint indicesBufferId;
     PrimitiveMode primitiveMode;
@@ -41,6 +42,15 @@ namespace StarEngine {
     int computeStride(std::vector<FormatPair> vf);
     GLenum getGLPrimitiveMode(PrimitiveMode pt);
     void enablePointers();
+    void setPointers();
+
+    int m_stride;
+    struct PointerParam {
+      int numComponents;
+      int descIndex;
+      int pos;
+    };
+    std::vector<PointerParam> m_pointerParam;
   };
 
 /*****************************************************************************/
@@ -54,13 +64,15 @@ namespace StarEngine {
     void *lock(AccessType access);
     void unlock();
 
+    void bind();
+    void unbind();
+
   private:
     Type type;
     GLuint indicesBufferId;
     unsigned int numIndices;
 
     GLuint getBufferObject() { return indicesBufferId; }
-    friend void GeometricBatch::drawElements(int count);
   };
 
 }
