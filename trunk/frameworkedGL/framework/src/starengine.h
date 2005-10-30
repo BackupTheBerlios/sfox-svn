@@ -1,6 +1,7 @@
 #ifndef STARENGINE_H
 #define STARENGINE_H
 
+#ifdef WIN32
 #pragma comment (lib, "frameworkGL.lib")
 #pragma comment (lib, "opengl32.lib")
 #pragma comment (lib, "glu32.lib")
@@ -11,6 +12,8 @@
 #pragma comment (lib, "cg.lib")
 #pragma comment (lib, "cgGL.lib")
 #pragma comment (lib, "glew32s.lib")
+#endif
+
 #define GLEW_STATIC
 
 #include "math/matrix.h"
