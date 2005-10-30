@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\framework\src"
+				AdditionalIncludeDirectories="..\..\..\framework\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\framework\src"
+				AdditionalIncludeDirectories="..\..\..\framework\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -121,10 +121,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\volrendCG\src\main.cpp">
+				RelativePath="..\..\..\volrendCG\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\..\volrendCG\src\testapp.cpp">
+				RelativePath="..\..\..\volrendCG\src\testapp.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -132,7 +132,7 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\volrendCG\src\testapp.h">
+				RelativePath="..\..\..\volrendCG\src\testapp.h">
 			</File>
 		</Filter>
 		<Filter
@@ -144,19 +144,19 @@
 			Name="shaders"
 			Filter="">
 			<File
-				RelativePath="..\..\volrendCG\src\shaders\pass1.frag">
+				RelativePath="..\..\..\volrendCG\src\shaders\pass1.frag">
 			</File>
 			<File
-				RelativePath="..\..\volrendCG\src\shaders\pass1.vert">
+				RelativePath="..\..\..\volrendCG\src\shaders\pass1.vert">
 			</File>
 			<File
-				RelativePath="..\..\volrendCG\src\shaders\pass2.frag">
+				RelativePath="..\..\..\volrendCG\src\shaders\pass2.frag">
 			</File>
 			<File
-				RelativePath="..\..\volrendCG\src\shaders\pass3.frag">
+				RelativePath="..\..\..\volrendCG\src\shaders\pass3.frag">
 			</File>
 			<File
-				RelativePath="..\..\volrendCG\src\shaders\pass4.frag">
+				RelativePath="..\..\..\volrendCG\src\shaders\pass4.frag">
 			</File>
 		</Filter>
 	</Files>

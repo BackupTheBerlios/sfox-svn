@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\framework\src"
+				AdditionalIncludeDirectories="..\..\..\framework\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -120,10 +120,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\testBatch\src\main.cpp">
+				RelativePath="..\..\..\testBatch\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\..\testBatch\src\testapp.cpp">
+				RelativePath="..\..\..\testBatch\src\testapp.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -131,7 +131,7 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\testBatch\src\testapp.h">
+				RelativePath="..\..\..\testBatch\src\testapp.h">
 			</File>
 		</Filter>
 		<Filter

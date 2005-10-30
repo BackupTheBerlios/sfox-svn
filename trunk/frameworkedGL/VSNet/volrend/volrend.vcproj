@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\framework\src"
+				AdditionalIncludeDirectories="..\..\..\framework\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -70,7 +70,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\framework\src"
+				AdditionalIncludeDirectories="..\..\..\framework\src"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -121,10 +121,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\volrend\src\main.cpp">
+				RelativePath="..\..\..\volrend\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\..\volrend\src\testapp.cpp">
+				RelativePath="..\..\..\volrend\src\testapp.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -132,7 +132,7 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\volrend\src\testapp.h">
+				RelativePath="..\..\..\volrend\src\testapp.h">
 			</File>
 		</Filter>
 		<Filter
@@ -141,22 +141,22 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 		</Filter>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass1.frag">
+			RelativePath="..\..\..\volrend\src\shaders\pass1.frag">
 		</File>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass1.vert">
+			RelativePath="..\..\..\volrend\src\shaders\pass1.vert">
 		</File>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass2.frag">
+			RelativePath="..\..\..\volrend\src\shaders\pass2.frag">
 		</File>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass2.vert">
+			RelativePath="..\..\..\volrend\src\shaders\pass2.vert">
 		</File>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass3.frag">
+			RelativePath="..\..\..\volrend\src\shaders\pass3.frag">
 		</File>
 		<File
-			RelativePath="..\..\volrend\src\shaders\pass4.frag">
+			RelativePath="..\..\..\volrend\src\shaders\pass4.frag">
 		</File>
 	</Files>
 	<Globals>
