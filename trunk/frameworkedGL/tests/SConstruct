@@ -13,7 +13,7 @@ if sys.platform == 'linux2' or sys.platform == 'linux-i386':
 env = Environment(TARGS=COMMAND_LINE_TARGETS,
 		  tools=['default', 'generic', 'opengl', 'cg', 
 			 'sdl', 'sdl_image', 'freetype'],
-		  toolpath=['.', 'admin']
+		  toolpath=['.', '..', '../admin']
 		 )
 #Framework installation path
 framework_lib = ['frameworkGL', 'GLEW']
@@ -22,15 +22,11 @@ framework_include = [os.path.join(env['PREFIX'],'include/starengine')]
 
 env.AppendUnique(CPPPATH = framework_include+z_include)
 env.AppendUnique(LIBPATH = framework_libpath+z_libpath)
-env.AppendUnique(LIBS = z_lib+['GLEW'])
-
-#Create library
-SConscript('framework/SConscript', exports = 'env')
+env.PrependUnique(LIBS = framework_lib+z_lib)
 
 #Create test programs
-#env.PrependUnique(LIBS = framework_lib+z_lib)
-#SConscript('tests/testTexture/SConscript', exports = 'env')
-#SConscript('tests/testCG/SConscript', exports = 'env')
-#SConscript('tests/volrend/SConscript', exports = 'env')
-#SConscript('tests/volrendCG/SConscript', exports = 'env')
-#SConscript('tests/testBatch/SConscript', exports = 'env')
+SConscript('testTexture/SConscript', exports = 'env')
+SConscript('testCG/SConscript', exports = 'env')
+SConscript('volrend/SConscript', exports = 'env')
+SConscript('volrendCG/SConscript', exports = 'env')
+SConscript('testBatch/SConscript', exports = 'env')
