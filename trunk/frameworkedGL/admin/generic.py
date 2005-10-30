@@ -70,20 +70,24 @@ def generate(env):
         opts = Options(cachefile)
 	opts.AddOptions(
 		( 'PREFIX', 'prefix for installation'),
-		( 'DEBUG', 'Enable debug')
+		( 'DEBUG', 'Enable debug'),
+		( 'CONFIGURED', 'True if already configured')
 	)
         opts.Update(env)
 	
-	#Get installation prefix
-	if env['ARGS'].has_key('prefix'):
-		env['PREFIX']=os.path.abspath(env['ARGS'].get('prefix', ''))
-	else:
-		env['PREFIX']='/usr/local/'
-	if env['ARGS'].has_key('debug'):
-		env['DEBUG']=env['ARGS'].get('debug', 0)
-	else:
-		env['DEBUG']='0'
-	opts.Save(cachefile, env)
+	#Set config options if needed
+	if not env.has_key('CONFIGURED') or 'configure' in sys.argv:
+		#Get installation prefix
+		if env['ARGS'].has_key('prefix'):
+			env['PREFIX']=os.path.abspath(env['ARGS'].get('prefix', ''))
+		else:
+			env['PREFIX']='/usr/local/'
+		if env['ARGS'].has_key('debug'):
+			env['DEBUG']=env['ARGS'].get('debug', 0)
+		else:
+			env['DEBUG']='0'
+		env['CONFIGURED']=1
+		opts.Save(cachefile, env)
 
 	#Set debug options
 	if env['DEBUG'] == '1':
