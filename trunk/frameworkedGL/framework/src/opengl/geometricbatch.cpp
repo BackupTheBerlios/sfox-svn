@@ -66,7 +66,7 @@ namespace StarEngine {
 
 /****************************************************************************/
   GeometricBatch::GeometricBatch()
-    :verticesBufferId(0), numVertices(0)
+    :verticesBufferId(0), numVertices(0), m_stride(-1)
   {
   }
 
@@ -159,7 +159,7 @@ namespace StarEngine {
     //glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
     setPointers();
     enablePointers();
-    count = count == -1?numVertices:count;
+    count = count == -1?indices->getNumIndices():count;
     //glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, indices->getBufferObject());
 
     glDrawElements(getGLPrimitiveMode(primitiveMode), count,
@@ -174,8 +174,8 @@ namespace StarEngine {
   void
   GeometricBatch::setVertices(int size, void *data, UsageType usage)
   {
-    assert(verticesBufferId);
-    numVertices = size/computeStride(extractFormat(vertexFormat));
+    assert(verticesBufferId&&m_stride!=-1);
+    numVertices = size/m_stride;
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, verticesBufferId);
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, size, data, usage);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);

@@ -65,6 +65,7 @@ namespace StarEngine {
     cgGLEnableProfile(profileCG);
     cgGLLoadProgram( program );
     Renderer::printCGError();
+    unbind();
   }
 
   void

@@ -16,6 +16,7 @@ namespace StarEngine {
 
     void setVertexFormat(const std::string &format);
     void setPrimitiveMode(PrimitiveMode pt);
+    /*Size is in octet*/
     void setVertices(int size, void *data, UsageType usage);
     void drawArrays(int first = 0, int count = -1);
     void drawElements(IndicesBatch *indices, int count = -1);
@@ -66,6 +67,8 @@ namespace StarEngine {
 
     void bind();
     void unbind();
+
+    int getNumIndices() { return numIndices; }
 
   private:
     Type type;

@@ -20,7 +20,9 @@ namespace StarEngine {
     PF_RGB16F,
     PF_RGBA16F,
     PF_RGB32F,
-    PF_RGBA32F
+    PF_RGBA32F,
+    PF_INTENSITY32F,
+    PF_INTENSITY
   };
 
   enum DataType {
