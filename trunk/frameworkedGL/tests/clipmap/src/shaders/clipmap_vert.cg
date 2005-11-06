@@ -1,0 +1,27 @@
+
+struct vertout {
+  float4 hpos : POSITION;
+  float4 color : COLOR;
+  float4 texCoord : TEXCOORD0;
+};
+
+vertout main(float3 position : POSITION,
+             float4 color : COLOR,
+	     uniform float4x4 mvp,
+             uniform float4 scaleTranslate,
+             uniform float4 scaleTranslateTex,
+             uniform sampler2D heightmap)
+{
+  vertout OUT;
+
+  float2 uv = position.xz*scaleTranslateTex.xy+scaleTranslateTex.zw;
+  float z = tex2Dlod(heightmap, float4(uv, 0, 1)).w*20;
+  float2 worldPos = position.xz*scaleTranslate.xy+scaleTranslate.zw;
+  //z = 0;
+  OUT.hpos = mul(mvp, float4(worldPos.x, z, worldPos.y, 1));
+//  OUT.color = float4(uv,0,0)*color;
+  OUT.color = color;
+  OUT.texCoord = float4(uv, 0, 1);
+
+  return OUT;
+}
