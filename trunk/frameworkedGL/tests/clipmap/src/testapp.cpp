@@ -2,6 +2,7 @@
 #include "GL/glew.h"
 
 #include "clipmap.h"
+#include "mipmap.h"
 
 #define DATAPATH "../../common"
 
@@ -38,51 +39,22 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  static float vertices[] = {
-    -1, 1, 0,
-    1,0,0,
-    -1, -1, 0,
-    1,1,0,
-    1, -1, 0,
-    1,0,0,
-    1, 1, 0,
-    1,1,0
-  };
-
-  static float vertices2[] = {
-    0, 2, 0,
-    0,1,0,
-    0, 0, 0,
-    0,1,0,
-    2, 0, 0,
-    0,1,0,
-    2, 2, 0,
-    0,1,0
-  };
-
-  static unsigned int indices[] = {
-    0, 1, 2, 3
-  };
-
-  indBatch = new IndicesBatch();
-  indBatch->setIndices(4, SE_UNSIGNED_INT, indices, UT_STATIC_DRAW);
-
-  geomBatch = new GeometricBatch();
-  geomBatch->setVertexFormat("vertex:float3 color0:float3");
-  geomBatch->setPrimitiveMode(PM_QUADS);
-//   geomBatch->setVertices(sizeof(vertices), vertices, UT_STATIC_DRAW);
-  geomBatch->setVertices(4*6*sizeof(float), NULL, UT_STATIC_DRAW);
-  float *tmp = (float *)geomBatch->lock(AT_WRITE_ONLY);
-  memcpy(tmp, vertices, sizeof(vertices));
-  geomBatch->unlock();
-  //geomBatch->setIndicesBatch(ind);
-
-  geomBatch2 = new GeometricBatch();
-  geomBatch2->setVertexFormat("vertex:float3 color0:float3");
-  geomBatch2->setPrimitiveMode(PM_QUADS);
-  geomBatch2->setVertices(sizeof(vertices), vertices2, UT_STATIC_DRAW);
-
   clipmap = new ClipMap(255);
+
+  fprintf(stderr, "Generating mipmap...");
+  mipmap = new Mipmap;
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain2.png", 10);
+  fprintf(stderr, "Done\n");
+
+  ImageLoader::ImageData *imgData = mipmap->getLevel(7)->getImageData();
+  imgData->pixelFormat = PF_LUMINANCE;
+  texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
+                                    imgData->height);
+  texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
+  imgData->height );
+
+//   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
+  //texture = g_TextureManager.load("test", "test.png");
 }
 
 
@@ -93,20 +65,34 @@ void
 TestApp::render() {
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
   cam->toOpenGL();
-//  trackball->toOpenGL();
 
   glColor3f(1,0,0);
 
-  //geomBatch2->bind();
-  //geomBatch2->drawArrays(0);
 
-  //geomBatch->bind();
-  //indBatch->bind();
-//  geomBatch->drawElements(indBatch, 4);
-//  indBatch->unbind();
-//  geomBatch->unbind();
-
+  glPushMatrix();
   clipmap->render();
+  glPopMatrix();
+
+  TextureUnits::activeUnit( 0 );
+  glEnable( GL_TEXTURE_2D );
+  TextureUnits::setEnvMode( TEM_REPLACE );
+  texture->bind();
+  texture->setMinFilter(TF_LINEAR);
+  texture->setMagFilter(TF_LINEAR);
+
+  glScalef(1, 0.25, 1);
+  //glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+  glBegin( GL_QUADS );
+  glTexCoord2f(0., 1.);
+  glVertex3f(-1, 1, 0);
+  glTexCoord2f(0., 0.);
+  glVertex3f(-1, -1, 0);
+  glTexCoord2f(1., 0.);
+  glVertex3f(1, -1, 0);
+  glTexCoord2f(1., 1.);
+  glVertex3f(1, 1, 0);
+  glEnd();
 
   Renderer::printGLError();
 

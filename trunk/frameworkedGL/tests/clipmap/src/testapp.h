@@ -4,6 +4,7 @@
 #include "starengine.h"
 
 class ClipMap;
+class Mipmap;
 
 namespace StarEngine {
   class FontGL;
@@ -20,11 +21,9 @@ private:
   StarEngine::FontGL *font;
   StarEngine::Camera *cam;
   StarEngine::Texture *texture;
-  StarEngine::GeometricBatch *geomBatch;
-  StarEngine::GeometricBatch *geomBatch2;
-  StarEngine::IndicesBatch *indBatch;
 
   ClipMap *clipmap;
+  Mipmap *mipmap;
 
   void printInfos();
 

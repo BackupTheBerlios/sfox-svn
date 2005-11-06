@@ -4,6 +4,7 @@ Import('env')
 
 src="""main.cpp
        testapp.cpp
-       clipmap.cpp"""
+       clipmap.cpp
+       mipmap.cpp"""
 
 env.Program('clipmap', Split(src))
