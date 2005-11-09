@@ -17,6 +17,9 @@ private:
   StarEngine::GeometricBatch *ringFixupVertices;
   StarEngine::IndicesBatch *ringFixupIndices;
 
+  StarEngine::GeometricBatch *finestLevelVertices;
+  StarEngine::IndicesBatch *finestLevelIndices;
+
   StarEngine::ShaderCG *clipmapVert;
   StarEngine::ShaderCG *clipmapFrag;
 
@@ -24,9 +27,12 @@ private:
   void genBlocks();
   //Generate vertex and indices buffers for ring fixup
   void genRingFixUp();
+  //Generate vertex and indices buffers for central mesh
+  void genFinestLevel();
 
   void drawBlocks();
   void drawRingFixup();
+  void drawFinestLevel();
 
   int clipmapSize;
 };

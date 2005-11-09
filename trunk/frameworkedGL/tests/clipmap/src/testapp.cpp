@@ -43,15 +43,21 @@ TestApp::init() {
 
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain2.png", 10);
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/partition.png", 10);
   fprintf(stderr, "Done\n");
 
-  ImageLoader::ImageData *imgData = mipmap->getLevel(7)->getImageData();
+  ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
   imgData->pixelFormat = PF_LUMINANCE;
-  texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
-                                    imgData->height);
-  texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
-  imgData->height );
+//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
+//                                     imgData->height);
+  texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS,128);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS, 128);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
+//   texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
+//   imgData->height );
+   texture->setData( imgData->data, imgData->pixelFormat, 128,
+                     128);
 
 //   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
   //texture = g_TextureManager.load("test", "test.png");
@@ -80,7 +86,7 @@ TestApp::render() {
   texture->setMinFilter(TF_LINEAR);
   texture->setMagFilter(TF_LINEAR);
 
-  glScalef(1, 0.25, 1);
+//  glScalef(1, 0.25, 1);
   //glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
   glBegin( GL_QUADS );

@@ -8,8 +8,9 @@ Mipmap::buildMipmap(const char *filename, int numLevels)
   levels = new Image*[numLevels];
   levels[0] = new Image;
   levels[0]->load(filename);
-  for(int i = 1; i < numLevels; i++)
+  for(int i = 1; i < numLevels; i++) {
     levels[i] = halfScale(levels[i-1]);
+  }
 }
 
 Image *

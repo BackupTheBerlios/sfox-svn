@@ -21,6 +21,7 @@ ClipMap::ClipMap(int n)
 {
   genBlocks();
   genRingFixUp();
+  genFinestLevel();
 
   //Load float terrain texture
   Image *img = new Image;
@@ -84,71 +85,8 @@ ClipMap::genBlocks()
   assert(numIndices == ofs);
   blockIndices->unlock();
 }
+
 /****************************************************************************/
-// void
-// ClipMap::genRingFixUp()
-// {
-//   int m = (clipmapSize+1)/4;
-
-//   ringFixupVertices = new GeometricBatch;
-//   ringFixupVertices->setPrimitiveMode(PM_TRIANGLE_STRIP);
-// //  ringFixupVertices->setPrimitiveMode(PM_POINTS);
-//   ringFixupVertices->setVertexFormat("vertex:float3");
-//   ringFixupVertices->setVertices(m*3*4*sizeof(s_vec3), NULL, UT_STATIC_DRAW);
-//   s_vec3 *vertices = (s_vec3 *)ringFixupVertices->lock(AT_READ_WRITE);
-//   float startx = 2*(m-1);
-//   for(int k = 0; k < 2; k++) {
-//     for(int j = 0; j < m; j++)
-//       for(int i = 0; i < 3; i++) {
-//         int ofs = i+j*3+k*3*m;
-//         vertices[ofs].x = startx+i;
-//         vertices[ofs].y = 0;
-//         vertices[ofs].z = j+k*(3*(m-1)+2);
-//       }
-//   }
-//   int ofs = 2*3*m;
-//   for(int i = 0; i < 2*3*m; i++) {
-//     vertices[ofs].x = vertices[i].z;
-//     vertices[ofs].y = 0;
-//     vertices[ofs++].z = vertices[i].x;
-//   }
-//   ringFixupVertices->unlock();
-
-//   ringFixupIndices = new IndicesBatch();
-//   int numIndices = ((2*3+2)*(2*m-3)+2*3);
-//   ringFixupIndices->setIndices(numIndices, SE_UNSIGNED_SHORT, NULL,
-//                                UT_STATIC_DRAW);
-//   ofs = 0;
-//   unsigned short *ind = (unsigned short *)ringFixupIndices->lock(AT_WRITE_ONLY);
-//   for(int j = 0; j < 2*m-1; j++) {
-//     for(int i = 0; i < 3; i++) {
-//       ind[ofs++] = i+j*3;
-//       ind[ofs++] = i+(j+1)*3;
-//     }
-//     if(j >= 2*m-2)
-//       break;
-//     if(j == m-2) {
-//       ind[ofs++] = 2+(j+1)*3;
-//       ind[ofs++] = (j+2)*3;
-//       j++;
-//       continue;
-//     } else {
-//       ind[ofs++] = 2+(j+1)*3;
-//       ind[ofs++] = 2+(j+1)*3;
-//     }
-//     j++;
-
-//     for(int i = 2; i >= 0; i--) {
-//       ind[ofs++] = i+(j+1)*3;
-//       ind[ofs++] = i+j*3;
-//     }
-//     ind[ofs++] = (j+2)*3;
-//     ind[ofs++] = (j+2)*3;
-//   }
-//     printf("ofs=%d est=%d\n", ofs, numIndices);
-//   assert(numIndices == ofs);
-//   ringFixupIndices->unlock();
-// }
 void
 ClipMap::genRingFixUp()
 {
@@ -262,6 +200,55 @@ ClipMap::genRingFixUp()
 /****************************************************************************/
 
 void
+ClipMap::genFinestLevel()
+{
+  finestLevelVertices = new GeometricBatch;
+  finestLevelVertices->setPrimitiveMode(PM_TRIANGLE_STRIP);
+  finestLevelVertices->setVertexFormat("vertex:float3");
+  finestLevelVertices->setVertices(clipmapSize*clipmapSize*sizeof(s_vec3),
+                                   NULL, UT_STATIC_DRAW);
+  s_vec3 *vertices = (s_vec3 *)finestLevelVertices->lock(AT_WRITE_ONLY);
+  for(int j = 0; j < clipmapSize; j++)
+    for(int i = 0; i < clipmapSize; i++) {
+      vertices[i+j*clipmapSize].x = i;
+      vertices[i+j*clipmapSize].y = 0;
+      vertices[i+j*clipmapSize].z = j;
+    }
+  finestLevelVertices->unlock();
+
+  finestLevelIndices = new IndicesBatch();
+  int numIndices = (2*clipmapSize+2)*(clipmapSize-2)+2*clipmapSize;
+  finestLevelIndices->setIndices(numIndices, SE_UNSIGNED_SHORT, NULL,
+                                 UT_STATIC_DRAW);
+  int ofs = 0;
+  unsigned short *ind = (unsigned short *)finestLevelIndices->lock(AT_WRITE_ONLY);
+  for(int j = 0; j < clipmapSize; j++) {
+    for(int i = 0; i < clipmapSize; i++) {
+      ind[ofs++] = i+j*clipmapSize;
+      ind[ofs++] = i+(j+1)*clipmapSize;
+    }
+    if(j==clipmapSize-2)
+      break;
+    ind[ofs++] = clipmapSize-1+(j+1)*clipmapSize;
+    ind[ofs++] = clipmapSize-1+j*clipmapSize;
+    j++;
+
+    for(int i = clipmapSize-1; i >= 0; i--) {
+      ind[ofs++] = i+(j+1)*clipmapSize;
+      ind[ofs++] = i+j*clipmapSize;
+    }
+    if(j==clipmapSize-2)
+      break;
+    ind[ofs++] = (j+2)*clipmapSize;
+    ind[ofs++] = (j+1)*clipmapSize;
+  }
+  assert(numIndices == ofs);
+  finestLevelIndices->unlock();
+}
+
+/****************************************************************************/
+
+void
 ClipMap::render()
 {
   glScalef(0.05,0.05,0.05);
@@ -281,6 +268,7 @@ ClipMap::render()
 
   drawBlocks();
   drawRingFixup();
+  drawFinestLevel();
   clipmapVert->disableTextureParameter("heightmap");
   clipmapVert->unbind();
 
@@ -381,6 +369,44 @@ ClipMap::drawRingFixup()
 
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
+}
+
+void
+ClipMap::drawFinestLevel()
+{
+  finestLevelVertices->bind();
+  finestLevelIndices->bind();
+
+  glColor3ub(141, 105, 213);
+  clipmapVert->setParameter4f("scaleTranslate", 0.5, 0.5, 64.0, 64.0);
+  float tx =  0./256.;
+  float ty =  0;
+  clipmapVert->setParameter4f("scaleTranslateTex", 1./256, 1./256,
+                              tx, ty);
+
+  clipmapFrag->bind();
+  Texture * texTerrain = g_TextureManager.getByName("terrain");
+  clipmapFrag->setTextureParameter("heightmap", texTerrain);
+  clipmapFrag->enableTextureParameter("heightmap");
+
+  finestLevelVertices->drawElements(finestLevelIndices);
+
+  clipmapFrag->disableTextureParameter("heightmap");
+  clipmapFrag->unbind();
+
+#if 0
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glDisable(GL_CULL_FACE);
+  glEnable(GL_POLYGON_OFFSET_LINE);
+  glPolygonOffset(-1, 0);
+  glColor3f(1, 0, 0);
+  finestLevelVertices->drawElements(finestLevelIndices);
+  glPolygonMode(GL_FRONT, GL_FILL);
+  glDisable(GL_POLYGON_OFFSET_LINE);
+#endif
+
+  finestLevelVertices->unbind();
+  finestLevelIndices->unbind();
 }
 
 ClipMap::~ClipMap()
