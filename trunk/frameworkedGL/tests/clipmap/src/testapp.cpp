@@ -39,28 +39,23 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(255);
+  clipmap = new ClipMap(127);
 
-  fprintf(stderr, "Generating mipmap...");
-  mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/partition.png", 10);
-  fprintf(stderr, "Done\n");
+//   ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
+//   imgData->pixelFormat = PF_LUMINANCE;
+// //   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
+// //                                     imgData->height);
+//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
+//   glPixelStorei(GL_UNPACK_SKIP_PIXELS,128);
+//   glPixelStorei(GL_UNPACK_SKIP_ROWS, 128);
+//   glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
+// //   texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
+// //   imgData->height );
+//   texture->setData( imgData->data, 0, imgData->pixelFormat, 128,
+//                      128);
 
-  ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
-  imgData->pixelFormat = PF_LUMINANCE;
-//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
-//                                     imgData->height);
-  texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS,128);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS, 128);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
-//   texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
-//   imgData->height );
-   texture->setData( imgData->data, imgData->pixelFormat, 128,
-                     128);
-
-//   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
-  //texture = g_TextureManager.load("test", "test.png");
+// //   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
+//   //texture = g_TextureManager.load("test", "test.png");
 }
 
 
@@ -79,26 +74,26 @@ TestApp::render() {
   clipmap->render();
   glPopMatrix();
 
-  TextureUnits::activeUnit( 0 );
-  glEnable( GL_TEXTURE_2D );
-  TextureUnits::setEnvMode( TEM_REPLACE );
-  texture->bind();
-  texture->setMinFilter(TF_LINEAR);
-  texture->setMagFilter(TF_LINEAR);
+//   TextureUnits::activeUnit( 0 );
+//   glEnable( GL_TEXTURE_2D );
+//   TextureUnits::setEnvMode( TEM_REPLACE );
+//   texture->bind();
+//   texture->setMinFilter(TF_LINEAR);
+//   texture->setMagFilter(TF_LINEAR);
 
-//  glScalef(1, 0.25, 1);
-  //glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-  glBegin( GL_QUADS );
-  glTexCoord2f(0., 1.);
-  glVertex3f(-1, 1, 0);
-  glTexCoord2f(0., 0.);
-  glVertex3f(-1, -1, 0);
-  glTexCoord2f(1., 0.);
-  glVertex3f(1, -1, 0);
-  glTexCoord2f(1., 1.);
-  glVertex3f(1, 1, 0);
-  glEnd();
+// //  glScalef(1, 0.25, 1);
+//   //glEnable(GL_BLEND);
+//   glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+//   glBegin( GL_QUADS );
+//   glTexCoord2f(0., 1.);
+//   glVertex3f(-1, 1, 0);
+//   glTexCoord2f(0., 0.);
+//   glVertex3f(-1, -1, 0);
+//   glTexCoord2f(1., 0.);
+//   glVertex3f(1, -1, 0);
+//   glTexCoord2f(1., 1.);
+//   glVertex3f(1, 1, 0);
+//   glEnd();
 
   Renderer::printGLError();
 
@@ -138,6 +133,13 @@ TestApp::keyDown(const SDL_keysym &key) {
 void
 TestApp::keyUp(const SDL_keysym &key)
 {
+  switch(key.sym) {
+  case SDLK_w:
+    clipmap->setWireframe(!clipmap->isWireframe());
+    break;
+  default:
+    break;
+  }
 }
 
 void

@@ -5,13 +5,33 @@ using namespace StarEngine;
 void
 Mipmap::buildMipmap(const char *filename, int numLevels)
 {
-  levels = new Image*[numLevels];
-  levels[0] = new Image;
+  levels.push_back(new Image);
   levels[0]->load(filename);
   for(int i = 1; i < numLevels; i++) {
-    levels[i] = halfScale(levels[i-1]);
+    levels.push_back(halfScale(levels[i-1]));
   }
 }
+/****************************************************************************/
+
+void
+Mipmap::getTexture(Texture2D *texture, int xoffs, int yoffs,
+                   int width, int height)
+{
+  size_t numLevels = levels.size();
+  for(size_t l = 0; l < numLevels; l++) {
+    ImageLoader::ImageData *imgData = levels[l]->getImageData();
+    imgData->pixelFormat = PF_LUMINANCE;
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, xoffs);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, yoffs);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
+    texture->setData(imgData->data, l, imgData->pixelFormat, width, height);
+    width /= 2;
+    height /= 2;
+    xoffs /= 2;
+    yoffs /= 2;
+  }
+}
+/****************************************************************************/
 
 Image *
 Mipmap::halfScale(Image *img)
@@ -54,6 +74,7 @@ Mipmap::halfScale(Image *img)
   res->setImageData(newImg);
   return res;
 }
+/****************************************************************************/
 
 Image *
 Mipmap::getLevel(int n)

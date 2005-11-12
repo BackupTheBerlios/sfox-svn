@@ -3,12 +3,17 @@
 
 #include "starengine.h"
 
+class Mipmap;
+
 class ClipMap {
 public:
   ClipMap(int n);
   ~ClipMap();
 
   void render();
+
+  void setWireframe(bool enable) { wireframe = enable; }
+  bool isWireframe() { return wireframe; }
 
 private:
   StarEngine::GeometricBatch *blockVertices;
@@ -35,6 +40,10 @@ private:
   void drawFinestLevel();
 
   int clipmapSize;
+
+  Mipmap *mipmap;
+
+  bool wireframe;
 };
 
 #endif

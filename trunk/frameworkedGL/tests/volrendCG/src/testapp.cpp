@@ -123,7 +123,7 @@ TestApp::init() {
 
   g_TextureManager.create("preint", PF_RGBA, 256, 256);
   Texture * texPreInt = g_TextureManager.getByName("preint");
-  texPreInt->setData(preIntTable, PF_RGBA, 256, 256);
+  texPreInt->setData(preIntTable, 0, PF_RGBA, 256, 256);
 }
 
 

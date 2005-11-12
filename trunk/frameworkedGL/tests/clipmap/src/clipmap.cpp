@@ -1,4 +1,5 @@
 #include "clipmap.h"
+#include "mipmap.h"
 
 using namespace StarEngine;
 
@@ -17,19 +18,22 @@ struct s_vec2 {
 };
 
 ClipMap::ClipMap(int n)
-  : clipmapSize(n)
+  : clipmapSize(n), wireframe(false)
 {
   genBlocks();
   genRingFixUp();
   genFinestLevel();
 
   //Load float terrain texture
-  Image *img = new Image;
-  img->load(DATAPATH"/media/clipmap/terrain/terrain1.png");
-  ImageLoader::ImageData *imgData = img->getImageData();
-  Texture *tex = g_TextureManager.create("terrain", PF_RGBA32F, 256, 256);
-  tex->setData( imgData->data, imgData->pixelFormat, imgData->width,
-                imgData->height );
+  fprintf(stderr, "Generating mipmap...");
+  mipmap = new Mipmap;
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/test.png", 4);
+  fprintf(stderr, "Done\n");
+
+  Texture2D *tex = (Texture2D *)g_TextureManager.create("terrain",
+                                                        PF_LUMINANCE32F,
+                                                        n+1, n+1);
+  mipmap->getTexture(tex, 0, 0, n+1, n+1);
 
   clipmapVert = new ShaderCG();
   clipmapVert->loadSourceFromFile("shaders/clipmap_vert.cg",
@@ -266,8 +270,10 @@ ClipMap::render()
   clipmapVert->setTextureParameter("heightmap", texTerrain);
   clipmapVert->enableTextureParameter("heightmap");
 
+  clipmapVert->setParameter1f("level", 1);
   drawBlocks();
   drawRingFixup();
+  clipmapVert->setParameter1f("level", 0);
   drawFinestLevel();
   clipmapVert->disableTextureParameter("heightmap");
   clipmapVert->unbind();
@@ -294,15 +300,14 @@ ClipMap::drawBlocks()
     {0, 3, 0, 2}, {1, 3, 0, 2}, {2, 3, 2, 2}, {3, 3, 2, 2}
   };
   for(size_t i = 0; i < sizeof(offset)/sizeof(offset[0]); i++) {
+    float texel = 1.0/float(clipmapSize+1);
     glColor3ub(141, 105, 213);
     float tx = (m-1)*offset[i].x+offset[i].z;
     float ty = (m-1)*offset[i].y+offset[i].w;
     clipmapVert->setParameter4f("scaleTranslate", 1, 1, tx, ty);
-//     tx =  offset[i].x*(0.25-1./256.)+offset[i].z*2./256.;
-//     ty =  offset[i].y*(0.25-1./256.)+offset[i].w*2./256.;
-    tx =  offset[i].x*(0.25-1./256.)+offset[i].z*1./256.;
-    ty =  offset[i].y*(0.25-1./256.)+offset[i].w*1./256.;
-    clipmapVert->setParameter4f("scaleTranslateTex", 1./256, 1./256,
+    tx =  offset[i].x*(0.25-texel)+offset[i].z*texel;
+    ty =  offset[i].y*(0.25-texel)+offset[i].w*texel;
+    clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                                 tx, ty);
 
     clipmapFrag->bind();
@@ -315,15 +320,15 @@ ClipMap::drawBlocks()
     clipmapFrag->disableTextureParameter("heightmap");
     clipmapFrag->unbind();
 
- #if 0
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1, 0);
-    glColor3f(1, 0, 0);
-    blockVertices->drawElements(blockIndices);
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glDisable(GL_POLYGON_OFFSET_LINE);
-#endif
+    if(wireframe) {
+      glPolygonMode(GL_FRONT, GL_LINE);
+      glEnable(GL_POLYGON_OFFSET_LINE);
+      glPolygonOffset(-1, 0);
+      glColor3f(1, 0, 0);
+      blockVertices->drawElements(blockIndices);
+      glPolygonMode(GL_FRONT, GL_FILL);
+      glDisable(GL_POLYGON_OFFSET_LINE);
+    }
   }
   blockVertices->unbind();
   blockIndices->unbind();
@@ -333,16 +338,16 @@ ClipMap::drawBlocks()
 void
 ClipMap::drawRingFixup()
 {
-  int m = (clipmapSize+1)/4;
   ringFixupVertices->bind();
   ringFixupIndices->bind();
 
   glColor3ub(141, 105, 213);
 //  clipmapVert->setParameter4f("scaleTranslate", 1, 1, 0, -2*(m-1)+1);
   clipmapVert->setParameter4f("scaleTranslate", 1, 1, 0, 0);
-  float tx =  0./256.;
+  float texel = 1.0/float(clipmapSize+1);
+  float tx =  0;
   float ty =  0;
-  clipmapVert->setParameter4f("scaleTranslateTex", 1./256, 1./256,
+  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                               tx, ty);
 
   clipmapFrag->bind();
@@ -357,15 +362,17 @@ ClipMap::drawRingFixup()
   clipmapFrag->disableTextureParameter("heightmap");
   clipmapFrag->unbind();
 
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//    glDisable(GL_CULL_FACE);
-//   //glEnable(GL_POLYGON_OFFSET_LINE);
-//   glPolygonOffset(-1, 0);
-//   glColor3f(1, 0, 0);
-//   ringFixupVertices->drawElements(ringFixupIndices);
-// //  ringFixupVertices->drawArrays();
-//   glPolygonMode(GL_FRONT, GL_FILL);
-//   glDisable(GL_POLYGON_OFFSET_LINE);
+  if(wireframe) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1, 0);
+    glColor3f(1, 0, 0);
+    ringFixupVertices->drawElements(ringFixupIndices);
+//  ringFixupVertices->drawArrays();
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+  }
 
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
@@ -378,10 +385,12 @@ ClipMap::drawFinestLevel()
   finestLevelIndices->bind();
 
   glColor3ub(141, 105, 213);
-  clipmapVert->setParameter4f("scaleTranslate", 0.5, 0.5, 64.0, 64.0);
-  float tx =  0./256.;
-  float ty =  0;
-  clipmapVert->setParameter4f("scaleTranslateTex", 1./256, 1./256,
+  clipmapVert->setParameter4f("scaleTranslate", 0.5, 0.5, (clipmapSize+1)/4.0,
+                              (clipmapSize+1)/4.0);
+  float texel = 1.0/float(clipmapSize+1);
+  float tx =  32*texel;
+  float ty =  32*texel;
+  clipmapVert->setParameter4f("scaleTranslateTex", 0.5*texel, 0.5*texel,
                               tx, ty);
 
   clipmapFrag->bind();
@@ -394,16 +403,16 @@ ClipMap::drawFinestLevel()
   clipmapFrag->disableTextureParameter("heightmap");
   clipmapFrag->unbind();
 
-#if 0
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDisable(GL_CULL_FACE);
-  glEnable(GL_POLYGON_OFFSET_LINE);
-  glPolygonOffset(-1, 0);
-  glColor3f(1, 0, 0);
-  finestLevelVertices->drawElements(finestLevelIndices);
-  glPolygonMode(GL_FRONT, GL_FILL);
-  glDisable(GL_POLYGON_OFFSET_LINE);
-#endif
+  if(wireframe) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1, 0);
+    glColor3f(1, 0, 0);
+    finestLevelVertices->drawElements(finestLevelIndices);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+  }
 
   finestLevelVertices->unbind();
   finestLevelIndices->unbind();

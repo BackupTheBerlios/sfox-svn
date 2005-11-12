@@ -10,14 +10,15 @@ vertout main(float3 position : POSITION,
 	     uniform float4x4 mvp,
              uniform float4 scaleTranslate,
              uniform float4 scaleTranslateTex,
-             uniform sampler2D heightmap)
+             uniform sampler2D heightmap,
+             uniform float level)
 {
   vertout OUT;
 
   float2 uv = position.xz*scaleTranslateTex.xy+scaleTranslateTex.zw;
-  float z = tex2Dlod(heightmap, float4(uv, 0, 1)).w*20;
+  float z = tex2Dlod(heightmap, float4(uv, 0, level)).x*20;
   float2 worldPos = position.xz*scaleTranslate.xy+scaleTranslate.zw;
-  z = 0;
+  //z = 0;
   OUT.hpos = mul(mvp, float4(worldPos.x, z, worldPos.y, 1));
 //  OUT.color = float4(uv,0,0)*color;
   OUT.color = color;
