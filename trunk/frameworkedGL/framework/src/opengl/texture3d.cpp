@@ -7,7 +7,6 @@
 
 #include "texture3d.h"
 #include "renderer.h"
-#include <GL/glew.h>
 
 namespace StarEngine {
 
@@ -19,11 +18,11 @@ namespace StarEngine {
   Texture3D::Texture3D(int width, int height, int depth, PixelFormat pf)
     :Texture(pf)
   {
-    setData( NULL, pf, width, height, depth);
+    setData( NULL, 0, pf, width, height, depth);
   }
 
   void
-  Texture3D::setData(const void *data, PixelFormat pfData,
+  Texture3D::setData(const void *data, int level, PixelFormat pfData,
                      int width, int height, int depth)
   {
     GLint internalFormat = PixelFormatUtils::getGLFormat(pf);
@@ -32,8 +31,8 @@ namespace StarEngine {
 
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage3DEXT( GL_TEXTURE_3D, 0, internalFormat, width, height, depth,
-                     border, format, type, data );
+    glTexImage3DEXT( GL_TEXTURE_3D, level, internalFormat, width, height,
+                     depth, border, format, type, data );
     setMinFilter( TF_NEAREST );
     setMagFilter( TF_NEAREST );
   }

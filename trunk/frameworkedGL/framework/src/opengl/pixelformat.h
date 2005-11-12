@@ -11,6 +11,7 @@ namespace StarEngine {
     PF_DEFAULT = -1,
     PF_ALPHA8,
     PF_LUMINANCE,
+    PF_LUMINANCE32F,
     PF_RGB,
     PF_RGBA,
     PF_DEPTH,

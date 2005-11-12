@@ -41,7 +41,7 @@ namespace StarEngine {
      @param pf is the pixel format of the texture
     */
     void setPixelFormat( PixelFormat pf );
-    virtual void setData(const void *data, PixelFormat pfData,
+    virtual void setData(const void *data, int level, PixelFormat pfData,
                          int width, int height = 0, int depth = 0) = 0;
     virtual void subImage(const void *data, PixelFormat pfData,
                           int width, int height, int depth,

@@ -14,11 +14,11 @@ namespace StarEngine {
   Texture2D::Texture2D(int width, int height, PixelFormat pf)
     :Texture(pf)
   {
-    setData(NULL, pf, width, height);
+    setData(NULL, 0, pf, width, height);
   }
 
   void
-  Texture2D::setData(const void *data, PixelFormat pfData,
+  Texture2D::setData(const void *data, int level, PixelFormat pfData,
                      int width, int height, int depth)
   {
     GLint internalFormat = PixelFormatUtils::getGLInternalFormat(pf);
@@ -27,7 +27,7 @@ namespace StarEngine {
 
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, border,
+    glTexImage2D( GL_TEXTURE_2D, level, internalFormat, width, height, border,
                   format, type, data );
     setMinFilter( TF_NEAREST );
     setMagFilter( TF_NEAREST );

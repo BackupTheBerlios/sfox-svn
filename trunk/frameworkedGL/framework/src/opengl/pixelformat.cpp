@@ -15,6 +15,7 @@ namespace StarEngine {
     case PF_ALPHA8:
       return GL_ALPHA;
     case PF_LUMINANCE:
+    case PF_LUMINANCE32F:
       return GL_LUMINANCE;
     case PF_INTENSITY:
     case PF_INTENSITY32F:
@@ -59,6 +60,8 @@ namespace StarEngine {
       return GL_RGBA32F_ARB;
     case PF_INTENSITY32F:
       return GL_INTENSITY32F_ARB;
+    case PF_LUMINANCE32F:
+      return GL_LUMINANCE32F_ARB;
     default:
       return getGLFormat( pf );
       break;
@@ -75,6 +78,7 @@ namespace StarEngine {
     case PF_LUMINANCE:
     case PF_INTENSITY:
     case PF_INTENSITY32F:
+    case PF_LUMINANCE32F:
       return 1;
     case PF_RGB:
     case PF_RGB32F:
@@ -111,6 +115,7 @@ namespace StarEngine {
     case PF_RGB32F:
     case PF_RGBA32F:
     case PF_INTENSITY32F:
+    case PF_LUMINANCE32F:
       return GL_FLOAT;
     default:
       assert( 0 );

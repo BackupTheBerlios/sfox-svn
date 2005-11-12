@@ -9,7 +9,7 @@ namespace StarEngine {
     Texture3D(PixelFormat pf);
     Texture3D(int width, int height, int depth, PixelFormat pf);
     void bind() const;
-    void setData(const void *data, PixelFormat pfData,
+    void setData(const void *data, int level, PixelFormat pfData,
                  int width, int height, int depth);
     void subImage(const void *data, PixelFormat pfData,
                   int width, int height, int depth,
