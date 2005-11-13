@@ -21,6 +21,7 @@ vertout main(float3 position : POSITION,
   z = 0;
   OUT.hpos = mul(mvp, float4(worldPos.x, z, worldPos.y, 1));
   OUT.color = color;
+  OUT.color = float4(uv, 0, 0);
   OUT.texCoord = float4(uv, 0, 1);
 
   return OUT;

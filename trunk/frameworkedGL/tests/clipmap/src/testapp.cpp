@@ -39,28 +39,25 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(63);
+  clipmap = new ClipMap(31);
 
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/test.png", 4);
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 4);
   fprintf(stderr, "Done\n");
 
-  ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
+  ImageLoader::ImageData *imgData = mipmap->getLevel(2)->getImageData();
   imgData->pixelFormat = PF_LUMINANCE;
-   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
+   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 32, 32);
 //   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width, imgData->height);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
+   glPixelStorei(GL_UNPACK_SKIP_PIXELS,120/4);
   glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
-  texture->setData( imgData->data, 0, imgData->pixelFormat, 128,
-                     128);
+  texture->setData( imgData->data, 0, imgData->pixelFormat, 32,
+                     32);
 //   texture->setData( imgData->data, 0, imgData->pixelFormat,
 //                     imgData->width, imgData->height);
-
-// //   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
-//   //texture = g_TextureManager.load("test", "test.png");
 }
 
 
@@ -79,26 +76,28 @@ TestApp::render() {
   clipmap->render();
   glPopMatrix();
 
-//   TextureUnits::activeUnit( 0 );
-//   glEnable( GL_TEXTURE_2D );
-//   TextureUnits::setEnvMode( TEM_REPLACE );
-//   texture->bind();
-//   texture->setMinFilter(TF_LINEAR);
-//   texture->setMagFilter(TF_LINEAR);
+  TextureUnits::activeUnit( 0 );
+  glEnable( GL_TEXTURE_2D );
+  TextureUnits::setEnvMode( TEM_REPLACE );
+  texture->bind();
+  texture->setMinFilter(TF_NEAREST);
+  texture->setMagFilter(TF_NEAREST);
+  texture->setWrapS( TW_CLAMP_TO_EDGE );
+  texture->setWrapT( TW_CLAMP_TO_EDGE );
 
-// //  glScalef(1, 0.25, 1);
-//   //glEnable(GL_BLEND);
-//   glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-//   glBegin( GL_QUADS );
-//   glTexCoord2f(0., 1.);
-//   glVertex3f(-1, 1, 0);
-//   glTexCoord2f(0., 0.);
-//   glVertex3f(-1, -1, 0);
-//   glTexCoord2f(1., 0.);
-//   glVertex3f(1, -1, 0);
-//   glTexCoord2f(1., 1.);
-//   glVertex3f(1, 1, 0);
-//   glEnd();
+//  glScalef(1, 0.25, 1);
+  //glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+  glBegin( GL_QUADS );
+  glTexCoord2f(0., 0.);
+  glVertex3f(-1, 1, 0);
+  glTexCoord2f(0., 1.);
+  glVertex3f(-1, -1, 0);
+  glTexCoord2f(1., 1.);
+  glVertex3f(1, -1, 0);
+  glTexCoord2f(1., 0.);
+  glVertex3f(1, 1, 0);
+  glEnd();
 
   Renderer::printGLError();
 
