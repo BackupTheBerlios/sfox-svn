@@ -39,20 +39,25 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(127);
+  clipmap = new ClipMap(63);
 
-//   ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
-//   imgData->pixelFormat = PF_LUMINANCE;
-// //   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width,
-// //                                     imgData->height);
-//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
-//   glPixelStorei(GL_UNPACK_SKIP_PIXELS,128);
-//   glPixelStorei(GL_UNPACK_SKIP_ROWS, 128);
-//   glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
-// //   texture->setData( imgData->data, imgData->pixelFormat, imgData->width,
-// //   imgData->height );
-//   texture->setData( imgData->data, 0, imgData->pixelFormat, 128,
-//                      128);
+  //Load float terrain texture
+  fprintf(stderr, "Generating mipmap...");
+  mipmap = new Mipmap;
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/test.png", 4);
+  fprintf(stderr, "Done\n");
+
+  ImageLoader::ImageData *imgData = mipmap->getLevel(1)->getImageData();
+  imgData->pixelFormat = PF_LUMINANCE;
+   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 128, 128);
+//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width, imgData->height);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
+  texture->setData( imgData->data, 0, imgData->pixelFormat, 128,
+                     128);
+//   texture->setData( imgData->data, 0, imgData->pixelFormat,
+//                     imgData->width, imgData->height);
 
 // //   texture = g_TextureManager.load("test", DATAPATH"/media/clipmap/terrain/bigterrain.png");
 //   //texture = g_TextureManager.load("test", "test.png");

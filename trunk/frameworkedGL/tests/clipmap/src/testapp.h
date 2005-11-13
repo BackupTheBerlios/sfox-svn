@@ -23,6 +23,7 @@ private:
   StarEngine::Texture *texture;
 
   ClipMap *clipmap;
+  Mipmap *mipmap;
 
   void printInfos();
 

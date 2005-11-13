@@ -51,29 +51,17 @@ Mipmap::halfScale(Image *img)
   unsigned char *src = (unsigned char *)oldImg->data;
   int ofs = 0;
 
-  //j==0&&i==0
-  dst[ofs++] = (src[0]+src[1]+src[oldw]+src[1+oldw])/4.0f;
-  for(int i = 2; i < oldw-1; i+=2) {
-    int s = src[i-1]+src[i]+src[i+1]+
-            src[i-1+oldw]+src[i+oldw]+src[i+1+oldw];
-    dst[ofs++] = s/6.0f;
-  }
-
-  for(int j = 2; j < oldh-1; j+=2) {
-    //i==0
-    dst[ofs++] = (src[(j-1)*oldw]+src[1+(j-1)*oldw]+
-                  src[j*oldw]+src[1+j*oldw]+
-                  src[(j+1)*oldw]+src[1+(j+1)*oldw])/6.0f;
-    for(int i = 2; i < oldw-1; i+=2) {
-      int s = src[i-1+(j-1)*oldw]+src[i+(j-1)*oldw]+src[i+1+(j-1)*oldw]+
-              src[i-1+j*oldw]+src[i+j*oldw]+src[i+1+j*oldw]+
-              src[i-1+(j+1)*oldw]+src[i+(j+1)*oldw]+src[i+1+(j+1)*oldw];
-      dst[ofs++] = s/9.0f;
+  for(int j = 0; j < oldh-1; j+=2) {
+    for(int i = 0; i < oldw-1; i+=2) {
+      int s = src[i+j*oldw]+src[i+1+j*oldw]+src[i+(j+1)*oldw]+
+              src[i+1+(j+1)*oldw];
+      dst[ofs++] = s/4.0f;
     }
   }
   res->setImageData(newImg);
   return res;
 }
+
 /****************************************************************************/
 
 Image *

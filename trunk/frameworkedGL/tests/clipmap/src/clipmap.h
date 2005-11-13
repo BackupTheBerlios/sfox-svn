@@ -35,8 +35,8 @@ private:
   //Generate vertex and indices buffers for central mesh
   void genFinestLevel();
 
-  void drawBlocks();
-  void drawRingFixup();
+  void drawBlocks(int level);
+  void drawRingFixup(int level);
   void drawFinestLevel();
 
   int clipmapSize;
