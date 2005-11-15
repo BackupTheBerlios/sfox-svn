@@ -17,6 +17,7 @@ TestApp::TestApp()
   hideCursor(false);
   grabInput(false);
   speedFactor = 0.1;
+  levelToDisplay = 0;
 }
 
 void
@@ -30,7 +31,7 @@ void
 TestApp::init() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0, 0, 0, 0);
+  glClearColor(0, 1, 1, 0);
 
   font = new FontGL(DATAPATH"/media/fonts/vera.ttf", 16, 128);
 
@@ -39,7 +40,7 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(31);
+  clipmap = new ClipMap(63);
 
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap...");
@@ -47,17 +48,7 @@ TestApp::init() {
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 4);
   fprintf(stderr, "Done\n");
 
-  ImageLoader::ImageData *imgData = mipmap->getLevel(2)->getImageData();
-  imgData->pixelFormat = PF_LUMINANCE;
-   texture = g_TextureManager.create("mipm", PF_LUMINANCE, 32, 32);
-//   texture = g_TextureManager.create("mipm", PF_LUMINANCE, imgData->width, imgData->height);
-   glPixelStorei(GL_UNPACK_SKIP_PIXELS,120/4);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
-  texture->setData( imgData->data, 0, imgData->pixelFormat, 32,
-                     32);
-//   texture->setData( imgData->data, 0, imgData->pixelFormat,
-//                     imgData->width, imgData->height);
+  mipmap->getTextures(levels, 256-16, 256-16, 64, 64);
 }
 
 
@@ -79,24 +70,30 @@ TestApp::render() {
   TextureUnits::activeUnit( 0 );
   glEnable( GL_TEXTURE_2D );
   TextureUnits::setEnvMode( TEM_REPLACE );
-  texture->bind();
-  texture->setMinFilter(TF_NEAREST);
-  texture->setMagFilter(TF_NEAREST);
-  texture->setWrapS( TW_CLAMP_TO_EDGE );
-  texture->setWrapT( TW_CLAMP_TO_EDGE );
+  levels[levelToDisplay]->bind();
+  levels[levelToDisplay]->setMinFilter(TF_NEAREST);
+  levels[levelToDisplay]->setMagFilter(TF_NEAREST);
+  levels[levelToDisplay]->setWrapS( TW_CLAMP_TO_EDGE );
+  levels[levelToDisplay]->setWrapT( TW_CLAMP_TO_EDGE );
 
 //  glScalef(1, 0.25, 1);
   //glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, width-1, height-1, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslatef(width-100, 0, 0);
+
   glBegin( GL_QUADS );
   glTexCoord2f(0., 0.);
-  glVertex3f(-1, 1, 0);
+  glVertex3f(0, 0, 0);
   glTexCoord2f(0., 1.);
-  glVertex3f(-1, -1, 0);
+  glVertex3f(0, 100, 0);
   glTexCoord2f(1., 1.);
-  glVertex3f(1, -1, 0);
+  glVertex3f(100, 100, 0);
   glTexCoord2f(1., 0.);
-  glVertex3f(1, 1, 0);
+  glVertex3f(100, 0, 0);
   glEnd();
 
   Renderer::printGLError();
@@ -140,6 +137,12 @@ TestApp::keyUp(const SDL_keysym &key)
   switch(key.sym) {
   case SDLK_w:
     clipmap->setWireframe(!clipmap->isWireframe());
+    break;
+  case SDLK_l:
+    levelToDisplay = (levelToDisplay+1)%levels.size();
+    break;
+  case SDLK_k:
+    levelToDisplay = (levelToDisplay+levels.size()-1)%levels.size();
     break;
   default:
     break;

@@ -30,10 +30,7 @@ ClipMap::ClipMap(int n)
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 4);
   fprintf(stderr, "Done\n");
 
-  Texture2D *tex = (Texture2D *)g_TextureManager.create("terrain",
-                                                        PF_LUMINANCE32F,
-                                                        n+1, n+1);
-  mipmap->getTexture(tex, 120, 0, n+1, n+1);
+  mipmap->getTextures(geomTex, 256-16, 256-16, n+1, n+1);
 
   clipmapVert = new ShaderCG();
   clipmapVert->loadSourceFromFile("shaders/clipmap_vert.cg",
@@ -42,6 +39,7 @@ ClipMap::ClipMap(int n)
   clipmapFrag = new ShaderCG();
   clipmapFrag->loadSourceFromFile("shaders/clipmap_frag.cg",
                                   ShaderCG::FRAGMENT);
+  ShaderCG::setManageTextureParameters(true);
 }
 /****************************************************************************/
 
@@ -258,36 +256,19 @@ ClipMap::render()
   glScalef(0.05,0.05,0.05);
   glTranslatef(-(clipmapSize+1)/2, 0, -(clipmapSize+1)/2);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  Texture * texTerrain = g_TextureManager.getByName("terrain");
-  texTerrain->bind();
-  texTerrain->setMinFilter( TF_NEAREST );
-  texTerrain->setMagFilter( TF_NEAREST );
-  texTerrain->setWrapS( TW_CLAMP_TO_EDGE );
-  texTerrain->setWrapT( TW_CLAMP_TO_EDGE );
-//  texTerrain->setWrapS( TW_REPEAT );
-//  texTerrain->setWrapT( TW_REPEAT );
 
-  clipmapVert->bind();
   clipmapVert->setGLMVPMatrix("mvp");
-  clipmapVert->setTextureParameter("heightmap", texTerrain);
-  clipmapVert->enableTextureParameter("heightmap");
 
-  clipmapVert->setParameter1f("level", 1);
   drawBlocks(1);
   drawRingFixup(1);
 
-  clipmapVert->setParameter1f("level", 2);
   drawBlocks(2);
   //drawRingFixup(2);
 
-  clipmapVert->setParameter1f("level", 3);
   // drawBlocks(3);
 //  drawRingFixup(3);
 
-  clipmapVert->setParameter1f("level", 0);
   drawFinestLevel();
-  clipmapVert->disableTextureParameter("heightmap");
-  clipmapVert->unbind();
 
   Renderer::printCGError();
   Renderer::printGLError();
@@ -299,6 +280,9 @@ ClipMap::drawBlocks(int level)
 {
   blockVertices->bind();
   blockIndices->bind();
+
+  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
+  clipmapVert->bind();
 
   int m = (clipmapSize+1)/4;
   //Offset for mxm blocks from left-top to right-bottom
@@ -319,25 +303,22 @@ ClipMap::drawBlocks(int level)
                                 ty*scale-(scale-1)*(clipmapSize+1)/2);
     tx = offset[i].x*(0.25-texel)+offset[i].z*texel;
     ty = offset[i].y*(0.25-texel)+offset[i].w*texel;
-//     clipmapVert->setParameter4f("scaleTranslateTex",
-//                                 texel*scale,
-//                                 texel*scale,
-//                                 tx*scale-(scale-1)*texel*(clipmapSize+1)/2,
-//                                 ty*scale-(scale-1)*texel*(clipmapSize+1)/2);
+    clipmapVert->setParameter4f("scaleTranslateTex",
+                                texel*scale,
+                                texel*scale,
+                                tx*scale-(scale-1)*texel*(clipmapSize+1)/2,
+                                ty*scale-(scale-1)*texel*(clipmapSize+1)/2);
+
     clipmapVert->setParameter4f("scaleTranslateTex",
                                 texel,
                                 texel,
-                                tx/*-(scale-1)*texel*(clipmapSize+1)/2*/,
-                                    ty/*-(scale-1)*texel*(clipmapSize+1)/2*/);
+                                tx,
+                                ty);
 
+
+    clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
     clipmapFrag->bind();
-    Texture * texTerrain = g_TextureManager.getByName("terrain");
-    clipmapFrag->setTextureParameter("heightmap", texTerrain);
-    clipmapFrag->enableTextureParameter("heightmap");
-
     blockVertices->drawElements(blockIndices);
-
-    clipmapFrag->disableTextureParameter("heightmap");
     clipmapFrag->unbind();
 
     if(wireframe) {
@@ -351,6 +332,7 @@ ClipMap::drawBlocks(int level)
       glDisable(GL_POLYGON_OFFSET_LINE);
     }
   }
+  clipmapVert->unbind();
   blockVertices->unbind();
   blockIndices->unbind();
 }
@@ -361,6 +343,9 @@ ClipMap::drawRingFixup(int level)
 {
   ringFixupVertices->bind();
   ringFixupIndices->bind();
+
+  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
+  clipmapVert->bind();
 
   glColor3ub(141, 105, 213);
   int scale = 1 << (level-1);
@@ -376,13 +361,13 @@ ClipMap::drawRingFixup(int level)
                               tx, ty);
 
   clipmapFrag->bind();
-  Texture * texTerrain = g_TextureManager.getByName("terrain");
-  clipmapFrag->setTextureParameter("heightmap", texTerrain);
-  clipmapFrag->enableTextureParameter("heightmap");
+  //Texture * texTerrain = g_TextureManager.getByName("terrain");
+  clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
+  //clipmapFrag->enableTextureParameter("heightmap");
 
   ringFixupVertices->drawElements(ringFixupIndices);
 
-  clipmapFrag->disableTextureParameter("heightmap");
+  //clipmapFrag->disableTextureParameter("heightmap");
   clipmapFrag->unbind();
 
   if(wireframe) {
@@ -397,6 +382,7 @@ ClipMap::drawRingFixup(int level)
     glDisable(GL_POLYGON_OFFSET_LINE);
   }
 
+  clipmapVert->unbind();
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
 }
@@ -407,6 +393,9 @@ ClipMap::drawFinestLevel()
   finestLevelVertices->bind();
   finestLevelIndices->bind();
 
+  clipmapVert->setTextureParameter("heightmap", geomTex[0]);
+  clipmapVert->bind();
+
   glColor3ub(141, 105, 213);
   clipmapVert->setParameter4f("scaleTranslate", 0.5, 0.5, (clipmapSize+1)/4.0,
                               (clipmapSize+1)/4.0);
@@ -415,15 +404,12 @@ ClipMap::drawFinestLevel()
   float ty =  texel*(clipmapSize+1)/4.0;
   clipmapVert->setParameter4f("scaleTranslateTex", 0.5*texel, 0.5*texel,
                               tx, ty);
+  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
+                             0, 0);
 
+  clipmapFrag->setTextureParameter("heightmap", geomTex[0]);
   clipmapFrag->bind();
-  Texture * texTerrain = g_TextureManager.getByName("terrain");
-  clipmapFrag->setTextureParameter("heightmap", texTerrain);
-  clipmapFrag->enableTextureParameter("heightmap");
-
   finestLevelVertices->drawElements(finestLevelIndices);
-
-  clipmapFrag->disableTextureParameter("heightmap");
   clipmapFrag->unbind();
 
   if(wireframe) {
@@ -437,6 +423,7 @@ ClipMap::drawFinestLevel()
     glDisable(GL_POLYGON_OFFSET_LINE);
   }
 
+  clipmapVert->unbind();
   finestLevelVertices->unbind();
   finestLevelIndices->unbind();
 }

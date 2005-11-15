@@ -14,21 +14,25 @@ Mipmap::buildMipmap(const char *filename, int numLevels)
 /****************************************************************************/
 
 void
-Mipmap::getTexture(Texture2D *texture, int xoffs, int yoffs,
-                   int width, int height)
+Mipmap::getTextures(std::vector<Texture2D *> &textures,
+                    int xoffs, int yoffs, int width, int height)
 {
   size_t numLevels = levels.size();
   for(size_t l = 0; l < numLevels; l++) {
+    Texture2D *tex = new Texture2D(PF_LUMINANCE32F);
+    textures.push_back(tex);
     ImageLoader::ImageData *imgData = levels[l]->getImageData();
     imgData->pixelFormat = PF_LUMINANCE;
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, xoffs);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, yoffs);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
-    texture->setData(imgData->data, l, imgData->pixelFormat, width, height);
-    width /= 2;
-    height /= 2;
-    xoffs /= 2;
-    yoffs /= 2;
+    tex->setData(imgData->data, 0, imgData->pixelFormat, width, height);
+//    xoffs /= 2;
+//    yoffs /= 2;
+    xoffs = xoffs/2-width/4;
+    yoffs = yoffs/2-width/4;
+    tex->setWrapS( TW_CLAMP_TO_EDGE );
+    tex->setWrapT( TW_CLAMP_TO_EDGE );
   }
 }
 /****************************************************************************/

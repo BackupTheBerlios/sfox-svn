@@ -42,6 +42,7 @@ private:
   int clipmapSize;
 
   Mipmap *mipmap;
+  std::vector<StarEngine::Texture2D *> geomTex;
 
   bool wireframe;
 };

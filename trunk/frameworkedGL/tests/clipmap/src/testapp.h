@@ -3,6 +3,8 @@
 
 #include "starengine.h"
 
+#include <vector>
+
 class ClipMap;
 class Mipmap;
 
@@ -10,6 +12,7 @@ namespace StarEngine {
   class FontGL;
   class Camera;
   class Texture;
+  class Texture2D;
   class Trackball;
   class GeometricBatch;
   class IndicesBatch;
@@ -24,6 +27,7 @@ private:
 
   ClipMap *clipmap;
   Mipmap *mipmap;
+  std::vector<StarEngine::Texture2D *> levels;
 
   void printInfos();
 
@@ -33,6 +37,8 @@ private:
   static const int SPEEDCONST = 60;
   float speedFactor;
   void doMove();
+
+  int levelToDisplay;
 
 public:
   TestApp();
