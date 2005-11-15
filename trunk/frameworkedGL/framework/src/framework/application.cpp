@@ -83,6 +83,9 @@ namespace StarEngine {
         case SDL_MOUSEBUTTONUP:
           mouseButtonUp(event.button);
           break;
+        case SDL_QUIT:
+          finish = true;
+          break;
         default:
           break;
         }
