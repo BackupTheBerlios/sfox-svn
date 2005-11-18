@@ -40,15 +40,19 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(63);
+  clipmap = new ClipMap(255);
 
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 4);
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
   fprintf(stderr, "Done\n");
 
-  mipmap->getTextures(levels, 256-16, 256-16, 64, 64);
+  mipmap->getTextures(levels, 1024, 1024, 256, 256);
+
+//  Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
+  //levels.push_back(tex);
+
 }
 
 

@@ -27,10 +27,10 @@ ClipMap::ClipMap(int n)
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 4);
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
   fprintf(stderr, "Done\n");
 
-  mipmap->getTextures(geomTex, 256-16, 256-16, n+1, n+1);
+  mipmap->getTextures(geomTex, 1024, 1024, n+1, n+1);
 
   clipmapVert = new ShaderCG();
   clipmapVert->loadSourceFromFile("shaders/clipmap_vert.cg",
@@ -40,6 +40,16 @@ ClipMap::ClipMap(int n)
   clipmapFrag->loadSourceFromFile("shaders/clipmap_frag.cg",
                                   ShaderCG::FRAGMENT);
   ShaderCG::setManageTextureParameters(true);
+
+  Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
+  tex->setMinFilter(TF_LINEAR);
+  tex->setMagFilter(TF_LINEAR);
+  clipmapFrag->setTextureParameter("grass", tex);
+
+  tex = (Texture2D *)g_TextureManager.load("cliff", DATAPATH"/media/clipmap/textures/cliff_face.jpg");
+  tex->setMinFilter(TF_LINEAR);
+  tex->setMagFilter(TF_LINEAR);
+  clipmapFrag->setTextureParameter("cliff", tex);
 }
 /****************************************************************************/
 
@@ -304,12 +314,6 @@ ClipMap::drawBlocks(int level)
     tx = offset[i].x*(0.25-texel)+offset[i].z*texel;
     ty = offset[i].y*(0.25-texel)+offset[i].w*texel;
     clipmapVert->setParameter4f("scaleTranslateTex",
-                                texel*scale,
-                                texel*scale,
-                                tx*scale-(scale-1)*texel*(clipmapSize+1)/2,
-                                ty*scale-(scale-1)*texel*(clipmapSize+1)/2);
-
-    clipmapVert->setParameter4f("scaleTranslateTex",
                                 texel,
                                 texel,
                                 tx,
@@ -355,19 +359,14 @@ ClipMap::drawRingFixup(int level)
   float texel = 1.0/float(clipmapSize+1);
   float tx =  -(scale-1)*texel*(clipmapSize+1)/2;
   float ty =  -(scale-1)*texel*(clipmapSize+1)/2;
-//   clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
-//                               tx, ty);
   clipmapVert->setParameter4f("scaleTranslateTex", texel*scale, texel*scale,
                               tx, ty);
 
   clipmapFrag->bind();
-  //Texture * texTerrain = g_TextureManager.getByName("terrain");
   clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
-  //clipmapFrag->enableTextureParameter("heightmap");
 
   ringFixupVertices->drawElements(ringFixupIndices);
 
-  //clipmapFrag->disableTextureParameter("heightmap");
   clipmapFrag->unbind();
 
   if(wireframe) {
@@ -402,8 +401,6 @@ ClipMap::drawFinestLevel()
   float texel = 1.0/float(clipmapSize+1);
   float tx =  texel*(clipmapSize+1)/4.0;
   float ty =  texel*(clipmapSize+1)/4.0;
-  clipmapVert->setParameter4f("scaleTranslateTex", 0.5*texel, 0.5*texel,
-                              tx, ty);
   clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                              0, 0);
 

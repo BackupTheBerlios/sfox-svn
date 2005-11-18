@@ -27,13 +27,14 @@ Mipmap::getTextures(std::vector<Texture2D *> &textures,
     glPixelStorei(GL_UNPACK_SKIP_ROWS, yoffs);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, imgData->width);
     tex->setData(imgData->data, 0, imgData->pixelFormat, width, height);
-//    xoffs /= 2;
-//    yoffs /= 2;
     xoffs = xoffs/2-width/4;
     yoffs = yoffs/2-width/4;
     tex->setWrapS( TW_CLAMP_TO_EDGE );
     tex->setWrapT( TW_CLAMP_TO_EDGE );
   }
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 }
 /****************************************************************************/
 
