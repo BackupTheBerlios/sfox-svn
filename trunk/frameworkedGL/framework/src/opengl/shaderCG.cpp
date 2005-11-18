@@ -102,6 +102,12 @@ namespace StarEngine {
   }
 
   void
+  ShaderCG::setManageTextureParameters(bool enable)
+  {
+    cgGLSetManageTextureParameters(context, enable);
+  }
+
+  void
   ShaderCG::enableTextureParameter(const char *name)
   {
     cgGLEnableTextureParameter(getNamedParameter( name ));

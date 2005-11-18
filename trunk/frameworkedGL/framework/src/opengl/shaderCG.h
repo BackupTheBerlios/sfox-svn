@@ -42,6 +42,7 @@ namespace StarEngine {
 
     void enableTextureParameter(const char *name);
     void disableTextureParameter(const char *name);
+    static void setManageTextureParameters(bool enable);
 
     /**
      Set the uniform name with the current model view projection matrix.

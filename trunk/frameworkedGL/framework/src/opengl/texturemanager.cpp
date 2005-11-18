@@ -41,7 +41,7 @@ namespace StarEngine {
     Image *img = new Image();
     img->load( filename );
     if ( img->getDimension() == 2 ) {
-      img->flipY();
+//      img->flipY();
       ImageLoader::ImageData *imgData = img->getImageData();
       tex = new Texture2D( imgData->pixelFormat );
       tex->setData( imgData->data, 0, imgData->pixelFormat, imgData->width,
