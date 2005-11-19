@@ -68,7 +68,7 @@ namespace StarEngine {
       imgData->depth = 1;
 
       SDL_LockSurface(image);
-      unsigned char *data = new unsigned char[image->w[image->w*image->h*bpp];
+      unsigned char *data = new unsigned char[image->w*image->h*bpp];
       unsigned char *pixels = (unsigned char *)image->pixels;
       imgData->data = ( void * )data;
       for ( int j = 0; j < image->h; j++ )

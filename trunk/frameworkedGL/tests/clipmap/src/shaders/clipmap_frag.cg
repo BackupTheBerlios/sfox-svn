@@ -7,16 +7,16 @@ float f1(float z)
 }
 
 float4 main(in float4 color : COLOR,
-	    in float4 texCoord : TEXCOORD0,
+	        in float4 texCoord : TEXCOORD0,
             uniform sampler2D heightmap,
             uniform sampler2D cliff,
             uniform sampler2D grass) : COLOR
 {
   float z = tex2D(heightmap, texCoord.xy).x;
   float alpha = 1.-f1(z);
-  return lerp(tex2D(grass, texCoord.xy*10), tex2D(cliff, texCoord.xy*5), alpha);
+//  return lerp(tex2D(grass, texCoord.xy*10), tex2D(cliff, texCoord.xy*5), alpha);
 //  return tex2Dlod(heightmap, texCoord).x;
-//  return tex2D(heightmap, texCoord.xy).zzzz;
+  return tex2D(heightmap, texCoord.xy).zzzz;
   //return tex2D(heightmap, texCoord.xy).wwww;
 //  return color;
 }

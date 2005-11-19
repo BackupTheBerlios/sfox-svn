@@ -263,7 +263,7 @@ ClipMap::genFinestLevel()
 void
 ClipMap::render()
 {
-  glScalef(0.05,0.05,0.05);
+  glScalef(0.05f, 0.05f, 0.05f);
   glTranslatef(-(clipmapSize+1)/2, 0, -(clipmapSize+1)/2);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -273,7 +273,7 @@ ClipMap::render()
   drawRingFixup(1);
 
   drawBlocks(2);
-  //drawRingFixup(2);
+  drawRingFixup(2);
 
   // drawBlocks(3);
 //  drawRingFixup(3);
@@ -303,7 +303,7 @@ ClipMap::drawBlocks(int level)
     {0, 3, 0, 2}, {1, 3, 0, 2}, {2, 3, 2, 2}, {3, 3, 2, 2}
   };
   for(size_t i = 0; i < sizeof(offset)/sizeof(offset[0]); i++) {
-    float texel = 1.0/float(clipmapSize+1);
+    float texel = 1.0f/float(clipmapSize+1);
     glColor3ub(141, 105, 213);
     float tx = (m-1)*offset[i].x+offset[i].z;
     float ty = (m-1)*offset[i].y+offset[i].w;
@@ -311,8 +311,8 @@ ClipMap::drawBlocks(int level)
     clipmapVert->setParameter4f("scaleTranslate", scale, scale,
                                 tx*scale-(scale-1)*(clipmapSize+1)/2,
                                 ty*scale-(scale-1)*(clipmapSize+1)/2);
-    tx = offset[i].x*(0.25-texel)+offset[i].z*texel;
-    ty = offset[i].y*(0.25-texel)+offset[i].w*texel;
+    tx = offset[i].x*(0.25f-texel)+offset[i].z*texel;
+    ty = offset[i].y*(0.25f-texel)+offset[i].w*texel;
     clipmapVert->setParameter4f("scaleTranslateTex",
                                 texel,
                                 texel,
@@ -356,10 +356,14 @@ ClipMap::drawRingFixup(int level)
   clipmapVert->setParameter4f("scaleTranslate", scale, scale,
                               -(scale-1)*(clipmapSize+1)/2,
                               -(scale-1)*(clipmapSize+1)/2);
-  float texel = 1.0/float(clipmapSize+1);
-  float tx =  -(scale-1)*texel*(clipmapSize+1)/2;
-  float ty =  -(scale-1)*texel*(clipmapSize+1)/2;
+  float texel = 1.0f/float(clipmapSize+1);
+  //float tx =  -(scale-1)*texel*(clipmapSize+1)/2;
+  //float ty =  -(scale-1)*texel*(clipmapSize+1)/2;
+  float tx =  0;
+  float ty =  0;
   clipmapVert->setParameter4f("scaleTranslateTex", texel*scale, texel*scale,
+                              tx, ty);
+  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                               tx, ty);
 
   clipmapFrag->bind();
@@ -396,11 +400,11 @@ ClipMap::drawFinestLevel()
   clipmapVert->bind();
 
   glColor3ub(141, 105, 213);
-  clipmapVert->setParameter4f("scaleTranslate", 0.5, 0.5, (clipmapSize+1)/4.0,
-                              (clipmapSize+1)/4.0);
-  float texel = 1.0/float(clipmapSize+1);
-  float tx =  texel*(clipmapSize+1)/4.0;
-  float ty =  texel*(clipmapSize+1)/4.0;
+  clipmapVert->setParameter4f("scaleTranslate", 0.5f, 0.5f, (clipmapSize+1)/4.0f,
+                              (clipmapSize+1)/4.0f);
+  float texel = 1.0f/float(clipmapSize+1);
+  float tx =  texel*(clipmapSize+1)/4.0f;
+  float ty =  texel*(clipmapSize+1)/4.0f;
   clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                              0, 0);
 

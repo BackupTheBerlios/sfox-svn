@@ -22,7 +22,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
@@ -33,6 +33,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/clipmap.exe"
 				LinkIncremental="2"
+				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/clipmap.pdb"
 				SubSystem="2"
@@ -143,6 +144,16 @@
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+		</Filter>
+		<Filter
+			Name="shaders"
+			Filter="">
+			<File
+				RelativePath="..\..\tests\clipmap\src\shaders\clipmap_frag.cg">
+			</File>
+			<File
+				RelativePath="..\..\tests\clipmap\src\shaders\clipmap_vert.cg">
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

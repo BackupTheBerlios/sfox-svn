@@ -16,7 +16,7 @@ TestApp::TestApp()
 {
   hideCursor(false);
   grabInput(false);
-  speedFactor = 0.1;
+  speedFactor = 0.1f;
   levelToDisplay = 0;
 }
 
@@ -35,7 +35,7 @@ TestApp::init() {
 
   font = new FontGL(DATAPATH"/media/fonts/vera.ttf", 16, 128);
 
-  cam = new Camera(60, 0.001, 50);
+  cam = new Camera(60, 0.001f, 50);
   cam->setPos(0, 1, 0);
 
   trackball = new Trackball(width,  height);
@@ -143,10 +143,10 @@ TestApp::keyUp(const SDL_keysym &key)
     clipmap->setWireframe(!clipmap->isWireframe());
     break;
   case SDLK_l:
-    levelToDisplay = (levelToDisplay+1)%levels.size();
+    levelToDisplay = (levelToDisplay+1)%(int)levels.size();
     break;
   case SDLK_k:
-    levelToDisplay = (levelToDisplay+levels.size()-1)%levels.size();
+    levelToDisplay = (levelToDisplay+(int)levels.size()-1)%(int)levels.size();
     break;
   default:
     break;
