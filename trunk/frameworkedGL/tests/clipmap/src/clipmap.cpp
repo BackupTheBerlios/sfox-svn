@@ -23,14 +23,17 @@ ClipMap::ClipMap(int n)
   genBlocks();
   genRingFixUp();
   genFinestLevel();
+  genL();
 
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
+//  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
   fprintf(stderr, "Done\n");
 
-  mipmap->getTextures(geomTex, 1024, 1024, n+1, n+1);
+   mipmap->getTextures(geomTex, 1024, 1024, n+1, n+1);
+  //mipmap->getTextures(geomTex, 218, 218, n+1, n+1);
 
   clipmapVert = new ShaderCG();
   clipmapVert->loadSourceFromFile("shaders/clipmap_vert.cg",
@@ -259,6 +262,63 @@ ClipMap::genFinestLevel()
 }
 
 /****************************************************************************/
+void
+ClipMap::genL()
+{
+  int m = (clipmapSize+1)/4;
+  tlFixupVertices = new GeometricBatch;
+  tlFixupVertices->setPrimitiveMode(PM_TRIANGLE_STRIP);
+//  tlFixupVertices->setPrimitiveMode(PM_POINTS);
+  tlFixupVertices->setVertexFormat("vertex:float3");
+  tlFixupVertices->setVertices(2*(2*m+1+2*m-1)*sizeof(s_vec3), NULL,
+                               UT_STATIC_DRAW);
+  s_vec3 *vertices = (s_vec3 *)tlFixupVertices->lock(AT_WRITE_ONLY);
+  int ofs = 0;
+  for(int j = 0; j < 2; j++)
+    for(int i = 0; i < 2*m+1; i++) {
+      vertices[ofs].x = i+m-1;
+      vertices[ofs].y = 0;
+      vertices[ofs++].z = m-1+j;
+    }
+
+  for(int j = 0; j < 2*m-1; j++)
+    for(int i = 0; i < 2; i++) {
+      vertices[ofs].x = i+m-1;
+      vertices[ofs].y = 0;
+      vertices[ofs++].z = m-1+2+j;
+    }
+
+  tlFixupVertices->unlock();
+
+  tlFixupIndices = new IndicesBatch();
+  int numIndices = 2*(2*m+1)+2+2*(2*m);
+  tlFixupIndices->setIndices(numIndices, SE_UNSIGNED_SHORT, NULL,
+                           UT_STATIC_DRAW);
+  ofs = 0;
+  unsigned short *ind = (unsigned short *)tlFixupIndices->lock(AT_WRITE_ONLY);
+  int j = 0;
+  for(int i = 0; i < 2*m+1; i++) {
+    ind[ofs++] = i+j*(2*m+1);
+    ind[ofs++] = i+(j+1)*(2*m+1);
+  }
+
+  ind[ofs++] = 2*m+(2*m+1);
+  ind[ofs++] = 2*m+1;
+
+  ind[ofs++] = 2*m+2;
+  ind[ofs++] = 2*m+1;
+
+  int i = 2*(2*m+1);
+  for(j = 0; j < 2*m-1; j++) {
+    ind[ofs++] = i+1+j*2;
+    ind[ofs++] = i+j*2;
+  }
+
+  assert(numIndices == ofs);
+  tlFixupIndices->unlock();
+}
+
+/****************************************************************************/
 
 void
 ClipMap::render()
@@ -271,9 +331,11 @@ ClipMap::render()
 
   drawBlocks(1);
   drawRingFixup(1);
+  drawLFixup(1);
 
   drawBlocks(2);
   drawRingFixup(2);
+  drawLFixup(2);
 
   // drawBlocks(3);
 //  drawRingFixup(3);
@@ -389,6 +451,7 @@ ClipMap::drawRingFixup(int level)
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
 }
+/****************************************************************************/
 
 void
 ClipMap::drawFinestLevel()
@@ -403,8 +466,6 @@ ClipMap::drawFinestLevel()
   clipmapVert->setParameter4f("scaleTranslate", 0.5f, 0.5f, (clipmapSize+1)/4.0f,
                               (clipmapSize+1)/4.0f);
   float texel = 1.0f/float(clipmapSize+1);
-  float tx =  texel*(clipmapSize+1)/4.0f;
-  float ty =  texel*(clipmapSize+1)/4.0f;
   clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
                              0, 0);
 
@@ -428,6 +489,51 @@ ClipMap::drawFinestLevel()
   finestLevelVertices->unbind();
   finestLevelIndices->unbind();
 }
+/****************************************************************************/
+
+void
+ClipMap::drawLFixup(int level)
+{
+  tlFixupIndices->bind();
+  tlFixupVertices->bind();
+
+  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
+  clipmapVert->bind();
+
+  glColor3ub(141, 105, 213);
+  int scale = 1 << (level-1);
+  clipmapVert->setParameter4f("scaleTranslate", scale, scale,
+                              -(scale-1)*(clipmapSize+1)/2,
+                              -(scale-1)*(clipmapSize+1)/2);
+  float texel = 1.0f/float(clipmapSize+1);
+  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
+                              0, 0);
+
+  clipmapFrag->bind();
+  clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
+
+  glColor3f(1,0,0);
+  tlFixupVertices->drawElements(tlFixupIndices);
+  //tlFixupVertices->drawArrays();
+
+  clipmapFrag->unbind();
+
+  if(wireframe) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1, 0);
+    glColor3f(1, 0, 0);
+    tlFixupVertices->drawElements(tlFixupIndices);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+  }
+
+  clipmapVert->unbind();
+  tlFixupVertices->unbind();
+  tlFixupIndices->unbind();
+}
+/****************************************************************************/
 
 ClipMap::~ClipMap()
 {

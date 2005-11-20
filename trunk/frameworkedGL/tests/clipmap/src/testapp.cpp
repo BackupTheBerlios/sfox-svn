@@ -46,9 +46,11 @@ TestApp::init() {
   fprintf(stderr, "Generating mipmap...");
   mipmap = new Mipmap;
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
+//  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
   fprintf(stderr, "Done\n");
 
   mipmap->getTextures(levels, 1024, 1024, 256, 256);
+//  mipmap->getTextures(levels, 218, 218, 63, 63);
 
 //  Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
   //levels.push_back(tex);

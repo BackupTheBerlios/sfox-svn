@@ -22,6 +22,9 @@ private:
   StarEngine::GeometricBatch *ringFixupVertices;
   StarEngine::IndicesBatch *ringFixupIndices;
 
+  StarEngine::GeometricBatch *tlFixupVertices;
+  StarEngine::IndicesBatch *tlFixupIndices;
+
   StarEngine::GeometricBatch *finestLevelVertices;
   StarEngine::IndicesBatch *finestLevelIndices;
 
@@ -34,10 +37,13 @@ private:
   void genRingFixUp();
   //Generate vertex and indices buffers for central mesh
   void genFinestLevel();
+  //Generate vertex and indices buffers for L-shaped fixups
+  void genL();
 
   void drawBlocks(int level);
   void drawRingFixup(int level);
   void drawFinestLevel();
+  void drawLFixup(int level);
 
   int clipmapSize;
 
