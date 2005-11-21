@@ -11,6 +11,7 @@ os.system("make -C glew")
 
 src_opengl="""opengl/light.cpp
        opengl/pixelformat.cpp
+       opengl/effectCG.cpp
        opengl/image.cpp
        opengl/imageloader.cpp
        opengl/imageloader_dat.cpp

@@ -23,6 +23,7 @@ src_math = """src/math/matrix.h
 
 src_opengl="""src/opengl/camera.h
               src/opengl/mesh.h
+              src/opengl/effectCG.h
               src/opengl/image.h
               src/opengl/imageloader.h
               src/opengl/imageloader_dat.h

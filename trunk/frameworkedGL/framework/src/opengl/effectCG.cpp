@@ -8,124 +8,114 @@
 #include <Cg/cg.h>
 #include <Cg/cgGL.h>
 
+#include "effectCG.h"
 #include "shaderCG.h"
 #include "framework/exception.h"
 #include "opengl/texture.h"
 #include "opengl/renderer.h"
 
 namespace StarEngine {
-  CGcontext ShaderCG::context = 0;
 
-  void
-  ShaderCG::init() {
-    if ( !context ) {
-      context = cgCreateContext();
-      cgGLRegisterStates(context);
-    }
-  }
-
-  void
-  ShaderCG::quit() {
-    if ( context )
-      cgDestroyContext(context);
-  }
-
-  ShaderCG::ShaderCG()
-    : program(0)
+  EffectCG::EffectCG()
+    : effect(0)
   {
+    context = ShaderCG::getContext();
     assert( context );
   }
 
-  ShaderCG::~ShaderCG()
+  EffectCG::~EffectCG()
   {
-    if( program )
-      cgDestroyProgram( program );
+    if( effect )
+      cgDestroyEffect( effect );
 
   }
 
   void
-  ShaderCG::loadSourceFromFile(const char *filename, ProfileType profile,
-                               const CGenum program_type,
-                               const char *entry,  const char **args)
+  EffectCG::loadSourceFromFile(const char *filename, const char **args)
   {
-    profileCG = cgGLGetLatestProfile( getProfileCGGL( profile ) );
-    if( profileCG == CG_PROFILE_UNKNOWN )
-      throw new Exception("ShaderCG::loadSourceFromFile(): Can't find " \
-                          "appropriate profile");
-    cgGLSetOptimalOptions( profileCG );
-    program = cgCreateProgramFromFile( context, CG_SOURCE, filename, profileCG,
-                                       entry, args );
-    Renderer::printCGError();
-
-    if ( !program ) {
-      std::string mess("ShaderCG::loadSourceFromFile(): Can't load " \
-                       "file \"");
+    effect = cgCreateEffectFromFile(context, filename, args);
+    if( !effect ) {
+      const char *listing = cgGetLastListing(context);
+      std::string mess("EffectCG::loadSourceFromFile(): Unable " \
+                       "to create effect \"");
       mess.append(filename);
-      mess.append("\"");
+      mess.append("\" :\n");
+      if(listing)
+        mess.append(listing);
       throw new Exception(mess);
     }
-    cgGLEnableProfile(profileCG);
-    cgGLLoadProgram( program );
     Renderer::printCGError();
-    unbind();
   }
 
-  void
-  ShaderCG::bind()
+  CGtechnique
+  EffectCG::getAndValidateTechnique(const char *name)
   {
-    cgGLEnableProfile(profileCG);
-    cgGLBindProgram(program);
-  }
-
-  void
-  ShaderCG::unbind()
-  {
-    cgGLDisableProfile(profileCG);
-  }
-
-  CGGLenum
-  ShaderCG::getProfileCGGL( ProfileType profile )
-  {
-    switch( profile ) {
-    case VERTEX:
-      return CG_GL_VERTEX;
-    case FRAGMENT:
-      return CG_GL_FRAGMENT;
-    default:
-      assert( 0 );
+    CGtechnique technique = cgGetNamedTechnique(effect, name);
+    if(!technique) {
+      std::string mess("EffectCG::getAndValidateTechnique(): Technique \"");
+      mess.append(name);
+      mess.append("\" not found.");
+      throw new Exception(mess);
     }
-    assert(0);
+    if(!cgValidateTechnique(technique)) {
+      std::string mess("EffectCG::getAndValidateTechnique(): Technique \"");
+      mess.append(name);
+      mess.append("\" didn't validate");
+      throw new Exception(mess);
+    }
+    return technique;
   }
+
 
   CGparameter
-  ShaderCG::getNamedParameter(const char *name)
+  EffectCG::getNamedParameter(const char *name)
   {
-    return cgGetNamedParameter(program, name);
+    return cgGetNamedEffectParameter(effect, name);
   }
 
   void
-  ShaderCG::setManageTextureParameters(bool enable)
+  EffectCG::setManageTextureParameters(bool enable)
   {
-    cgGLSetManageTextureParameters(context, enable);
+    cgGLSetManageTextureParameters(ShaderCG::getContext(), enable);
   }
 
   void
-  ShaderCG::enableTextureParameter(const char *name)
+  EffectCG::enableTextureParameter(const char *name)
   {
     cgGLEnableTextureParameter(getNamedParameter( name ));
   }
 
   void
-  ShaderCG::disableTextureParameter(const char *name)
+  EffectCG::disableTextureParameter(const char *name)
   {
     cgGLDisableTextureParameter(getNamedParameter( name ));
+  }
+
+  void
+  EffectCG::setSamplerState(CGparameter p)
+  {
+    cgSetSamplerState(p);
+  }
+
+  CGprogram
+  EffectCG::createProgramFromEffect(CGparameter p, char *progName,
+                                    const char** args)
+  {
+    return cgCreateProgramFromEffect(effect, CG_PROFILE_GENERIC, progName, args);
+  }
+
+  void
+  EffectCG::evaluateProgram(CGprogram prog, float *obuf, int ncomp,
+                              int nx, int ny, int nz)
+  {
+    cgEvaluateProgram(prog, obuf, ncomp, nx, ny, nz);
   }
 
 /*****************************************************************************/
 /* Uniforms setters                                                          */
 /*****************************************************************************/
   void
-  ShaderCG::setGLMVPMatrix( const char *name )
+  EffectCG::setGLMVPMatrix( const char *name )
   {
     CGparameter mvp = getNamedParameter( name );
     cgGLSetStateMatrixParameter( mvp, CG_GL_MODELVIEW_PROJECTION_MATRIX,
@@ -133,13 +123,13 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setTextureParameter(const char *name, Texture *tex)
+  EffectCG::setTextureParameter(const char *name, Texture *tex)
   {
     cgGLSetTextureParameter(getNamedParameter( name ), tex->getGLName());
   }
 
   void
-  ShaderCG::setParameter1f(const char *name,
+  EffectCG::setParameter1f(const char *name,
                            float x)
   {
     CGparameter param = getNamedParameter( name );
@@ -147,7 +137,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter2f(const char *name,
+  EffectCG::setParameter2f(const char *name,
                            float x,
                            float y)
   {
@@ -156,7 +146,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter3f(const char *name,
+  EffectCG::setParameter3f(const char *name,
                            float x,
                            float y,
                            float z)
@@ -166,7 +156,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter4f(const char *name,
+  EffectCG::setParameter4f(const char *name,
                            float x,
                            float y,
                            float z,
@@ -177,35 +167,35 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter1fv(const char *name, const float *v)
+  EffectCG::setParameter1fv(const char *name, const float *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter1fv( param,  v );
   }
 
   void
-  ShaderCG::setParameter2fv(const char *name, const float *v)
+  EffectCG::setParameter2fv(const char *name, const float *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter2fv( param,  v );
   }
 
   void
-  ShaderCG::setParameter3fv(const char *name, const float *v)
+  EffectCG::setParameter3fv(const char *name, const float *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter3fv( param,  v );
   }
 
   void
-  ShaderCG::setParameter4fv(const char *name, const float *v)
+  EffectCG::setParameter4fv(const char *name, const float *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter4fv( param,  v );
   }
 
   void
-  ShaderCG::setParameter1d(const char *name,
+  EffectCG::setParameter1d(const char *name,
                            double x)
   {
     CGparameter param = getNamedParameter( name );
@@ -213,7 +203,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter2d(const char *name,
+  EffectCG::setParameter2d(const char *name,
                            double x,
                            double y)
   {
@@ -222,7 +212,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter3d(const char *name,
+  EffectCG::setParameter3d(const char *name,
                            double x,
                            double y,
                            double z)
@@ -232,7 +222,7 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter4d(const char *name,
+  EffectCG::setParameter4d(const char *name,
                            double x,
                            double y,
                            double z,
@@ -243,28 +233,28 @@ namespace StarEngine {
   }
 
   void
-  ShaderCG::setParameter1dv(const char *name, const double *v)
+  EffectCG::setParameter1dv(const char *name, const double *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter1dv( param,  v );
   }
 
   void
-  ShaderCG::setParameter2dv(const char *name, const double *v)
+  EffectCG::setParameter2dv(const char *name, const double *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter2dv( param,  v );
   }
 
   void
-  ShaderCG::setParameter3dv(const char *name, const double *v)
+  EffectCG::setParameter3dv(const char *name, const double *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter3dv( param,  v );
   }
 
   void
-  ShaderCG::setParameter4dv(const char *name, const double *v)
+  EffectCG::setParameter4dv(const char *name, const double *v)
   {
     CGparameter param = getNamedParameter( name );
     cgGLSetParameter4dv( param,  v );

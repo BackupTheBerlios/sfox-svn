@@ -1,5 +1,5 @@
-#ifndef SHADERCG_H
-#define SHADERCG_H
+#ifndef EFFECTCG_H
+#define EFFECTCG_H
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -14,42 +14,39 @@ namespace StarEngine {
 };
 
 namespace StarEngine {
-  class ShaderCG : public Ressource {
+  class EffectCG : public Ressource {
   public:
     enum ProfileType { VERTEX, FRAGMENT };
 
   private:
-    static CGcontext context;
-    CGprogram program;
+    CGeffect effect;
     CGprofile profileCG;
+    CGcontext context;
 
     CGGLenum getProfileCGGL( ProfileType profile );
 
   public:
-    ShaderCG();
-    ~ShaderCG();
+    EffectCG();
+    ~EffectCG();
 
     static void init();
     static void quit();
 
-    void loadSourceFromFile(const char *filename, ProfileType profile,
-                            const CGenum program_type = CG_SOURCE,
-                            const char *entry = NULL,
+    void loadSourceFromFile(const char *filename,
                             const char **args = NULL);
-    void bind();
-    void unbind();
-
+    CGtechnique getAndValidateTechnique(const char *name);
 
     void enableTextureParameter(const char *name);
     void disableTextureParameter(const char *name);
-    void setSamplerState(CGparameter p);
     static void setManageTextureParameters(bool enable);
-    static CGcontext getContext() { return context; }
+
+    void setSamplerState(CGparameter p);
 
     CGprogram createProgramFromEffect(CGparameter p, char *progName,
-                                      char**args);
+                                      const char** args);
     void evaluateProgram(CGprogram prog, float *obuf, int ncomp,
                          int nx, int ny, int nz);
+
 
     /**
      Set the uniform name with the current model view projection matrix.
