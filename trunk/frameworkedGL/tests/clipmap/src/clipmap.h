@@ -31,6 +31,9 @@ private:
   StarEngine::ShaderCG *clipmapVert;
   StarEngine::ShaderCG *clipmapFrag;
 
+  StarEngine::EffectCG *clipmapFX;
+  CGtechnique technique;
+
   //Generate vertex and indices buffers for biggest blocks
   void genBlocks();
   //Generate vertex and indices buffers for ring fixup
