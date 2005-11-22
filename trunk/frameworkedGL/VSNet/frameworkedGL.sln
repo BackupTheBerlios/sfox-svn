@@ -8,7 +8,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testTexture", "testTexture\
 		{71646124-A094-4E8A-AE0A-B2826DE2D86C} = {71646124-A094-4E8A-AE0A-B2826DE2D86C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volrend", "volrend\volrend.vcproj", "{818C81C9-003E-4F0E-8A95-88042407F034}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volumeGLSL", "volrend\volrend.vcproj", "{818C81C9-003E-4F0E-8A95-88042407F034}"
 	ProjectSection(ProjectDependencies) = postProject
 		{71646124-A094-4E8A-AE0A-B2826DE2D86C} = {71646124-A094-4E8A-AE0A-B2826DE2D86C}
 	EndProjectSection
@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testCG", "testCG\testCG.vcp
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volrendCG", "volrendCG\volrendCG.vcproj", "{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "volumeCG", "volumeGLSLCG\volrendCG.vcproj", "{41BC5994-9D21-41AC-8C1F-873CB1EB74BA}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
