@@ -26,11 +26,3 @@ env.AppendUnique(LIBS = z_lib+['GLEW'])
 
 #Create library
 SConscript('framework/SConscript', exports = 'env')
-
-#Create test programs
-#env.PrependUnique(LIBS = framework_lib+z_lib)
-#SConscript('tests/testTexture/SConscript', exports = 'env')
-#SConscript('tests/testCG/SConscript', exports = 'env')
-#SConscript('tests/volrend/SConscript', exports = 'env')
-#SConscript('tests/volrendCG/SConscript', exports = 'env')
-#SConscript('tests/testBatch/SConscript', exports = 'env')
