@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="volrend"
+	Name="volumeGLSL"
 	ProjectGUID="{818C81C9-003E-4F0E-8A95-88042407F034}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -33,12 +33,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="frameworkGL.lib opengl32.lib glu32.lib libfreetype.lib SDL.lib SDL_image.lib SDLmain.lib cg.lib cgGL.lib"
-				OutputFile="$(OutDir)/volrend.exe"
+				OutputFile="$(OutDir)/volumeGLSL.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\frameworkGL\Debug"
 				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/volrend.pdb"
+				ProgramDatabaseFile="$(OutDir)/volumeGLSL.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="frameworkGL.lib opengl32.lib glu32.lib libfreetype.lib SDL.lib SDL_image.lib SDLmain.lib cg.lib cgGL.lib"
-				OutputFile="$(OutDir)/volrend.exe"
+				OutputFile="$(OutDir)/volumeGLSL.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\frameworkGL\Release"
 				IgnoreDefaultLibraryNames="msvcrt.lib msvcrtd.lib"
@@ -121,10 +121,10 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\..\volrend\src\main.cpp">
+				RelativePath="..\..\..\volumeGLSL\src\main.cpp">
 			</File>
 			<File
-				RelativePath="..\..\..\volrend\src\testapp.cpp">
+				RelativePath="..\..\..\volumeGLSL\src\testapp.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -132,7 +132,7 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\..\volrend\src\testapp.h">
+				RelativePath="..\..\..\volumeGLSL\src\testapp.h">
 			</File>
 		</Filter>
 		<Filter
@@ -141,22 +141,22 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 		</Filter>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass1.frag">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass1.frag">
 		</File>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass1.vert">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass1.vert">
 		</File>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass2.frag">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass2.frag">
 		</File>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass2.vert">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass2.vert">
 		</File>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass3.frag">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass3.frag">
 		</File>
 		<File
-			RelativePath="..\..\..\volrend\src\shaders\pass4.frag">
+			RelativePath="..\..\..\volumeGLSL\src\shaders\pass4.frag">
 		</File>
 	</Files>
 	<Globals>
