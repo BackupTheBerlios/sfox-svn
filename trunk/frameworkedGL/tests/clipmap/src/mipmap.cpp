@@ -75,15 +75,100 @@ Mipmap::buildMipmapGPU(const char *filename, int numLevels)
   levels.push_back(new Image);
   levels[0]->load(filename);
 
-  Texture2D *destTex = new Texture2D(PF_LUMINANCE);
+  FramebufferObject *fbo = new FramebufferObject;
+  Texture2D *destTex = new Texture2D(PF_RGB);
   Texture2D *sourceTex = new Texture2D(PF_LUMINANCE);
   ImageLoader::ImageData *imgData = levels[0]->getImageData();
+  int width = imgData->width;
+  int height = imgData->height;
   sourceTex->setData(imgData->data, 0, PF_LUMINANCE, width, height);
 
   for(int i = 1; i < numLevels; i++) {
-    levels.push_back(halfScale(levels[i-1]));
+    int newWidth = width/2;
+    int newHeight = height/2;
+
+    destTex->setData(NULL, 0, PF_RGB, newWidth, newHeight);
+    fbo->bind();
+    fbo->attachTexture(destTex, FramebufferObject::COLOR_ATTACHMENT0, 0);
+    fbo->checkStatus();
+    Renderer::printGLError();
+
+    glPushMatrix();
+    int vp[4];
+    glGetIntegerv(GL_VIEWPORT, vp);
+    glViewport(0, 0, newWidth, newHeight);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, newWidth-1, newHeight-1, 0, 0, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDisable(GL_TEXTURE_2D);
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+//     glColor3f(1,0,0);
+//     glBegin(GL_QUADS);
+//     glVertex2f(0, 0);
+//     glVertex2f(0, newHeight-1);
+//     glVertex2f(newWidth-1, newHeight-1);
+//     glVertex2f(newWidth-1, 0);
+//     glEnd();
+
+    ImageLoader::ImageData *newImg = new ImageLoader::ImageData;
+    newImg->pixelFormat = PF_LUMINANCE;
+    newImg->width = newWidth;
+    newImg->height = newHeight;
+    newImg->data = new unsigned char[newWidth*newHeight];
+    glReadPixels(0, 0, newWidth, newHeight, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                 newImg->data);
+    destTex->bind();
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                  newImg->data);
+    Image *res = new Image;
+    res->setImageData(newImg);
+    levels.push_back(res);
+    glViewport(vp[0], vp[1], vp[2], vp[3]);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    fbo->unbind();
+
+    width = newWidth;
+    height = newHeight;
   }
 }
+// void
+// Mipmap::buildMipmapGPU(const char *filename, int numLevels)
+// {
+//   levels.push_back(new Image);
+//   levels[0]->load(filename);
+
+//   Texture2D *sourceTex = new Texture2D(PF_LUMINANCE);
+//   ImageLoader::ImageData *imgData = levels[0]->getImageData();
+//   int width = imgData->width;
+//   int height = imgData->height;
+//   sourceTex->setData(imgData->data, 0, PF_LUMINANCE, width, height);
+//   sourceTex->bind();
+//   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+
+//   for(int i = 1; i < numLevels; i++) {
+//     Image *res = new Image;
+//     int newWidth = width/2;
+//     int newHeight = height/2;
+//     ImageLoader::ImageData *newImg = new ImageLoader::ImageData;
+//     newImg->pixelFormat = PF_LUMINANCE;
+//     newImg->width = newWidth;
+//     newImg->height = newHeight;
+//     newImg->data = new unsigned char[newWidth*newHeight];
+//     glGetTexImage(GL_TEXTURE_2D, i, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+//                   newImg->data);
+//     res->setImageData(newImg);
+//     levels.push_back(res);
+//     width = newWidth;
+//     height = height;
+//   }
+// }
 /****************************************************************************/
 
 Image *
