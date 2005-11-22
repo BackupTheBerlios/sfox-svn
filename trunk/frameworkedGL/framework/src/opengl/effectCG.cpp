@@ -111,6 +111,30 @@ namespace StarEngine {
     cgEvaluateProgram(prog, obuf, ncomp, nx, ny, nz);
   }
 
+  CGpass
+  EffectCG::getFirstPass(CGtechnique technique)
+  {
+    return cgGetFirstPass(technique);
+  }
+
+  CGpass
+  EffectCG::getNextPass(CGpass pass)
+  {
+    return cgGetNextPass(pass);
+  }
+
+  void
+  EffectCG::setPassState(CGpass pass)
+  {
+    cgSetPassState(pass);
+  }
+
+  void
+  EffectCG::resetPassState(CGpass pass)
+  {
+    cgResetPassState(pass);
+  }
+
 /*****************************************************************************/
 /* Uniforms setters                                                          */
 /*****************************************************************************/

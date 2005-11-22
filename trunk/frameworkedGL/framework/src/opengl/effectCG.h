@@ -48,6 +48,11 @@ namespace StarEngine {
                          int nx, int ny, int nz);
 
 
+    CGpass getFirstPass(CGtechnique technique);
+    CGpass getNextPass(CGpass pass);
+    void setPassState(CGpass pass);
+    void resetPassState(CGpass pass);
+
     /**
      Set the uniform name with the current model view projection matrix.
      @param name is the name of the uniform

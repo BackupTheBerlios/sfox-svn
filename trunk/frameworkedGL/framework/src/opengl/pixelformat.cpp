@@ -12,6 +12,8 @@ namespace StarEngine {
   PixelFormatUtils::getGLFormat(PixelFormat pf)
   {
     switch( pf ) {
+    case PF_RED:
+      return GL_RED;
     case PF_ALPHA8:
       return GL_ALPHA;
     case PF_LUMINANCE:
@@ -75,6 +77,7 @@ namespace StarEngine {
     switch( pf ) {
     case PF_ALPHA8:
       return 1;
+    case PF_RED:
     case PF_LUMINANCE:
     case PF_INTENSITY:
     case PF_INTENSITY32F:
@@ -99,6 +102,7 @@ namespace StarEngine {
   PixelFormatUtils::getGLType(PixelFormat pf)
   {
     switch( pf ) {
+    case PF_RED:
     case PF_RGB:
     case PF_RGBA:
     case PF_LUMINANCE:

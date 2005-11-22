@@ -49,6 +49,7 @@
 #include "opengl/ressourcemanager.h"
 #include "opengl/object3d.h"
 #include "opengl/fbo.h"
+#include "opengl/effectCG.h"
 #include "framework/application.h"
 #include "framework/timer.h"
 #include "framework/exception.h"
