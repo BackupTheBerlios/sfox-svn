@@ -69,6 +69,54 @@ Mipmap::halfScale(Image *img)
 
 /****************************************************************************/
 
+void
+Mipmap::buildMipmapGPU(const char *filename, int numLevels)
+{
+  levels.push_back(new Image);
+  levels[0]->load(filename);
+
+  Texture2D *destTex = new Texture2D(PF_LUMINANCE);
+  Texture2D *sourceTex = new Texture2D(PF_LUMINANCE);
+  ImageLoader::ImageData *imgData = levels[0]->getImageData();
+  sourceTex->setData(imgData->data, 0, PF_LUMINANCE, width, height);
+
+  for(int i = 1; i < numLevels; i++) {
+    levels.push_back(halfScale(levels[i-1]));
+  }
+}
+/****************************************************************************/
+
+Image *
+Mipmap::halfScaleGPU(Image *img)
+{
+  Image *res = new Image;
+  ImageLoader::ImageData *oldImg = img->getImageData();
+  ImageLoader::ImageData *newImg = new ImageLoader::ImageData;
+  newImg->pixelFormat = oldImg->pixelFormat;
+  int oldw = newImg->width = oldImg->width;
+  int oldh = newImg->height = oldImg->height;
+  int w = newImg->width = oldw/2;
+  int h = newImg->height = oldh/2;
+  int size = PixelFormatUtils::getBytesPerPixel(newImg->pixelFormat)*w*h;
+  newImg->data = new unsigned char[size];
+
+  unsigned char *dst = (unsigned char *)newImg->data;
+  unsigned char *src = (unsigned char *)oldImg->data;
+  int ofs = 0;
+
+  for(int j = 0; j < oldh-1; j+=2) {
+    for(int i = 0; i < oldw-1; i+=2) {
+      int s = src[i+j*oldw]+src[i+1+j*oldw]+src[i+(j+1)*oldw]+
+              src[i+1+(j+1)*oldw];
+      dst[ofs++] = s/4.0f;
+    }
+  }
+  res->setImageData(newImg);
+  return res;
+}
+
+/****************************************************************************/
+
 Image *
 Mipmap::getLevel(int n)
 {
