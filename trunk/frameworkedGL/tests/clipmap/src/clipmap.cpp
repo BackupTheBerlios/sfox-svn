@@ -26,7 +26,7 @@ ClipMap::ClipMap(int n)
   genL();
 
   //Load float terrain texture
-  fprintf(stderr, "Generating mipmap...");
+  fprintf(stderr, "Generating mipmap on CPU...");
   mipmap = new Mipmap;
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
 //  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);

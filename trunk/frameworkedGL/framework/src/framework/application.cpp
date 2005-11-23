@@ -61,6 +61,10 @@ namespace StarEngine {
   Application::run()
   {
     SDL_Event event;
+#ifdef DEBUG
+    grabInput(true);
+    grabInput(false); //Do in order to recover from a previous crash
+#endif
     ShaderCG::init();
     init();
     while(!finish) {

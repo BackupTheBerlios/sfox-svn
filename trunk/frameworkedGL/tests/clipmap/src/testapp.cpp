@@ -15,6 +15,7 @@ TestApp::TestApp()
   : Application(800, 600, "TestApp"), mouseMode(MOUSEFREE)
 {
   hideCursor(false);
+  grabInput(true);
   grabInput(false);
   speedFactor = 0.1f;
   levelToDisplay = 0;
@@ -23,6 +24,7 @@ TestApp::TestApp()
 void
 TestApp::quit()
 {
+  delete mipmap;
   delete font;
   FontGL::exit();
 }
@@ -43,10 +45,10 @@ TestApp::init() {
   clipmap = new ClipMap(255);
 
   //Load float terrain texture
-  fprintf(stderr, "Generating mipmap...");
+  fprintf(stderr, "Generating mipmap GPU...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
-  //mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
+  //mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
+  mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
   // mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
   fprintf(stderr, "Done\n");
 
@@ -103,7 +105,7 @@ TestApp::render() {
   glVertex3f(100, 0, 0);
   glEnd();
 
-  //mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
+//  mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
   Renderer::printGLError();
 
   printInfos();
