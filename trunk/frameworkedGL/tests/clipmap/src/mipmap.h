@@ -8,7 +8,7 @@ class Mipmap {
 public:
   void getTextures(std::vector<StarEngine::Texture2D *> &textures,
                    StarEngine::PixelFormat pf, int xoffs, int yoffs,
-                   int width, int height);
+                   int width, int height, bool allocTexture = true);
 
   void buildMipmap(const char *filename, int levels);
   void buildMipmapGPU(const char *filename, int numLevels);
@@ -18,8 +18,6 @@ public:
 private:
   std::vector<StarEngine::Image *> levels;
   StarEngine::Image *halfScale(StarEngine::Image *img);
-
-  StarEngine::Image * halfScaleGPU(StarEngine::Image *img);
 };
 
 #endif

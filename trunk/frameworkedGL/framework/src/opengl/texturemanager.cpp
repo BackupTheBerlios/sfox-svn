@@ -7,9 +7,10 @@
 
 namespace StarEngine {
   Texture *
-  TextureManager::load(const std::string &filename, int numMipmaps)
+  TextureManager::load(const std::string &filename, Texture *destTex,
+                       int numMipmaps)
   {
-    return load(filename, filename, numMipmaps);
+    return load(filename, filename, destTex, numMipmaps);
   }
 
   Texture *
@@ -35,24 +36,26 @@ namespace StarEngine {
 
   Texture *
   TextureManager::load(const std::string &name, const std::string &filename,
-                       int numMipmaps)
+                       Texture *destTex, int numMipmaps)
   {
-    Texture *tex;
+    Texture *tex = destTex;
     Image *img = new Image();
     img->load( filename );
     if ( img->getDimension() == 2 ) {
 //      img->flipY();
       ImageLoader::ImageData *imgData = img->getImageData();
-      tex = new Texture2D( imgData->pixelFormat );
+      if(!tex)
+        tex = new Texture2D( imgData->pixelFormat );
       tex->setData( imgData->data, 0, imgData->pixelFormat, imgData->width,
                     imgData->height );
-      tex->setMinFilter( TF_LINEAR );
-      tex->setMagFilter( TF_LINEAR );
     } else if ( img->getDimension() == 3 ) {
       ImageLoader::ImageData *imgData = img->getImageData();
-      tex = new Texture3D( imgData->pixelFormat );
+      if(!tex)
+        tex = new Texture3D( imgData->pixelFormat );
       tex->setData( imgData->data, 0, imgData->pixelFormat, imgData->width,
                     imgData->height, imgData->depth );
+    }
+    if(!destTex) {
       tex->setMinFilter( TF_LINEAR );
       tex->setMagFilter( TF_LINEAR );
     }

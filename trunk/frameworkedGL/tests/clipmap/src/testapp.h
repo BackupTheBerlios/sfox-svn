@@ -25,9 +25,8 @@ private:
   StarEngine::Camera *cam;
   StarEngine::Texture *texture;
 
+  int numLevels;
   ClipMap *clipmap;
-  Mipmap *mipmap;
-  std::vector<StarEngine::Texture2D *> levels;
 
   void printInfos();
 

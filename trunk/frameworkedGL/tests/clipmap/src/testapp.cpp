@@ -24,7 +24,7 @@ TestApp::TestApp()
 void
 TestApp::quit()
 {
-  delete mipmap;
+  delete clipmap;
   delete font;
   FontGL::exit();
 }
@@ -33,7 +33,7 @@ void
 TestApp::init() {
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0, 1, 1, 0);
+  glClearColor(0, 0, 0, 0);
 
   font = new FontGL(DATAPATH"/media/fonts/vera.ttf", 16, 128);
 
@@ -42,22 +42,8 @@ TestApp::init() {
 
   trackball = new Trackball(width,  height);
 
-  clipmap = new ClipMap(255);
-
-  //Load float terrain texture
-  fprintf(stderr, "Generating mipmap GPU...");
-  mipmap = new Mipmap;
-  //mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
-  mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
-  // mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
-  fprintf(stderr, "Done\n");
-
-  mipmap->getTextures(levels, PF_LUMINANCE, 1024, 1024, 256, 256);
-//  mipmap->getTextures(levels, 218, 218, 63, 63);
-
-//  Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
-  //levels.push_back(tex);
-
+  numLevels = 4;
+  clipmap = new ClipMap(255, numLevels);
 }
 
 
@@ -76,36 +62,8 @@ TestApp::render() {
   clipmap->render();
   glPopMatrix();
 
-  TextureUnits::activeUnit( 0 );
-  glEnable( GL_TEXTURE_2D );
-  TextureUnits::setEnvMode( TEM_REPLACE );
-  levels[levelToDisplay]->bind();
-  levels[levelToDisplay]->setMinFilter(TF_NEAREST);
-  levels[levelToDisplay]->setMagFilter(TF_NEAREST);
-  levels[levelToDisplay]->setWrapS( TW_CLAMP_TO_EDGE );
-  levels[levelToDisplay]->setWrapT( TW_CLAMP_TO_EDGE );
+  clipmap->drawDebugMipmap(levelToDisplay);
 
-//  glScalef(1, 0.25, 1);
-  //glEnable(GL_BLEND);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, width-1, height-1, 0, 0, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(width-100, 0, 0);
-
-  glBegin( GL_QUADS );
-  glTexCoord2f(0., 0.);
-  glVertex3f(0, 0, 0);
-  glTexCoord2f(0., 1.);
-  glVertex3f(0, 100, 0);
-  glTexCoord2f(1., 1.);
-  glVertex3f(100, 100, 0);
-  glTexCoord2f(1., 0.);
-  glVertex3f(100, 0, 0);
-  glEnd();
-
-//  mipmap->buildMipmapGPU(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
   Renderer::printGLError();
 
   printInfos();
@@ -149,10 +107,10 @@ TestApp::keyUp(const SDL_keysym &key)
     clipmap->setWireframe(!clipmap->isWireframe());
     break;
   case SDLK_l:
-    levelToDisplay = (levelToDisplay+1)%(int)levels.size();
+    levelToDisplay = (levelToDisplay+1)%numLevels;
     break;
   case SDLK_k:
-    levelToDisplay = (levelToDisplay+(int)levels.size()-1)%(int)levels.size();
+    levelToDisplay = (levelToDisplay+numLevels-1)%numLevels;
     break;
   default:
     break;
@@ -163,13 +121,13 @@ void
 TestApp::doMove()
 {
   if(isDown(SDLK_z))
-    cam->moveAlongView(0.05*speedFactor);
+    cam->moveAlongView(0.5*speedFactor);
   else if(isDown(SDLK_s))
-    cam->moveAlongView(-0.05*speedFactor);
+    cam->moveAlongView(-0.5*speedFactor);
   if(isDown(SDLK_q))
-    cam->sideMove(-0.05*speedFactor);
+    cam->sideMove(-0.5*speedFactor);
   else if(isDown(SDLK_d))
-    cam->sideMove(0.05*speedFactor);
+    cam->sideMove(0.5*speedFactor);
 }
 
 /*****************************************************************************/

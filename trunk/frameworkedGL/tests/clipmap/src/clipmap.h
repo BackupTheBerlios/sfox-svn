@@ -7,10 +7,11 @@ class Mipmap;
 
 class ClipMap {
 public:
-  ClipMap(int n);
+  ClipMap(int clipmapSize, int numLevels);
   ~ClipMap();
 
   void render();
+  void drawDebugMipmap(int levelToDisplay);
 
   void setWireframe(bool enable) { wireframe = enable; }
   bool isWireframe() { return wireframe; }
@@ -30,6 +31,7 @@ private:
 
   StarEngine::EffectCG *clipmapFX;
   CGtechnique technique;
+  CGtechnique techniqueNoFrag;
 
   //Generate vertex and indices buffers for biggest blocks
   void genBlocks();
@@ -46,12 +48,15 @@ private:
   void drawLFixup(int level);
 
   int clipmapSize;
+  int numLevels;
 
   Mipmap *mipmap;
   std::vector<StarEngine::Texture2D *> geomTex;
   std::vector<StarEngine::Texture2D *> heightTex;
 
   bool wireframe;
+  void drawWireframe(StarEngine::GeometricBatch *vertices,
+                     StarEngine::IndicesBatch *indices, int level);
 };
 
 #endif

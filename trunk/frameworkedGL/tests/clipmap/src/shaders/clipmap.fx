@@ -2,18 +2,21 @@ uniform float4x4 mvp;
 uniform float4 scaleTranslate;
 uniform float4 scaleTranslateTex;
 uniform sampler2D heightmap;
-uniform sampler2D cliff;
 uniform sampler2D grass;
-
-
+uniform sampler2D cliff;
 uniform sampler2D heightTex;
+
+sampler2D terrainTexSamp = sampler_state
+{
+  minFilter = Linear;
+  magFilter = Linear;
+};
 
 sampler2D heightSamp = sampler_state
 {
   minFilter = Linear;
   magFilter = Linear;
 };
-
 
 float f1(float z)
 {
@@ -35,9 +38,9 @@ float4 clipmapFrag(in float4 color : COLOR,
   float z = tex2D(heightmap, texCoord.xy).x;
   float alpha = 1.-f1(z2);
   return lerp(tex2D(grass, texCoord.xy*10), tex2D(cliff, texCoord.xy*5), alpha);
+  //return z2.xxxx;
 //   return tex2D(heightTex, texCoord.xy).xxxx;
-//  return tex2Dlod(heightmap, texCoord).x;
-   //return tex2D(heightmap, texCoord.xy).zzzz;
+  // return tex2D(heightmap, texCoord.xy).zzzz;
   //return tex2D(heightmap, texCoord.xy).wwww;
 //  return color;
 }
@@ -59,7 +62,7 @@ vertout clipmapVert(float3 position : POSITION,
   OUT.z.x = tex2Dlod(heightmap, float4(uv, 0, 1)).x;
   float2 worldPos = position.xz*scaleTranslate.xy+scaleTranslate.zw;
   //OUT.z = 0;
-  OUT.hpos = mul(mvp, float4(worldPos.x, OUT.z.x*30, worldPos.y, 1));
+  OUT.hpos = mul(mvp, float4(worldPos.x, OUT.z.x*0, worldPos.y, 1));
   OUT.color = color;
   OUT.color = float4(uv, 0, 1);
   OUT.texCoord = float4(uv, 0, 1);

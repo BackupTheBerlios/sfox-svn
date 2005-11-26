@@ -17,8 +17,8 @@ struct s_vec2 {
   float x,y;
 };
 
-ClipMap::ClipMap(int n)
-  : clipmapSize(n), wireframe(false)
+ClipMap::ClipMap(int clipmapSize, int numLevels)
+  : clipmapSize(clipmapSize), numLevels(numLevels), wireframe(false)
 {
   genBlocks();
   genRingFixUp();
@@ -28,31 +28,43 @@ ClipMap::ClipMap(int n)
   //Load float terrain texture
   fprintf(stderr, "Generating mipmap on CPU...");
   mipmap = new Mipmap;
-  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png", 4);
-//  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
+  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png",
+                      numLevels);
+//  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png",
+//                    numLevels);
   fprintf(stderr, "Done\n");
 
-  mipmap->getTextures(heightTex, PF_LUMINANCE, 1024, 1024, n+1, n+1);
-  mipmap->getTextures(geomTex, PF_RGBA32F, 1024, 1024, n+1, n+1);
+
+  mipmap->getTextures(heightTex, PF_LUMINANCE, 1024, 1024, clipmapSize+1,
+                      clipmapSize+1);
+  mipmap->getTextures(geomTex, PF_RGBA32F, 1024, 1024, clipmapSize+1,
+                      clipmapSize+1);
   //mipmap->getTextures(geomTex, 218, 218, n+1, n+1);
 
   clipmapFX = new EffectCG;
   clipmapFX->loadSourceFromFile("shaders/clipmap.fx");
   ShaderCG::setManageTextureParameters(true);
 
-  for(int i = 0; i < heightTex.size(); i++)
-    clipmapFX->setupSampler("heightSamp", heightTex[i]);
-
-  Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
-  tex->setMinFilter(TF_LINEAR);
-  tex->setMagFilter(TF_LINEAR);
-  clipmapFX->setTextureParameter("grass", tex);
   technique = clipmapFX->getAndValidateTechnique("clipmap");
+  techniqueNoFrag = clipmapFX->getAndValidateTechnique("clipmapNoFrag");
 
-  tex = (Texture2D *)g_TextureManager.load("cliff", DATAPATH"/media/clipmap/textures/cliff_face.jpg");
-  tex->setMinFilter(TF_LINEAR);
-  tex->setMagFilter(TF_LINEAR);
+  for(size_t i = 0; i < heightTex.size(); i++) {
+//     heightTex[i]->bind();
+//     heightTex[i]->setMinFilter(TF_LINEAR);
+//     heightTex[i]->setMagFilter(TF_LINEAR);
+    clipmapFX->setupSampler("heightSamp", heightTex[i]);
+  }
+
+  Texture2D *tex = new Texture2D(PF_RGB);
+  clipmapFX->setTextureParameter("grass", tex);
+  clipmapFX->setupSampler("terrainTexSamp", tex);
+  g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png",
+                        tex);
+
+  tex = new Texture2D(PF_RGB);
   clipmapFX->setTextureParameter("cliff", tex);
+  clipmapFX->setupSampler("terrainTexSamp", tex);
+  g_TextureManager.load("cliff", DATAPATH"/media/clipmap/textures/cliff_face.jpg", tex);
 }
 /****************************************************************************/
 
@@ -329,18 +341,12 @@ ClipMap::render()
 
   clipmapFX->setGLMVPMatrix("mvp");
 
-  drawBlocks(1);
-  drawRingFixup(1);
-  drawLFixup(1);
-
-  drawBlocks(2);
-  drawRingFixup(2);
-  drawLFixup(2);
-
-  // drawBlocks(3);
-//  drawRingFixup(3);
-
   drawFinestLevel();
+  for(int l = 1; l < numLevels; l++) {
+    drawBlocks(l);
+    drawRingFixup(l);
+    drawLFixup(l);
+  }
 
   Renderer::printCGError();
   Renderer::printGLError();
@@ -387,21 +393,32 @@ ClipMap::drawBlocks(int level)
     blockVertices->drawElements(blockIndices);
     clipmapFX->resetPassState(pass);
 
-    if(wireframe) {
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      glEnable(GL_POLYGON_OFFSET_LINE);
-      glPolygonOffset(-1, 0);
-      glColor3f(level%2, 1+level%2, 0);
-      glColor3f(1, 0, 0);
-      blockVertices->drawElements(blockIndices);
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      glDisable(GL_POLYGON_OFFSET_LINE);
-      glEnable(GL_CULL_FACE);
-    }
+    drawWireframe(blockVertices, blockIndices, level);
   }
 
   blockVertices->unbind();
   blockIndices->unbind();
+}
+/****************************************************************************/
+
+void
+ClipMap::drawWireframe(GeometricBatch *vertices, IndicesBatch *indices,
+                       int level)
+{
+  if(wireframe) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_POLYGON_OFFSET_LINE);
+    glPolygonOffset(-1, 0);
+    glColor3f(level%2, 1+level%2, 0);
+    glColor3f(1, 0, 0);
+    CGpass pass = clipmapFX->getFirstPass(techniqueNoFrag);
+    clipmapFX->setPassState(pass);
+    vertices->drawElements(indices);
+    clipmapFX->resetPassState(pass);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_POLYGON_OFFSET_LINE);
+    glEnable(GL_CULL_FACE);
+  }
 }
 /****************************************************************************/
 
@@ -430,18 +447,7 @@ ClipMap::drawRingFixup(int level)
   ringFixupVertices->drawElements(ringFixupIndices);
   clipmapFX->resetPassState(pass);
 
-  if(wireframe) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1, 0);
-    glColor3f(1, 0, 0);
-    ringFixupVertices->drawElements(ringFixupIndices);
-//  ringFixupVertices->drawArrays();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_POLYGON_OFFSET_LINE);
-    glEnable(GL_CULL_FACE);
-  }
+  drawWireframe(ringFixupVertices, ringFixupIndices, level);
 
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
@@ -461,23 +467,14 @@ ClipMap::drawFinestLevel()
   clipmapFX->setParameter4f("scaleTranslateTex", texel, texel,
                             0, 0);
   clipmapFX->setTextureParameter("heightmap", geomTex[0]);
+  clipmapFX->setTextureParameter("heightTex", heightTex[0]);
 
   CGpass pass = clipmapFX->getFirstPass(technique);
   clipmapFX->setPassState(pass);
   finestLevelVertices->drawElements(finestLevelIndices);
   clipmapFX->resetPassState(pass);
 
-  if(wireframe) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1, 0);
-    glColor3f(1, 0, 0);
-    finestLevelVertices->drawElements(finestLevelIndices);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_POLYGON_OFFSET_LINE);
-    glEnable(GL_CULL_FACE);
-  }
+  drawWireframe(finestLevelVertices, finestLevelIndices, 0);
 
   finestLevelVertices->unbind();
   finestLevelIndices->unbind();
@@ -506,19 +503,9 @@ ClipMap::drawLFixup(int level)
   CGpass pass = clipmapFX->getFirstPass(technique);
   clipmapFX->setPassState(pass);
   tlFixupVertices->drawElements(tlFixupIndices);
-  //tlFixupVertices->drawArrays();
   clipmapFX->resetPassState(pass);
 
-  if(wireframe) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1, 0);
-    glColor3f(1, 0, 0);
-    tlFixupVertices->drawElements(tlFixupIndices);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_POLYGON_OFFSET_LINE);
-  }
+  drawWireframe(tlFixupVertices, tlFixupIndices, level);
 
   tlFixupVertices->unbind();
   tlFixupIndices->unbind();
@@ -527,4 +514,63 @@ ClipMap::drawLFixup(int level)
 
 ClipMap::~ClipMap()
 {
+  for(size_t i = 0; i < geomTex.size(); i++) {
+    delete geomTex[i];
+    delete heightTex[i];
+  }
+  delete blockVertices;
+  delete blockIndices;
+
+  delete ringFixupVertices;
+  delete ringFixupIndices;
+
+  delete tlFixupVertices;
+  delete tlFixupIndices;
+
+  delete finestLevelVertices;
+  delete finestLevelIndices;
+  delete clipmapFX;
+  delete mipmap;
+}
+
+/****************************************************************************/
+
+void
+ClipMap::drawDebugMipmap(int levelToDisplay)
+{
+  assert(levelToDisplay < numLevels);
+  glPushAttrib(GL_ENABLE_BIT);
+  TextureUnits::activeUnit( 0 );
+  glEnable( GL_TEXTURE_2D );
+  TextureUnits::setEnvMode( TEM_REPLACE );
+  heightTex[levelToDisplay]->bind();
+
+  GLint vp[4];
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  glOrtho(0, vp[2]-1, vp[3]-1, 0, 0, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  glTranslatef(vp[2]-100, 0, 0);
+
+  glBegin( GL_QUADS );
+  glTexCoord2f(0., 0.);
+  glVertex3f(0, 0, 0);
+  glTexCoord2f(0., 1.);
+  glVertex3f(0, 100, 0);
+  glTexCoord2f(1., 1.);
+  glVertex3f(100, 100, 0);
+  glTexCoord2f(1., 0.);
+  glVertex3f(100, 0, 0);
+  glEnd();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+  glPopAttrib();
 }
