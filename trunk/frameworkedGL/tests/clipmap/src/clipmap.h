@@ -28,9 +28,6 @@ private:
   StarEngine::GeometricBatch *finestLevelVertices;
   StarEngine::IndicesBatch *finestLevelIndices;
 
-  StarEngine::ShaderCG *clipmapVert;
-  StarEngine::ShaderCG *clipmapFrag;
-
   StarEngine::EffectCG *clipmapFX;
   CGtechnique technique;
 
@@ -52,6 +49,7 @@ private:
 
   Mipmap *mipmap;
   std::vector<StarEngine::Texture2D *> geomTex;
+  std::vector<StarEngine::Texture2D *> heightTex;
 
   bool wireframe;
 };

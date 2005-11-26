@@ -97,6 +97,19 @@ namespace StarEngine {
     cgSetSamplerState(p);
   }
 
+  void
+  EffectCG::setSamplerState(const char *name, Texture *tex)
+  {
+    tex->bind();
+    cgSetSamplerState(getNamedParameter(name));
+  }
+
+  void
+  EffectCG::setupSampler(const char *name, Texture *tex)
+  {
+    cgGLSetupSampler(getNamedParameter(name), tex->getGLName());
+  }
+
   CGprogram
   EffectCG::createProgramFromEffect(CGparameter p, char *progName,
                                     const char** args)

@@ -40,7 +40,9 @@ namespace StarEngine {
     void disableTextureParameter(const char *name);
     static void setManageTextureParameters(bool enable);
 
+    void setSamplerState(const char *name, Texture *tex);
     void setSamplerState(CGparameter p);
+    void setupSampler(const char *name, Texture *tex);
 
     CGprogram createProgramFromEffect(CGparameter p, char *progName,
                                       const char** args);

@@ -7,7 +7,8 @@
 class Mipmap {
 public:
   void getTextures(std::vector<StarEngine::Texture2D *> &textures,
-                   int xoffs, int yoffs, int width, int height);
+                   StarEngine::PixelFormat pf, int xoffs, int yoffs,
+                   int width, int height);
 
   void buildMipmap(const char *filename, int levels);
   void buildMipmapGPU(const char *filename, int numLevels);

@@ -9,20 +9,19 @@ Mipmap::buildMipmap(const char *filename, int numLevels)
   levels[0]->load(filename);
   Timer timer;
   timer.start();
-  for(int i = 1; i < numLevels; i++) {
+  for(int i = 1; i < numLevels; i++)
     levels.push_back(halfScale(levels[i-1]));
-  }
   printf("Mipmap gentime=%dms\n", timer.getElapsed());
 }
 /****************************************************************************/
 
 void
-Mipmap::getTextures(std::vector<Texture2D *> &textures,
+Mipmap::getTextures(std::vector<Texture2D *> &textures, PixelFormat pf,
                     int xoffs, int yoffs, int width, int height)
 {
   size_t numLevels = levels.size();
   for(size_t l = 0; l < numLevels; l++) {
-    Texture2D *tex = new Texture2D(PF_LUMINANCE32F);
+    Texture2D *tex = new Texture2D(pf);
     textures.push_back(tex);
     ImageLoader::ImageData *imgData = levels[l]->getImageData();
     imgData->pixelFormat = PF_LUMINANCE;

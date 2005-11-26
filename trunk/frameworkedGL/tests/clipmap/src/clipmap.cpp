@@ -32,32 +32,26 @@ ClipMap::ClipMap(int n)
 //  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png", 3);
   fprintf(stderr, "Done\n");
 
-  mipmap->getTextures(geomTex, 1024, 1024, n+1, n+1);
+  mipmap->getTextures(heightTex, PF_LUMINANCE, 1024, 1024, n+1, n+1);
+  mipmap->getTextures(geomTex, PF_RGBA32F, 1024, 1024, n+1, n+1);
   //mipmap->getTextures(geomTex, 218, 218, n+1, n+1);
 
   clipmapFX = new EffectCG;
   clipmapFX->loadSourceFromFile("shaders/clipmap.fx");
-
-  clipmapVert = new ShaderCG();
-  clipmapVert->loadSourceFromFile("shaders/clipmap_vert.cg",
-                                  ShaderCG::VERTEX);
-
-  clipmapFrag = new ShaderCG();
-  clipmapFrag->loadSourceFromFile("shaders/clipmap_frag.cg",
-                                  ShaderCG::FRAGMENT);
   ShaderCG::setManageTextureParameters(true);
+
+  for(int i = 0; i < heightTex.size(); i++)
+    clipmapFX->setupSampler("heightSamp", heightTex[i]);
 
   Texture2D *tex = (Texture2D *)g_TextureManager.load("grass", DATAPATH"/media/clipmap/textures/grass.png");
   tex->setMinFilter(TF_LINEAR);
   tex->setMagFilter(TF_LINEAR);
-  clipmapFrag->setTextureParameter("grass", tex);
   clipmapFX->setTextureParameter("grass", tex);
   technique = clipmapFX->getAndValidateTechnique("clipmap");
 
   tex = (Texture2D *)g_TextureManager.load("cliff", DATAPATH"/media/clipmap/textures/cliff_face.jpg");
   tex->setMinFilter(TF_LINEAR);
   tex->setMagFilter(TF_LINEAR);
-  clipmapFrag->setTextureParameter("cliff", tex);
   clipmapFX->setTextureParameter("cliff", tex);
 }
 /****************************************************************************/
@@ -333,7 +327,6 @@ ClipMap::render()
   glTranslatef(-(clipmapSize+1)/2, 0, -(clipmapSize+1)/2);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  clipmapVert->setGLMVPMatrix("mvp");
   clipmapFX->setGLMVPMatrix("mvp");
 
   drawBlocks(1);
@@ -360,8 +353,8 @@ ClipMap::drawBlocks(int level)
   blockVertices->bind();
   blockIndices->bind();
 
-  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
-  clipmapVert->bind();
+  clipmapFX->setTextureParameter("heightmap", geomTex[level]);
+  clipmapFX->setTextureParameter("heightTex", heightTex[level]);
 
   int m = (clipmapSize+1)/4;
   //Offset for mxm blocks from left-top to right-bottom
@@ -377,19 +370,11 @@ ClipMap::drawBlocks(int level)
     float tx = (m-1)*offset[i].x+offset[i].z;
     float ty = (m-1)*offset[i].y+offset[i].w;
     int scale = 1 << (level-1);
-    clipmapVert->setParameter4f("scaleTranslate", scale, scale,
-                                tx*scale-(scale-1)*(clipmapSize+1)/2,
-                                ty*scale-(scale-1)*(clipmapSize+1)/2);
     clipmapFX->setParameter4f("scaleTranslate", scale, scale,
                               tx*scale-(scale-1)*(clipmapSize+1)/2,
                               ty*scale-(scale-1)*(clipmapSize+1)/2);
     tx = offset[i].x*(0.25f-texel)+offset[i].z*texel;
     ty = offset[i].y*(0.25f-texel)+offset[i].w*texel;
-    clipmapVert->setParameter4f("scaleTranslateTex",
-                                texel,
-                                texel,
-                                tx,
-                                ty);
     clipmapFX->setParameter4f("scaleTranslateTex",
                               texel,
                               texel,
@@ -397,11 +382,10 @@ ClipMap::drawBlocks(int level)
                               ty);
 
 
-    clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
-    clipmapFX->setTextureParameter("heightmap", geomTex[level]);
-    clipmapFrag->bind();
+    CGpass pass = clipmapFX->getFirstPass(technique);
+    clipmapFX->setPassState(pass);
     blockVertices->drawElements(blockIndices);
-    clipmapFrag->unbind();
+    clipmapFX->resetPassState(pass);
 
     if(wireframe) {
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -412,9 +396,10 @@ ClipMap::drawBlocks(int level)
       blockVertices->drawElements(blockIndices);
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       glDisable(GL_POLYGON_OFFSET_LINE);
+      glEnable(GL_CULL_FACE);
     }
   }
-  clipmapVert->unbind();
+
   blockVertices->unbind();
   blockIndices->unbind();
 }
@@ -426,36 +411,24 @@ ClipMap::drawRingFixup(int level)
   ringFixupVertices->bind();
   ringFixupIndices->bind();
 
-  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
-  clipmapVert->bind();
+  clipmapFX->setTextureParameter("heightmap", geomTex[level]);
+  clipmapFX->setTextureParameter("heightTex", heightTex[level]);
 
   glColor3ub(141, 105, 213);
   int scale = 1 << (level-1);
-  clipmapVert->setParameter4f("scaleTranslate", scale, scale,
-                              -(scale-1)*(clipmapSize+1)/2,
-                              -(scale-1)*(clipmapSize+1)/2);
   clipmapFX->setParameter4f("scaleTranslate", scale, scale,
                             -(scale-1)*(clipmapSize+1)/2,
                             -(scale-1)*(clipmapSize+1)/2);
   float texel = 1.0f/float(clipmapSize+1);
-  //float tx =  -(scale-1)*texel*(clipmapSize+1)/2;
-  //float ty =  -(scale-1)*texel*(clipmapSize+1)/2;
   float tx =  0;
   float ty =  0;
-  clipmapVert->setParameter4f("scaleTranslateTex", texel*scale, texel*scale,
-                              tx, ty);
-  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
-                              tx, ty);
   clipmapFX->setParameter4f("scaleTranslateTex", texel, texel,
                             tx, ty);
 
-  clipmapFrag->bind();
-  clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
-  clipmapFX->setTextureParameter("heightmap", geomTex[level]);
-
+  CGpass pass = clipmapFX->getFirstPass(technique);
+  clipmapFX->setPassState(pass);
   ringFixupVertices->drawElements(ringFixupIndices);
-
-  clipmapFrag->unbind();
+  clipmapFX->resetPassState(pass);
 
   if(wireframe) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -467,9 +440,9 @@ ClipMap::drawRingFixup(int level)
 //  ringFixupVertices->drawArrays();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable(GL_POLYGON_OFFSET_LINE);
+    glEnable(GL_CULL_FACE);
   }
 
-  clipmapVert->unbind();
   ringFixupVertices->unbind();
   ringFixupIndices->unbind();
 }
@@ -481,30 +454,18 @@ ClipMap::drawFinestLevel()
   finestLevelVertices->bind();
   finestLevelIndices->bind();
 
-  clipmapVert->setTextureParameter("heightmap", geomTex[0]);
-//  clipmapVert->bind();
-
   glColor3ub(141, 105, 213);
-//   clipmapVert->setParameter4f("scaleTranslate", 0.5f, 0.5f, (clipmapSize+1)/4.0f,
-//                               (clipmapSize+1)/4.0f);
   clipmapFX->setParameter4f("scaleTranslate", 0.5f, 0.5f, (clipmapSize+1)/4.0f,
                             (clipmapSize+1)/4.0f);
   float texel = 1.0f/float(clipmapSize+1);
-//   clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
-//                              0, 0);
   clipmapFX->setParameter4f("scaleTranslateTex", texel, texel,
                             0, 0);
-
-//   clipmapFrag->setTextureParameter("heightmap", geomTex[0]);
   clipmapFX->setTextureParameter("heightmap", geomTex[0]);
-//   clipmapFrag->bind();
 
   CGpass pass = clipmapFX->getFirstPass(technique);
   clipmapFX->setPassState(pass);
   finestLevelVertices->drawElements(finestLevelIndices);
   clipmapFX->resetPassState(pass);
-
-//   clipmapFrag->unbind();
 
   if(wireframe) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -515,9 +476,9 @@ ClipMap::drawFinestLevel()
     finestLevelVertices->drawElements(finestLevelIndices);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable(GL_POLYGON_OFFSET_LINE);
+    glEnable(GL_CULL_FACE);
   }
 
-  clipmapVert->unbind();
   finestLevelVertices->unbind();
   finestLevelIndices->unbind();
 }
@@ -529,33 +490,24 @@ ClipMap::drawLFixup(int level)
   tlFixupIndices->bind();
   tlFixupVertices->bind();
 
-  clipmapVert->setTextureParameter("heightmap", geomTex[level]);
   clipmapFX->setTextureParameter("heightmap", geomTex[level]);
-  clipmapVert->bind();
+  clipmapFX->setTextureParameter("heightTex", heightTex[level]);
 
   glColor3ub(141, 105, 213);
   int scale = 1 << (level-1);
-  clipmapVert->setParameter4f("scaleTranslate", scale, scale,
-                              -(scale-1)*(clipmapSize+1)/2,
-                              -(scale-1)*(clipmapSize+1)/2);
   clipmapFX->setParameter4f("scaleTranslate", scale, scale,
                             -(scale-1)*(clipmapSize+1)/2,
                             -(scale-1)*(clipmapSize+1)/2);
   float texel = 1.0f/float(clipmapSize+1);
-  clipmapVert->setParameter4f("scaleTranslateTex", texel, texel,
-                              0, 0);
   clipmapFX->setParameter4f("scaleTranslateTex", texel, texel,
                             0, 0);
 
-  clipmapFrag->bind();
-  clipmapFrag->setTextureParameter("heightmap", geomTex[level]);
-  clipmapFX->setTextureParameter("heightmap", geomTex[level]);
-
   glColor3f(1,0,0);
+  CGpass pass = clipmapFX->getFirstPass(technique);
+  clipmapFX->setPassState(pass);
   tlFixupVertices->drawElements(tlFixupIndices);
   //tlFixupVertices->drawArrays();
-
-  clipmapFrag->unbind();
+  clipmapFX->resetPassState(pass);
 
   if(wireframe) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -568,7 +520,6 @@ ClipMap::drawLFixup(int level)
     glDisable(GL_POLYGON_OFFSET_LINE);
   }
 
-  clipmapVert->unbind();
   tlFixupVertices->unbind();
   tlFixupIndices->unbind();
 }
