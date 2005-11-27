@@ -29,9 +29,9 @@ ClipMap::ClipMap(int clipmapSize, int numLevels)
   fprintf(stderr, "Generating mipmap on CPU...");
   mipmap = new Mipmap;
   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/bigterrain.png",
-                      numLevels);
-//  mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/smallterrain.png",
-//                    numLevels);
+                       numLevels);
+//   mipmap->buildMipmap(DATAPATH"/media/clipmap/terrain/terrain.png",
+//                       numLevels);
   fprintf(stderr, "Done\n");
 
 
@@ -39,7 +39,10 @@ ClipMap::ClipMap(int clipmapSize, int numLevels)
                       clipmapSize+1);
   mipmap->getTextures(geomTex, PF_RGBA32F, 1024, 1024, clipmapSize+1,
                       clipmapSize+1);
-  //mipmap->getTextures(geomTex, 218, 218, n+1, n+1);
+//    mipmap->getTextures(heightTex, PF_LUMINANCE, 256, 256, clipmapSize+1,
+//                        clipmapSize+1);
+//    mipmap->getTextures(geomTex, PF_RGBA32F, 256, 256, clipmapSize+1,
+//                        clipmapSize+1);
 
   clipmapFX = new EffectCG;
   clipmapFX->loadSourceFromFile("shaders/clipmap.fx");

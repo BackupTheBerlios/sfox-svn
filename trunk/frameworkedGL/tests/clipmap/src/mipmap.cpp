@@ -10,7 +10,7 @@ Mipmap::buildMipmap(const char *filename, int numLevels)
   Timer timer;
   timer.start();
   for(int i = 1; i < numLevels; i++)
-    levels.push_back(halfScale(levels[i-1]));
+    levels.push_back(halfScale(levels[i-1], 256, 256));
   printf("Mipmap gentime=%dms\n", timer.getElapsed());
 }
 /****************************************************************************/
@@ -43,23 +43,62 @@ Mipmap::getTextures(std::vector<Texture2D *> &textures, PixelFormat pf,
 }
 /****************************************************************************/
 
+// Image *
+// Mipmap::halfScale(Image *img)
+// {
+//   Image *res = new Image;
+//   ImageLoader::ImageData *oldImg = img->getImageData();
+//   ImageLoader::ImageData *newImg = new ImageLoader::ImageData;
+//   newImg->pixelFormat = oldImg->pixelFormat;
+//   int oldw = newImg->width = oldImg->width;
+//   int oldh = newImg->height = oldImg->height;
+//   int w = newImg->width = oldw/2;
+//   int h = newImg->height = oldh/2;
+//   int size = PixelFormatUtils::getBytesPerPixel(newImg->pixelFormat)*w*h;
+//   newImg->data = new unsigned char[size];
+
+//   unsigned char *dst = (unsigned char *)newImg->data;
+//   unsigned char *src = (unsigned char *)oldImg->data;
+//   int ofs = 0;
+
+//   for(int j = 0; j < oldh-1; j+=2) {
+//     for(int i = 0; i < oldw-1; i+=2) {
+//       int s = src[i+j*oldw]+src[i+1+j*oldw]+src[i+(j+1)*oldw]+
+//               src[i+1+(j+1)*oldw];
+//       dst[ofs++] = (unsigned char)(s/4.0f);
+//     }
+//   }
+//   res->setImageData(newImg);
+//   return res;
+// }
+
 Image *
-Mipmap::halfScale(Image *img)
+Mipmap::halfScale(Image *img, int minWidth, int minHeight)
 {
   Image *res = new Image;
   ImageLoader::ImageData *oldImg = img->getImageData();
   ImageLoader::ImageData *newImg = new ImageLoader::ImageData;
   newImg->pixelFormat = oldImg->pixelFormat;
-  int oldw = newImg->width = oldImg->width;
-  int oldh = newImg->height = oldImg->height;
+  int oldw = oldImg->width;
+  int oldh = oldImg->height;
   int w = newImg->width = oldw/2;
   int h = newImg->height = oldh/2;
-  int size = PixelFormatUtils::getBytesPerPixel(newImg->pixelFormat)*w*h;
+  int realW = w;
+  int realH = h;
+  if(w<minWidth)
+    realW = minWidth;
+  if(h<minHeight)
+    realH = minHeight;
+  newImg->width = realW;
+  newImg->height = realH;
+  int size = PixelFormatUtils::getBytesPerPixel(newImg->pixelFormat)*realW*realH;
   newImg->data = new unsigned char[size];
 
   unsigned char *dst = (unsigned char *)newImg->data;
   unsigned char *src = (unsigned char *)oldImg->data;
   int ofs = 0;
+
+  printf("oldW=%d newW=%d realW=%d\n", oldw, w, realW);
 
   for(int j = 0; j < oldh-1; j+=2) {
     for(int i = 0; i < oldw-1; i+=2) {
@@ -67,7 +106,13 @@ Mipmap::halfScale(Image *img)
               src[i+1+(j+1)*oldw];
       dst[ofs++] = (unsigned char)(s/4.0f);
     }
+    for(int i = w; i < realW; i++)
+      dst[ofs++] = 0;
   }
+  for(int j = h; j < realH; j++)
+    for(int i = 0; i < realW; i++)
+      dst[ofs++] = 0;
+
   res->setImageData(newImg);
   return res;
 }

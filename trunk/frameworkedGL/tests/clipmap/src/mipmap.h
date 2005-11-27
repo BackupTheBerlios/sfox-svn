@@ -17,7 +17,8 @@ public:
 
 private:
   std::vector<StarEngine::Image *> levels;
-  StarEngine::Image *halfScale(StarEngine::Image *img);
+  StarEngine::Image *halfScale(StarEngine::Image *img, int minWidth,
+                               int minHeight);
 };
 
 #endif
