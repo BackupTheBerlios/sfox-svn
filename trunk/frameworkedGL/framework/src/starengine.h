@@ -11,6 +11,7 @@
 #pragma comment (lib, "SDLmain.lib")
 #pragma comment (lib, "cg.lib")
 #pragma comment (lib, "cgGL.lib")
+#pragma comment (lib, "cgFXParser.lib")
 #pragma comment (lib, "glew32s.lib")
 #pragma warning (disable:4244)
 #endif

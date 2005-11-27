@@ -46,7 +46,8 @@ xcopy &quot;$(InputDir)\..\..\framework\src\*.h&quot;  c:\starengine\include /Y
 xcopy &quot;$(InputDir)\..\..\framework\src\framework\*.h&quot; c:\starengine\include\framework /Y
 xcopy &quot;$(InputDir)\..\..\framework\src\opengl\*.h&quot; c:\starengine\include\opengl /Y
 xcopy &quot;$(InputDir)\..\..\framework\src\math\*.h&quot; c:\starengine\include\math /Y
-xcopy &quot;$(OutDir)\*.lib&quot; c:\starengine\lib /Y"/>
+xcopy &quot;$(OutDir)\*.lib&quot; c:\starengine\lib /Y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -115,6 +116,9 @@ xcopy &quot;$(OutDir)\*.lib&quot; c:\starengine\lib /Y"/>
 				Filter="">
 				<File
 					RelativePath="..\..\framework\src\opengl\camera.cpp">
+				</File>
+				<File
+					RelativePath="..\..\framework\src\opengl\effectCG.cpp">
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\fbo.cpp">
@@ -215,6 +219,9 @@ xcopy &quot;$(OutDir)\*.lib&quot; c:\starengine\lib /Y"/>
 				Filter="">
 				<File
 					RelativePath="..\..\framework\src\opengl\camera.h">
+				</File>
+				<File
+					RelativePath="..\..\framework\src\opengl\effectCG.h">
 				</File>
 				<File
 					RelativePath="..\..\framework\src\opengl\fbo.h">

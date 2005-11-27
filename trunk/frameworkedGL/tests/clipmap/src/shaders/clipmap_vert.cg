@@ -15,7 +15,7 @@ vertout main(float3 position : POSITION,
   vertout OUT;
 
   float2 uv = position.xz*scaleTranslateTex.xy+scaleTranslateTex.zw;
-  float z = tex2Dlod(heightmap, float4(uv, 0, 1)).x;
+  float z = tex2Dlod(heightmap, float4(uv, 0, 1)).x*2;
   float2 worldPos = position.xz*scaleTranslate.xy+scaleTranslate.zw;
   //z = 0;
   OUT.hpos = mul(mvp, float4(worldPos.x, z*30, worldPos.y, 1));

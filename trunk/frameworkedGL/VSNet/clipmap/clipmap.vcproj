@@ -149,6 +149,9 @@
 			Name="shaders"
 			Filter="">
 			<File
+				RelativePath="..\..\tests\clipmap\src\shaders\clipmap.fx">
+			</File>
+			<File
 				RelativePath="..\..\tests\clipmap\src\shaders\clipmap_frag.cg">
 			</File>
 			<File
