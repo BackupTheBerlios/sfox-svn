@@ -409,18 +409,17 @@ ClipMap::drawWireframe(GeometricBatch *vertices, IndicesBatch *indices,
                        int level)
 {
   if(wireframe) {
+    glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glEnable(GL_POLYGON_OFFSET_LINE);
-    glPolygonOffset(-1, 0);
-    glColor3f(level%2, 1+level%2, 0);
-    glColor3f(1, 0, 0);
+    glPolygonOffset(-1.0, -1.0);
+    glColor3f(level%2, 1.0f, level/4.0f);
     CGpass pass = clipmapFX->getFirstPass(techniqueNoFrag);
     clipmapFX->setPassState(pass);
     vertices->drawElements(indices);
     clipmapFX->resetPassState(pass);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable(GL_POLYGON_OFFSET_LINE);
-    glEnable(GL_CULL_FACE);
   }
 }
 /****************************************************************************/

@@ -70,6 +70,17 @@ struct vertout {
   float4 texCoord : TEXCOORD0;
 };
 
+
+float2 computeAlpha(float2 pos)
+{
+  float w = 256./10.;
+  float2 alpha;
+  alpha.x = clamp((abs(pos.x+scaleTranslate.z-128.0f)-(255./2.-w-1))/w, 0, 1);
+  alpha.y = clamp((abs(pos.y+scaleTranslate.w-128.0f)-(255./2.-w-1))/w, 0, 1);
+  return alpha;
+}
+
+
 vertout clipmapVert(float3 position : POSITION,
                     float4 color : COLOR)
 {
@@ -81,8 +92,9 @@ vertout clipmapVert(float3 position : POSITION,
   //z = 0;
   OUT.hpos = mul(mvp, float4(worldPos.x, z*50, worldPos.y, 1));
   OUT.color = color;
-  OUT.color = float4(uv, 0, 1);
+//  OUT.color = float4(uv, 0, 1);
   OUT.texCoord = float4(uv, 0, 1);
+  OUT.color = (computeAlpha(position.xz).x+computeAlpha(position.xz).y)*color;
 
   return OUT;
 }
