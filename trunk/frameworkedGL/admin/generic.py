@@ -94,5 +94,5 @@ def generate(env):
 		env.AppendUnique(CXXFLAGS='-g -Wall -DDEBUG',
 				 CFLAGS='-g -Wall -DDEBUG')
 	else:
-		env.AppendUnique(CXXFLAGS='-O2 -DNDEBUG',
-				 CFLAGS='-O2 -DNDEBUG')
+		env.AppendUnique(CXXFLAGS='--fast-math -O2 -DNDEBUG',
+				 CFLAGS='--fast-math -O2 -DNDEBUG')

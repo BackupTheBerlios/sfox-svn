@@ -20,6 +20,7 @@ namespace StarEngine {
     : effect(0)
   {
     context = ShaderCG::getContext();
+    cgGLRegisterStates(context);
     assert( context );
   }
 

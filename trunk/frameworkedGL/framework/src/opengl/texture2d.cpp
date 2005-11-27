@@ -29,8 +29,6 @@ namespace StarEngine {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexImage2D( GL_TEXTURE_2D, level, internalFormat, width, height, border,
                   format, type, data );
-    setMinFilter( TF_NEAREST );
-    setMagFilter( TF_NEAREST );
   }
 
   void

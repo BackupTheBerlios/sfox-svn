@@ -49,9 +49,9 @@ ClipMap::ClipMap(int clipmapSize, int numLevels)
   techniqueNoFrag = clipmapFX->getAndValidateTechnique("clipmapNoFrag");
 
   for(size_t i = 0; i < heightTex.size(); i++) {
-//     heightTex[i]->bind();
-//     heightTex[i]->setMinFilter(TF_LINEAR);
-//     heightTex[i]->setMagFilter(TF_LINEAR);
+    geomTex[i]->bind();
+    geomTex[i]->setMinFilter(TF_NEAREST);
+    geomTex[i]->setMagFilter(TF_NEAREST);
     clipmapFX->setupSampler("heightSamp", heightTex[i]);
   }
 
