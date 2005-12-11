@@ -43,6 +43,56 @@ Mipmap::getTextures(std::vector<Texture2D *> &textures, PixelFormat pf,
 }
 /****************************************************************************/
 
+void
+Mipmap::getTextures2(std::vector<Texture2D *> &textures, PixelFormat pf,
+                     int xoffs, int yoffs, int width, int height,
+                     bool allocTexture)
+{
+  assert(allocTexture || (textures.size() == levels.size()) );
+  size_t numLevels = levels.size();
+  for(size_t l = 0; l < numLevels; l++) {
+    if(allocTexture)
+      textures.push_back(new Texture2D(pf));
+    Texture2D *tex = textures[l];
+    ImageLoader::ImageData *imgData = levels[l]->getImageData();
+    ImageLoader::ImageData *imgDataCoarser;
+    if(l < textures.size()-1)
+      imgDataCoarser = levels[l+1]->getImageData();
+    else
+      imgDataCoarser = levels[l]->getImageData();
+    unsigned char *src = (unsigned char *)imgData->data;
+    unsigned char *srcCoarser = (unsigned char *)imgDataCoarser->data;
+    unsigned char *texData = new unsigned char[width*height*4];
+    int soffs = xoffs+yoffs*imgData->width;
+    int nextLine = imgData->width-width;
+    int doffs = 0;
+    for(int j = 0; j < height; j++) {
+      for(int i = 0; i < width; i++) {
+        int wc = imgDataCoarser->width;
+        int hc = imgDataCoarser->height;
+        int ic = (xoffs+i)/2-width/4;
+        int jc = (yoffs+j)/2-height/4;
+        int ic0 = ic+1;
+        int jc0 = jc+1;
+        if(ic0>=wc) ic0=wc-1;
+        if(jc0>=hc) jc0=hc-1;
+        int z0 = srcCoarser[ic0+jc*wc];
+        int z1 = srcCoarser[ic+jc0*wc];
+        texData[doffs] = src[soffs++];
+        texData[doffs+1] = z0;//(z0+z1)*0.5;
+        doffs += 4;
+      }
+      soffs += nextLine;
+    }
+    tex->setData(texData, 0, PF_RGBA, width, height);
+    xoffs = xoffs/2-width/4;
+    yoffs = yoffs/2-width/4;
+    tex->setWrapS( TW_CLAMP_TO_EDGE );
+    tex->setWrapT( TW_CLAMP_TO_EDGE );
+  }
+}
+/****************************************************************************/
+
 // Image *
 // Mipmap::halfScale(Image *img)
 // {

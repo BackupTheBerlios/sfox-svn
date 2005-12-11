@@ -57,11 +57,12 @@ float4 computeLighting(float3 N, float4 texCoord)
 float4 clipmapFrag(in float4 color : COLOR,
                    in float4 texCoord : TEXCOORD0) : COLOR
 {
-  float workAround = tex2D(heightmap, texCoord.xy).x;
+  float2 workAround = tex2D(heightmap, texCoord.xy).xy;
   float3 N = computeNormal(texCoord);
-  //return workAround.xxxx;
+//  return workAround.xxxx;
+//  return workAround.yyyy;
+
   return computeLighting(N, texCoord);
-//  return float4((N.xzy+1)*0.5, 1);
 }
 
 struct vertout {
@@ -71,13 +72,15 @@ struct vertout {
 };
 
 
-float2 computeAlpha(float2 pos)
+float computeAlpha(float2 pos)
 {
-  float w = 256./10.;
+  float w = scaleTranslate.x*256./10.;
+  float offset = 0.5*(scaleTranslate.x*256.-1)-w-1;
   float2 alpha;
-  alpha.x = clamp((abs(pos.x+scaleTranslate.z-128.0f)-(255./2.-w-1))/w, 0, 1);
-  alpha.y = clamp((abs(pos.y+scaleTranslate.w-128.0f)-(255./2.-w-1))/w, 0, 1);
-  return alpha;
+  alpha.x = clamp((abs(pos.x-128.0f)-offset)/w, 0, 1);
+  alpha.y = clamp((abs(pos.y-128.0f)-offset)/w, 0, 1);
+
+  return max(alpha.x, alpha.y);
 }
 
 
@@ -86,15 +89,26 @@ vertout clipmapVert(float3 position : POSITION,
 {
   vertout OUT;
 
-  float2 uv = position.xz*scaleTranslateTex.xy+scaleTranslateTex.zw;
-  float z = tex2Dlod(heightmap, float4(uv, 0, 1)).x;
   float2 worldPos = position.xz*scaleTranslate.xy+scaleTranslate.zw;
-  //z = 0;
-  OUT.hpos = mul(mvp, float4(worldPos.x, z*50, worldPos.y, 1));
+  float2 uv = position.xz*scaleTranslateTex.xy+scaleTranslateTex.zw;
+  float alpha = computeAlpha(worldPos);
+
+//   float z0 = tex2Dlod(heightmapCoarser, float4(uvCoarser.xy, 0, 1)).x;
+//   float z1 = tex2Dlod(heightmapCoarser, float4(uvCoarser.zw, 0, 1)).x;
+  float2 zz = tex2Dlod(heightmap, float4(uv, 0, 1)).xy;
+//   float z = tex2Dlod(heightmap, float4(uv, 0, 1)).x;
+  float z = (1-alpha)*zz.x+alpha*zz.y;
+//  z = zz.x-zz.x;
+//   float2 uvDiv2 = uv/2;
+//   float4 uvCoarser = float4(uvDiv2+float2(0.5*scaleTranslateTex.x, 0), uvDiv2+float2(0, 0.5*scaleTranslateTex.y));
+
+//  z = z+alpha*(z0+z1)*0.5;
+//  z = 0;
+  OUT.hpos = mul(mvp, float4(worldPos.x, zz.x*50, worldPos.y, 1));
   OUT.color = color;
 //  OUT.color = float4(uv, 0, 1);
   OUT.texCoord = float4(uv, 0, 1);
-  OUT.color = (computeAlpha(position.xz).x+computeAlpha(position.xz).y)*color;
+  OUT.color = alpha*color;
 
   return OUT;
 }

@@ -37,8 +37,8 @@ ClipMap::ClipMap(int clipmapSize, int numLevels)
 
   mipmap->getTextures(heightTex, PF_LUMINANCE, 1024, 1024, clipmapSize+1,
                       clipmapSize+1);
-  mipmap->getTextures(geomTex, PF_RGBA32F, 1024, 1024, clipmapSize+1,
-                      clipmapSize+1);
+  mipmap->getTextures2(geomTex, PF_RGBA32F, 1024, 1024, clipmapSize+1,
+                       clipmapSize+1);
 //    mipmap->getTextures(heightTex, PF_LUMINANCE, 256, 256, clipmapSize+1,
 //                        clipmapSize+1);
 //    mipmap->getTextures(geomTex, PF_RGBA32F, 256, 256, clipmapSize+1,
