@@ -32,8 +32,9 @@ GLStatsInit()
   loggerManager.add(logger);
 
   win = new UIWindow;
-  win->setSize(10, 10);
+  win->setSize(160, 90);
   win->setPosition(0, 0);
+  win->setCenter(true);
 }
 
 void
