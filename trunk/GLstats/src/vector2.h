@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 template<class T>
 class Vector2 {

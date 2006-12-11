@@ -6,19 +6,19 @@
 class GLStatConfig {
 public:
   /**
-   * Set the number of minimum frames before computing FPS
+   * Set the number of minimum millisecondes before computing FPS
    */
-  void setFPSSamplingRate(size_t frame) { m_FPSSamplingRate = frame; }
+  float setFPSSamplingRate(float ms) { m_FPSSamplingRate = ms; }
 
   /**
-   * Returns the number of minimum frames before computing FPS
+   * Returns the number of minimum millisecondes before computing FPS
    */
-  size_t getFPSSamplingRate() { return m_FPSSamplingRate; }
+  float getFPSSamplingRate() { return m_FPSSamplingRate; }
 
   static GLStatConfig *getInstance();
 
 private:
-  size_t m_FPSSamplingRate;
+  float m_FPSSamplingRate;
 
   static GLStatConfig *m_instance;
 };

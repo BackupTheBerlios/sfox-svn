@@ -57,7 +57,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libGLstats_la_LIBADD =
 am_libGLstats_la_OBJECTS = glstats.lo LibraryLoader.lo GLXFuncs.lo \
 	glx.lo font.lo timer.lo GLObjectList.lo GLStatConfig.lo \
-	Global.lo GLContext.lo LoggerManager.lo UIWindow.lo
+	Global.lo GLContext.lo LoggerManager.lo UIWindow.lo \
+	UILoggerDisplay.lo CounterManager.lo
 libGLstats_la_OBJECTS = $(am_libGLstats_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,7 +186,8 @@ lib_LTLIBRARIES = libGLstats.la
 libGLstats_la_SOURCES = glstats.cxx LibraryLoader.cxx GLXFuncs.cxx glx.cxx \
                       font.cxx timer.cxx GLObjectList.cxx \
                       GLStatConfig.cxx Global.cxx GLContext.cxx \
-		      LoggerManager.cxx UIWindow.cxx
+		      LoggerManager.cxx UIWindow.cxx UILoggerDisplay.cxx \
+		      CounterManager.cxx
 
 all: all-am
 
@@ -256,6 +258,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CounterManager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLContext.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLObjectList.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLStatConfig.Plo@am__quote@
@@ -263,6 +266,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Global.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LibraryLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LoggerManager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UILoggerDisplay.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UIWindow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/font.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glstats.Plo@am__quote@
