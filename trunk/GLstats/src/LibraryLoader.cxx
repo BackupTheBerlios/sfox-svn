@@ -23,7 +23,7 @@ void *
 LibraryLoader::getSym(const char *symName)
 {
   assert(handle);
-  void *addr = dlsym(handle, symName);
+  void *addr = dlsym(RTLD_NEXT, symName);
   char *error = dlerror();
   if(error) {
     std::ostringstream err;
