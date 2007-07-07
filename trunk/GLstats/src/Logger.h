@@ -37,6 +37,8 @@ class LoggerSimple : public Logger
 {
 public:
   typedef std::pair<uint64_t, T> TimedValue;
+  typedef std::vector<TimedValue> TimedValueList;
+  typedef typename TimedValueList::iterator TimedValueListIterator;
 
   LoggerSimple(const char *name):Logger(name) {}
 

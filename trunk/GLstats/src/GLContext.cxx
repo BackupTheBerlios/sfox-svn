@@ -2,16 +2,16 @@
 
 #include <GL/glx.h>
 
-#include "Global.h"
+#include "GlobalGLStat.h"
 
 GLContext *
 GLContext::getCurrent()
 {
   GLXContext ctx = glXGetCurrentContext();
-  size_t size = global.contextList.size();
+  size_t size = globalGLS.contextList.size();
   for(size_t i = 0; i < size; i++) {
-    if(global.contextList[i]->m_glContext == ctx)
-      return global.contextList[i];
+    if(globalGLS.contextList[i]->m_glContext == ctx)
+      return globalGLS.contextList[i];
   }
   abort();
 }

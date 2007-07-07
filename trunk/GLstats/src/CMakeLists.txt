@@ -1,7 +1,7 @@
 SET(SRC glstats.cxx LibraryLoader.cxx GLXFuncs.cxx glx.cxx
         font.cxx timer.cxx GLObjectList.cxx
-        GLStatConfig.cxx Global.cxx GLContext.cxx
-		    LoggerManager.cxx UIWindow.cxx UILoggerDisplay.cxx
-		    CounterManager.cxx)
+        GLStatConfig.cxx GlobalGLStat.cxx GLContext.cxx
+	LoggerManager.cxx UIWindow.cxx UILoggerDisplay.cxx
+	CounterManager.cxx UIFrame.cxx UIFramedWindow.cxx)
 
 ADD_LIBRARY(GLStat SHARED ${SRC})

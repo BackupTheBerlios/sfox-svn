@@ -5,7 +5,7 @@
 #include "glstats.h"
 
 #include "timer.h"
-#include "Global.h"
+#include "GlobalGLStat.h"
 
 void
 __attribute__ ((constructor)) sharedLibInit()
@@ -34,7 +34,7 @@ glXCreateContext(Display *dpy, XVisualInfo *vis,
   GLXContext context;
   context = glXFuncs->glXCreateContext(dpy, vis, shareList, direct);
 
-  global.contextList.push_back(new GLContext(context));
+  globalGLS.contextList.push_back(new GLContext(context));
 
   return context;
 }

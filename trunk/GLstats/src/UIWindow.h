@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "vector2.h"
+#include "vector4.h"
 
 #include "UIObject.h"
 
@@ -15,6 +16,11 @@ public:
   UIWindow();
 
   /**
+   * Delete all children
+   */
+  ~UIWindow();
+
+  /**
    * Draw the window and all its children
    */
   virtual void draw();
@@ -24,20 +30,38 @@ public:
    */
   void setCenter(bool f) { m_center = f; }
 
-  void addChild(UIObject *obj) { child.push_back(obj); }
+  /**
+   * Add object to the window. Deleted when this window is deleted
+   */
+  void addChild(UIObject *obj);
+
+  /**
+   * Set fullscreen mode
+   */
+  void setFullScreen(bool flag) { m_fullscreen = flag; }
+
+  /**
+   * Set background color
+   */
+  void setBackground(const Vec4f &color) { m_bgColor = color; }
+  void setBackground(float r, float g, float b, float a) { setBackground(Vec4f(r,g,b,a)); }
+
+  virtual void beginDraw();
+  virtual void endDraw();
 
 private:
   void drawBackground();
-  void beginDraw();
-  void endDraw();
 
   typedef std::vector<UIObject *> UIObjectList;
-  UIObjectList child;
+  UIObjectList m_child;
 
   bool m_center;
+  bool m_fullscreen;
+  Vec4f m_bgColor;
 
   static const Vec2i DEFAULT_SIZE;
   static const Vec2i DEFAULT_POS;
+  static const Vec4f DEFAULT_BG;
 };
 
 #endif
