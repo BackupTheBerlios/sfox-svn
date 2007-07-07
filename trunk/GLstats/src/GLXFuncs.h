@@ -3,20 +3,19 @@
 
 #include <GL/glx.h>
 
+#include "Singleton.h"
+
 typedef void(*PFNGLXSWAPBUFFERS)(Display*, GLXDrawable);
 typedef GLXContext(*PFNGLXCREATECONTEXT)(Display*, XVisualInfo*, GLXContext, Bool);
 
-class GLXFuncs {
+class GLXFuncs : public Singleton<GLXFuncs>
+{
 public:
-  static GLXFuncs *getInstance();
+  GLXFuncs();
 
   void (*glXSwapBuffers)(Display*,GLXDrawable);
   GLXContext (*glXCreateContext)(Display *dpy, XVisualInfo *vis,
                                  GLXContext shareList, Bool direct);
-private:
-  GLXFuncs();
-
-  static GLXFuncs *instance;
 };
 
 #define glXFuncs GLXFuncs::getInstance()

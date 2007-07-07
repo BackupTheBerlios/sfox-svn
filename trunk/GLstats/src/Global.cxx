@@ -1,15 +1,5 @@
 #include "Global.h"
 
-Global *Global::m_instance = NULL;
-
-Global *
-Global::getInstance()
-{
-  if(!m_instance)
-    m_instance = new Global;
-  return m_instance;
-}/*****************************************************************************/
-
 void
 Global::beginGLStatsDrawing()
 {

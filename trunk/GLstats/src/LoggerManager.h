@@ -4,16 +4,16 @@
 #include <map>
 
 #include "Logger.h"
+#include "Singleton.h"
 
-class LoggerManager {
+class LoggerManager : public Singleton<LoggerManager>
+{
 public:
-  Logger *getLogger(std::string name) { return loggers[name]; }
-  void add(Logger *log) { loggers[log->getName()] = log; }
-  static LoggerManager *getInstance();
+  Logger *getLogger(std::string name) { return m_loggers[name]; }
+  void add(Logger *log) { m_loggers[log->getName()] = log; }
 
 private:
-  static LoggerManager *m_instance;
-  std::map<std::string, Logger *> loggers;
+  std::map<std::string, Logger *> m_loggers;
 };
 
 #define loggerManager (*LoggerManager::getInstance())

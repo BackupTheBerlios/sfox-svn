@@ -2,16 +2,6 @@
 
 #include "LibraryLoader.h"
 
-GLXFuncs *GLXFuncs::instance = 0;
-
-GLXFuncs *
-GLXFuncs::getInstance()
-{
-  if(!instance)
-    instance = new GLXFuncs();
-  return instance;
-}
-
 GLXFuncs::GLXFuncs()
 {
   LibraryLoader loader;

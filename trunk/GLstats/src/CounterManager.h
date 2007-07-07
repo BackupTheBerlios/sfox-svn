@@ -2,18 +2,19 @@
 #define COUNTERMANAGER_H
 
 #include <map>
+#include <string>
 
 #include "Counter.h"
+#include "Singleton.h"
 
-class CounterManager {
+class CounterManager : public Singleton<CounterManager>
+{
 public:
-  Counter *getCounter(std::string name) { return counters[name]; }
-  void add(Counter *cnt) { counters[cnt->getName()] = cnt; }
-  static CounterManager *getInstance();
+  Counter *getCounter(std::string name) { return m_counters[name]; }
+  void add(Counter *cnt) { m_counters[cnt->getName()] = cnt; }
 
 private:
-  static CounterManager *m_instance;
-  std::map<std::string, Counter *> counters;
+  std::map<std::string, Counter *> m_counters;
 
 };
 

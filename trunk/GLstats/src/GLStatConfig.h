@@ -3,7 +3,10 @@
 
 #include <vector>
 
-class GLStatConfig {
+#include "Singleton.h"
+
+class GLStatConfig : public Singleton<GLStatConfig>
+{
 public:
   /**
    * Set the number of minimum millisecondes before computing FPS
@@ -15,12 +18,8 @@ public:
    */
   float getFPSSamplingRate() { return m_FPSSamplingRate; }
 
-  static GLStatConfig *getInstance();
-
 private:
   float m_FPSSamplingRate;
-
-  static GLStatConfig *m_instance;
 };
 
 #define glStatConfig GLStatConfig::getInstance()
