@@ -1,12 +1,12 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef GLOBALGLSTAT_H
+#define GLOBALGLSTAT_H
 
 #include <vector>
 
 #include "GLContext.h"
 #include "Singleton.h"
 
-class Global : public Singleton<Global>
+class GlobalGLStat : public Singleton<GlobalGLStat>
 {
 public:
   std::vector<GLContext *> contextList;
@@ -15,6 +15,6 @@ public:
   void endGLStatsDrawing();
 };
 
-#define global (*Global::getInstance())
+#define globalGLS (*GlobalGLStat::getInstance())
 
 #endif
