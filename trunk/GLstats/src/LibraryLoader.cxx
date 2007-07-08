@@ -23,6 +23,19 @@ void *
 LibraryLoader::getSym(const char *symName)
 {
   assert(handle);
+  void *addr = dlsym(handle, symName);
+  char *error = dlerror();
+  if(error) {
+    std::ostringstream err;
+    err << "Libraryloader::getSym(): dlsym() error: " << error << ".";
+    throw BasicException(err.str());
+  }
+  return addr;
+}
+
+void *
+LibraryLoader::getNextSym(const char *symName)
+{
   void *addr = dlsym(RTLD_NEXT, symName);
   char *error = dlerror();
   if(error) {
@@ -31,6 +44,12 @@ LibraryLoader::getSym(const char *symName)
     throw BasicException(err.str());
   }
   return addr;
+}
+
+void *
+LibraryLoader::getNextSym(const std::string& symName)
+{
+  getNextSym(symName.c_str());
 }
 
 void

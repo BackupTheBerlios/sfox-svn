@@ -5,9 +5,11 @@
 
 #include "BasicException.h"
 
+#include "GLFuncs.h"
 #include "glstats.h"
 #include "font.h"
 #include "Logger.h"
+#include "LoggerXml.h"
 #include "LoggerManager.h"
 #include "GLStatConfig.h"
 #include "GLContext.h"
@@ -29,6 +31,8 @@ void GLStatsInitGL();
 void
 GLStatsInit()
 {
+  GLFuncsInit();
+
   Timer::init();
   printf("GLStats init...\n");
   fontGL = 0;
@@ -36,6 +40,9 @@ GLStatsInit()
 
   LoggerSimple<float> *logger = new LoggerSimple<float>("FPS");
   loggerManager.add(logger);
+
+  LoggerXml *logXml = new LoggerXml("FuncLogger");
+  loggerManager.add(logXml);
 
   Counter *fpsCounter = new Counter("FPS");
   counterManager.add(fpsCounter);
@@ -70,7 +77,7 @@ GLStatsInitGL()
 {
   try {
     if(!fontGL) {
-      fontGL = new FontGL("data/fonts/DejaVuLGCSansMono-Bold.ttf", 7);
+      fontGL = new FontGL("data/fonts/DejaVuLGCSansMono-Bold.ttf", 16);
       timer = new Timer();
     }
   } catch(BasicException &e) {

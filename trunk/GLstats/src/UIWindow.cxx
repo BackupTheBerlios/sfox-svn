@@ -42,7 +42,6 @@ UIWindow::draw()
 void UIWindow::drawBackground()
 {
   Vec2i size = getSize();
-  printf("Drawbackground %d %d\n", size[0], size[1]);
   glColor4fv(&m_bgColor[0]);
   glBegin(GL_QUADS);
   glVertex2f(0, 0);
