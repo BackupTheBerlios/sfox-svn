@@ -2,34 +2,20 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/povray"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/kde-emacs"))
-
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/speedbar"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/eieio"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/semantic"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/ecb/ecb-2.32"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme"))
 
-;;;;;;;;;;;;;;;;;;;;;;;
-
+;;CLisp mode
 (add-to-list 'load-path "~/.emacs.d/slime/")
 (setq inferior-lisp-program "/usr/bin/cmucl")
 (require 'slime)
 (slime-setup)
 
 
-;;;;;;;;;;;;;;;;;;;;;
-
 (autoload 'gtags-mode "gtags" "" t)
 
 (require 'color-theme)
 (color-theme-initialize)
 (color-theme-deep-blue)
-
-;(setq semantic-load-turn-everything-on t)
-;(require 'semantic-load)
-
-;(require 'ecb)
-
 
 ;;kde modes
 (setq magic-keys-mode nil)
@@ -50,17 +36,6 @@
 ;(setq auto-mode-alist
 ;      (append '(("\\.css$" . css-mode) 
 ;		) auto-mode-alist))
-
-
-;;Semantic
-;(setq semantic-load-turn-everything-on t)
-;require 'semantic-load)
-
-;(require 'semantic-ia)
-;;Ecb
-;(global-semantic-show-dirty-mode -1)
-;(global-semantic-show-unmatched-syntax-mode -1)
-;(require 'ecb)
 
 ;;Mode special QT
 (load "cc-engine.elc")
