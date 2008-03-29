@@ -52,17 +52,36 @@
           (if (bufferp include-buf)
               (switch-to-buffer include-buf))))))
 
+
+;; autoinsert C/C++ header
+(require 'autoinsert)
+(auto-insert-mode)
+(setq auto-insert-directory "~/.emacs.d/autotmpl/") 
+(setq auto-insert-query nil)
+
+(setq auto-insert-alist
+      '(("\\.h$"   . ["cheader.h" cxxtools-auto-update-header-file])
+	))
+(defun cxxtools-auto-update-header-file ()
+  (let* ((relname (file-name-nondirectory (buffer-file-name)))
+	 (nameonly (file-name-sans-extension relname)))
+    (while (re-search-forward "@@@" nil t)
+      (replace-match (upcase nameonly) nil nil))    
+    )
+)
+
+
 ;(setq cxxtools-for-regex "\bfor\b\s-*(\s-*\\(.*\\)\s-*;\s-*\\(.*\\)\s-*;\s-*\\(.*\\)\s-*)")
 ;(setq cxxtools-for-regex "for\W*(\W*\\(.*\\)\W*")
-(setq cxxtools-for-regex "\\bfor\\b\\s-*(\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*;\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*;\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*)")
-(defun cxxtools-iso ()
-  (interactive)
-  ;(beginning-of-buffer)
-  (move-beginning-of-line nil)
-  (if (re-search-forward "\\bfor\\b" (line-end-position) t)
-      (let ((for-end (scan-lists (point) 1 0)))
-	(backward-char 3)
-	(while (re-search-forward cxxtools-for-regex for-end t)
-	  (replace-match "for ( \\1; \\2; \\3 )" nil nil)
-	  ))))
+;(setq cxxtools-for-regex "\\bfor\\b\\s-*(\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*;\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*;\\s-*\\(?:\\(.*[^[:blank:]]\\)\\|[:blank:]*\\)\\s-*)")
+;(defun cxxtools-iso ()
+;  (interactive)
+;  ;(beginning-of-buffer)
+;  (move-beginning-of-line nil)
+;  (if (re-search-forward "\\bfor\\b" (line-end-position) t)
+;      (let ((for-end (scan-lists (point) 1 0)))
+;	(backward-char 3)
+;	(while (re-search-forward cxxtools-for-regex for-end t)
+;	  (replace-match "for ( \\1; \\2; \\3 )" nil nil)
+;	  ))))
 	
