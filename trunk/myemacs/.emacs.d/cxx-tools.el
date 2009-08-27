@@ -85,3 +85,12 @@
 ;	  (replace-match "for ( \\1; \\2; \\3 )" nil nil)
 ;	  ))))
 	
+
+; Inserts a kdDebug statement showing the name of the current method.
+; You need to create the empty line first.
+(defun insert-std-cerr ()
+  (interactive)
+  (insert "std::cerr << ")
+  (insert " << std::endl;")
+  )
+(define-key c++-mode-map [(control meta d)] 'insert-std-cerr)
