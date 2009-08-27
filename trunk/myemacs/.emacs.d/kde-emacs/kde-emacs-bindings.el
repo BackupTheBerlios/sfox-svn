@@ -136,7 +136,7 @@
 (define-key c++-mode-map [(f10)] 'kdab-insert-header)
 (define-key c++-mode-map [(shift f10)] 'kdab-insert-forward-decl)
 (define-key c++-mode-map [(meta f10)] 'kdab-lookup-qt-documentation)
-(define-key c++-mode-map [(control meta d)] 'insert-kdDebug)
+;(define-key c++-mode-map [(control meta d)] 'insert-kdDebug)
 
 ; Standard Qt/KDE shortcuts: Ctrl+Backspace, Ctrl+Delete
 (define-key global-map [(control backspace)] 'backward-kill-word)
