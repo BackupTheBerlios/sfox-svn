@@ -10,12 +10,12 @@
 (require 'slime)
 (slime-setup)
 
-
+(transient-mark-mode 0)
 (autoload 'gtags-mode "gtags" "" t)
 
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-deep-blue)
+;(require 'color-theme)
+;(color-theme-initialize)
+;(color-theme-deep-blue)
 
 ;;kde modes
 (setq magic-keys-mode nil)
@@ -76,6 +76,7 @@
 (setq auto-mode-alist
       (append '(("\\.asm$" . nasm-mode) 
 		("\\.inc$" . nasm-mode)
+		("\\.cu$" . c++-mode)
 		) auto-mode-alist))
 
 ;; Set autoloading of POV-mode for these file-types.
@@ -171,19 +172,21 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(display-time-mode t)
  '(ecb-options-version "2.32")
  '(gnuserv-program (concat exec-directory "/gnuserv"))
  '(load-home-init-file t t)
  '(magic-keys-mode nil)
  '(pc-select-meta-moves-sexps t)
  '(pc-select-selection-keys-only t)
- '(pc-selection-mode t nil (pc-select)))
+ '(pc-selection-mode t nil (pc-select))
+ '(show-paren-mode t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "#141312" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
 
 (load "gl.el")
 (load "psvn.el")
@@ -215,7 +218,16 @@
 	   '(("\\.cmake\\'" . cmake-mode))
 	   auto-mode-alist))
 (autoload 'cmake-mode "~/.emacs.d/cmake-mode.el" t)
-
+(defun cmake-rename-buffer ()
+  "Renames a CMakeLists.txt buffer to cmake-<directory name>."
+  (interactive)
+  (when (and (buffer-file-name) (string-match "CMakeLists.txt" (buffer-name)))
+      (setq parent-dir (file-name-nondirectory (directory-file-name (file-name-directory (buffer-file-name)))))
+      (setq new-buffer-name (concat "cmake-" parent-dir))
+      (rename-buffer new-buffer-name t)
+      )
+  )
+(add-hook 'cmake-mode-hook (function cmake-rename-buffer))
 
 ;;switch cxx/h
 (load "cxx-tools.el")
