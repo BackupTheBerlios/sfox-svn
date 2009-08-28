@@ -14,8 +14,8 @@
 ;;
 ;; You should have received a copy of the GNU Lesser General Public
 ;; License along with this library; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-;; 02111-1307  USA
+;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+;; 02110-1301  USA
 
 ;;; Commentary:
 ;; Package provides four interactive functions:
@@ -148,6 +148,7 @@ token and TOKENS have to be a list of functions from buffer."
     ret
     ))
 
+;; TODO support Q_SIGNALS too
 (defmacro kde-label-signals (pt)
   "Returns none-nil if the current access label == \"signals\""
   `(save-excursion
@@ -177,7 +178,7 @@ token and TOKENS have to be a list of functions from buffer."
     (goto-char ,pt)
     (if (looking-at ":")
 	;; export this regex to a kde-emacs-vars defvar
-	(re-search-backward "\\(public\\|protected\\|private\\)[ \t]+slots" (point-at-bol) t))
+	(re-search-backward "\\(public\\|protected\\|private\\)[ \t]+\\(slots\\|Q_SLOTS\\)" (point-at-bol) t))
     ))
 
 (defmacro kde-is-constructor (function)

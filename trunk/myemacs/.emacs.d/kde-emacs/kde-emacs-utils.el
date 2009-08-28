@@ -1,6 +1,6 @@
 ;; kde-emacs-utils.el
 ;;
-;; Copyright (C)  2002  KDE Development Team <www.kde.org>
+;; Copyright (C)  2002-2005  KDE Development Team <www.kde.org>
 ;;
 ;; This library is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU Lesser General Public
@@ -14,8 +14,8 @@
 ;;
 ;; You should have received a copy of the GNU Lesser General Public
 ;; License along with this library; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-;; 02111-1307  USA
+;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+;; 02110-1301  USA
 
 
 (require 'kde-emacs-vars)
@@ -35,6 +35,9 @@ This function does not do any hidden buffer changes."
       `(scan-lists ,from ,count ,depth nil t)
     `(c-safe (scan-lists ,from ,count ,depth))))
 
+(if (not (eq kde-include-directory nil))
+    (setq sourcepair-header-path (list "." kde-include-directory "/*")))
+
 ;; returns non-nil if the given file has a using declaration
 ;; with the passed namespace
 (defun kde-file-has-using (namespace)
@@ -48,7 +51,6 @@ This function does not do any hidden buffer changes."
       )
     found)
   )
-
 ;; returns non-nill if the given file has a "namespace SomeNM" declaration
 ;; where SomeNM is passed via the namespace argument
 (defun kde-file-is-in-namespace (namespace)
@@ -62,6 +64,25 @@ This function does not do any hidden buffer changes."
       )
     found)
   )
+
+; Helper function for getting the baseclass of the current class - in a C++ header file
+; Only supports single inheritance
+(defun baseclass-under-point ()
+  (let ((pos (c-safe-scan-lists (point) -1 1)))
+    (save-excursion
+      (goto-char (if pos pos (point-min)))
+      (backward-word 2)			; move back over "public baseclass"
+      (if (looking-at "public\\|protected\\|private[ \t]*")
+	  (progn
+	    (forward-word)
+	    (while (looking-at "[ \t]")
+	      (forward-char 1))
+	    (let ((start (point)))
+	      (forward-word)
+	      (buffer-substring start (point))))
+	nil
+	)))
+    )
 
 ; Helper function for parsing our current position in a C++ header file
 ; returns (namespace (class function)) where (a b) is a cons.
@@ -80,7 +101,7 @@ This function does not do any hidden buffer changes."
 	(let ((pos (c-safe-scan-lists (point) -1 1)))
 	; +1 added here so that the regexp in the while matches the { too.
 	  (goto-char (if pos (+ pos 1) (point-min))))
-	(while (re-search-backward "^[ ]*\\(class\\|namespace\\)[ \t][^};]*{" nil t)
+	(while (re-search-backward "^[ ]*\\(class\\|namespace\\|struct\\)[ \t][^};]*{" nil t)
 	  (save-excursion
 	    (forward-word 1)
 	   (when (looking-at "[ \t]*[A-Z_]*_EXPORT[A-Z_]*[ \t]")
@@ -123,6 +144,12 @@ This function does not do any hidden buffer changes."
       (re-search-backward "^[ \t]*")
       (while (looking-at "[ \t]")
 	(forward-char 1))
+      (when (looking-at "/\\*") ; C-style comment, like /*! \reimp */
+	(re-search-forward "\\*/" nil t))
+      (when (looking-at "Q_") ; Qt macro like Q_SCRIPTABLE
+	(forward-sexp))
+      (while (looking-at "[ \t]")
+	(forward-char 1))
       (setq function (buffer-substring (point) end))
       )
     ) ; end of global save-excursion
@@ -136,6 +163,8 @@ This function does not do any hidden buffer changes."
        (setq function (replace-match " " t t function)))
   (and (string-match "^\\(virtual\\>\\)?[ \t]*" function)
        (setq function (replace-match "" t t function)))
+  (and (string-match "^\\(explicit\\>\\)?[ \t]*" function)
+       (setq function (replace-match "" t t function)))
   (and (string-match "^\\(static\\>\\)?[ \t]*" function)
        (setq function (replace-match "" t t function)))
   (while (string-match "  +" function) ; simplifyWhiteSpace
@@ -144,9 +173,13 @@ This function does not do any hidden buffer changes."
     (setq function (replace-match " " t t function)))
   (while (string-match "^ " function)  ; remove leading whitespace
     (setq function (replace-match "" t t function)))
+  ; remove default values. complex case: void foo(p=QString())
   (let ((startargs (string-match "(" function)))
-    (while (string-match " ?=[^,)]+" function startargs) ; remove default values
-      (setq function (replace-match " " t t function))))
+    (while (string-match " ?=[^,()]+" function startargs) ; part 1 (stop at '(')
+      (setq function (replace-match "" t t function)))
+    (while (string-match "([^()]*)" function (+ startargs 1))       ; part 2, remove "(...)"
+      (setq function (replace-match "" t t function))))
+
   (while (string-match " +," function) ; remove space before commas
     (setq function (replace-match "," t t function)))
   function ; the return value
@@ -203,34 +236,56 @@ This function does not do any hidden buffer changes."
         (function "")
         found
 	)
-    (if (or (string-match "\\.cc$" n)
-            (string-match "\\.cpp$" n)
-            (string-match "\\.C$" n))
+    (if (member (concat "." (file-name-extension n)) sourcepair-source-extensions)
         ; TODO replace fume-function-before-point, needed for emacs,
         ; and for better namespace support.
 	;(progn
 	;  (let ((pos (kde-scan-lists (point) -1 1 nil t))) ; Go up a level
 	;    (goto-char (if pos (+ pos 1) (point-min))))
-        (let ((a (fume-function-before-point)))
-          (and (string-match "^\\(.*\\)::\\(.*\\)$" a)
-               (progn
-                 (setq class (match-string 1 a))
-                 (setq function (match-string 2 a))
-                 (kde-switch-cpp-h)
-                 (goto-char 0)
-                 (re-search-forward
-		  (concat "\\(class\\|struct\\|namespace\\)\\s-+"
-			  class "[^;]+{") nil t)
-                 ;; TODO keep looking, until we find a match that's not inside a comment
-                 (re-search-forward (concat "[ \t]+" (regexp-quote function) "[ \t]*(") nil t)))))
-    (if (string-match "\\.h$" n)
+        (let ((a (fume-function-before-point))
+	      (functionregexp ""))
+          
+          (if (eq a nil)
+              (progn
+                (kde-switch-cpp-h)
+                (message "point is not in a method"))
+            (if (string-match "^\\(.*\\)::\\(.*\\)$" a)
+                (progn
+                  (setq class (match-string 1 a))
+                  (setq function (match-string 2 a))
+                  (kde-switch-cpp-h)
+                  (goto-char 0)
+                                        ; Look for beginning of class ("\\s-+" means whitespace including newlines)
+                  (re-search-forward
+                   (concat "\\(class\\|struct\\|namespace\\)\\s-+"
+                           "\\([A-Z_]+_EXPORT[A-Z_]*\\s-+\\)?"  ; allow for optional EXPORT macro
+                           class "\\b"                          ; the classname - with word separator
+                           "[^;]+{"                             ; the optional inheritance and the '{'
+                           ) nil t)                             ; no error, just return nil if not found
+
+                                        ; Look for function - with \\b prepended, unless this is about ~Foo.
+                  (setq functionregexp (kde-function-regexp-quote function))
+                  (and (not (string-match "^~" functionregexp))
+                       (setq functionregexp (concat "\\b" functionregexp)))
+                  ;; TODO keep looking, until we find a match that's not inside a comment
+                  (re-search-forward (concat functionregexp "[ \t]*(") nil t))
+                                        ; else: not a member method, maybe just a c function
+              (progn
+                (setq function a)
+                (kde-switch-cpp-h)
+                (goto-char 0)
+                (re-search-forward (concat "\\b" (kde-function-regexp-quote function) "[ \t]*(") nil t))
+              )
+            )
+          ))
+    (if (member (concat "." (file-name-extension n)) sourcepair-header-extensions)
         (progn
 	  (let ((mup (method-under-point))
 		(sig "")
 		(pos 0))
         (setq namespace (car mup))
-	    (setq class (car (cdr mup)))
-	    (setq function (cdr (cdr mup)))
+	    (setq class (cadr mup))
+	    (setq function (cddr mup))
 	    (kde-switch-cpp-h)
 
         ;; First search with namespace prefixed
@@ -238,7 +293,7 @@ This function does not do any hidden buffer changes."
 	    (setq sig (kde-remove-newline (kde-function-impl-sig namespace class function)))
 	    (if (string-match "(.*" sig) ; remove args
 		(setq sig (replace-match "" nil t sig)))
-	    (setq found (re-search-forward (concat "^[^()]*" (regexp-quote sig) "[ \t]*(") nil t) )
+	    (setq found (re-search-forward (concat "^[^()]*" (kde-function-regexp-quote sig) "[ \t]*(") nil t) )
 
         (if (not found)
             (progn
@@ -249,14 +304,14 @@ This function does not do any hidden buffer changes."
               
               (if (string-match "(.*" sig) ; remove args
                   (setq sig (replace-match "" nil t sig)))
-              (re-search-forward (concat "^[^()]*" (regexp-quote sig) "[ \t]*(") nil t) ) )
+              (re-search-forward (concat "^[^()]*" (kde-function-regexp-quote sig) "[ \t]*(") nil t) ) )
 	    )))))
 
 (defun kde-remove-newline (str) 
-  (let ((res str))
-    (while (string-match "\n" res )
-    (setq res (replace-match " " nil t res)))
-  res))
+    (replace-in-string str "\n" " "))
+; quote for use as regexp, but replace spaces with "any whitespace"
+(defun kde-function-regexp-quote (str)
+  (replace-in-string (regexp-quote str) "[ \n\t]" "[ \n\t]"))
 
 ; Initial implementation by Arnt Gulbransen
 ; Current maintainer: David Faure
@@ -266,13 +321,27 @@ This function does not do any hidden buffer changes."
   (let* (
 	 (mup (method-under-point))
 	 (namespace (car mup))  ; will contain A::B::
-	 (class (car (cdr mup)))
-	 (function (cdr (cdr mup)))
+	 (class (cadr mup))
+	 (function (cddr mup))
 	 (file (buffer-file-name))
 	 (insertion-string (kde-function-impl-sig namespace class function))
+	 (function-sig (canonical-function-sig function))
 	 (msubstr nil)
 	 (start nil)
+	 (newcppfile nil)
+	 (baseclass nil)
 	 )
+    ; First, assemble the skeleton text into insertion-string
+    ; At this point it already contains the method signature
+
+    ; If constructor: add call to base class 
+    (and (stringp class)
+	 (string-match (concat "^ *" class "[ \\t]*(") function-sig) ; constructor
+	 (setq baseclass (baseclass-under-point))
+	 ; TODO: passing the parent parameter if baseclass starts with Q :)
+	 (setq insertion-string (concat insertion-string "\n    : " baseclass "()" )))
+
+    ; Method body
     (setq insertion-string 
 	  (concat insertion-string "\n{\n"
 		  (replace-in-string kde-make-member-default-impl "FUNCTION" 
@@ -280,56 +349,87 @@ This function does not do any hidden buffer changes."
 				     (replace-in-string insertion-string "\n" " " t)
 				     t)
 		  "}\n"))
-    ; move to next method, to be ready for next call
+
+    ; Move to next method, to be ready for next call
     (backward-char)                ; in case we're after the ';'
     (re-search-forward ";" nil t)  ; end of this method decl
-    (re-search-forward ";" nil t)  ; end of next method decl
+    (let ((moveToNext t))
+      (while moveToNext
+	(re-search-forward ";" nil t)  ; end of next method decl
+	(save-excursion
+	  (forward-char -2) ; -1 goes to ';' itself, so go before that
+	  (while (looking-at "[ \t0=]")
+	    (forward-char -1))
+	  (forward-char 1)
+          ; move to next method again if we're at a pure virtual method
+	  (setq moveToNext (looking-at "[ \t]*=[ \t]*0;"))
+	  )
+	)
+      )
 
-    (if (string-match "\\.h$" file)
+    ; Switch to .cpp if the declaration was in a header file
+    (if (member (concat "." (file-name-extension file)) sourcepair-header-extensions)
 	(kde-switch-cpp-h)
       )
+    ;(setq newcppfile (= (point-max) 1))
     (goto-char (point-max))
     (kde-comments-begin)
     (kde-skip-blank-lines)
     (setq msubstr (buffer-substring (point-at-bol) (point-at-eol)))
+    ; TODO refine regexp
     (if (string-match "^#include.*moc.*" msubstr)
-	(progn 
-	  (forward-line -1)
-	  (end-of-line)
-	  (insert "\n")))
-    (if (string-match "}" msubstr)
 	(progn
+	  (while (string-match "^#include.*moc.*" msubstr)
+	    (forward-line -1)
+	    (setq msubstr (buffer-substring (point-at-bol) (point-at-eol)))
+	    )
+	  (end-of-line)
+	  (insert "\n"))
+    ; else
+      (progn
 	  (end-of-line)
 	  (insert "\n")
 	  (forward-line 1)
 	  ))
     (insert insertion-string)
     (forward-char -3)
-    (c-indent-defun)   
+    (c-indent-defun)
+    ; Insert #include for the header if necessary
     (save-excursion
       (and (string-match ".*/" file)
 	   (setq file (replace-match "" t nil file)))
       (and (string-match "\\.h$" file)
-	   (functionp 'kdab-insert-include-file)
-	   (kdab-insert-include-file file 't nil)))
+	   (functionp 'kdab-insert-header-non-interactive)
+       (kdab-insert-header-non-interactive (file-name-sans-extension file))))
     (when (featurep 'fume-rescan-buffer)
       (fume-rescan-buffer))
     ))
 
-
-; Adds the current file to Makefile.am.
-; Written by David.
-(defun add-file-to-makefile-am ()
-  "add the current file to the _SOURCES tag in the Makefile.am"
+(defun add-file-to-buildsystem ()
+  "Add the current (C++) file to either Makefile.am or a .pro file, whichever exists."
+  ; Author: David
   (interactive)
-  (let ((file (buffer-name))
-        (makefile "Makefile.am"))
+  (if (file-readable-p "Makefile.am")
+      (add-file-to-makefile-am)
+    ; else: find a .pro file and add it there
+    (let* ((files (directory-files "." nil ".pro$" nil t))
+	   (projfile (car files)))
+      (if projfile
+	  (add-file-to-project projfile "^SOURCES[ \t]*") ; could be SOURCES= or SOURCES+=
+	; else: error
+	(error "No build system file found")
+	)))
+  )
+
+; internal helper for add-file-to-*
+(defun add-file-to-project (makefile searchString)
+  (let ((file (buffer-name)))
     (if (not (file-readable-p makefile))
-	(error "Makefile.am not found!")
+	(error (concat makefile " not found!"))
       )
     (find-file makefile)
     (goto-char (point-min))
-    (if (re-search-forward "_SOURCES" nil t)
+    (if (re-search-forward searchString nil t)
 	(progn
 	  (end-of-line)
           ; check if line ends with '\' [had to read make-mode.el to find this one!]
@@ -338,20 +438,32 @@ This function does not do any hidden buffer changes."
 	  (insert " ")
 	  (insert file)
 	  )
-      (error "_SOURCES not found")
-      )
-    )
+      (error (concat searchString " not found"))
+      ))
+  )
+
+(defun add-file-to-makefile-am ()
+  "Add the current file to the first _SOURCES line in the Makefile.am"
+  ; Author: David
+  (interactive)
+  (add-file-to-project "Makefile.am" "_SOURCES")
   )
 
 
-; Inserts a kdDebug statement showing the name of the current method.
+; Inserts a kDebug statement showing the name of the current method.
 ; You need to create the empty line first.
-(defun insert-kdDebug ()
+(defun insert-kDebug ()
   (interactive)
-  (insert "kdDebug() << ")
-  ;; no unnecessary fume-* functions which aren't available on GNU/Emacs
-  (insert "k_funcinfo")
-  (insert " << endl;")
+  (if (and (boundp 'kdab-qt-version) (eq kdab-qt-version 4))
+    (progn ; KDE4 version
+      (insert "kDebug() << this << ;")
+      (backward-char 1)
+      )
+    (progn ; KDE3 version
+      (insert "kdDebug() << k_funcinfo "))
+      (insert "<< endl;")
+      (backward-char 8)
+      )
   )
 
 ; finds a string to be used in the header-protection function ( see below )
@@ -391,20 +503,25 @@ This function does not do any hidden buffer changes."
     )
   )
 
+;; Add (setq magic-parens-mode nil) to your .emacs (before loading this file)
+;; to disable the automatic spaces inside "( ... )" in C++ mode.
+;; This can also be enabled/disabled per project using  magic-parens-mode: t  in .emacs-dirvars.
+
 ; Makes '(' insert '(' or ' ( ' where appropiate
 (defun insert-parens (arg) (interactive "*P")
-  (if (not (c-in-literal))
+  (if (and (not (c-in-literal))
+           (boundp 'magic-parens-mode) magic-parens-mode)
       (let ((n nil) (except nil))
         (save-excursion
-          (setq n (or (progn (forward-char -2) (looking-at "if"))
-                      (progn (forward-char -1) (looking-at "for"))
-                      (progn (forward-char -1) (looking-at "case"))
-                      (progn (forward-char -1) (looking-at "while"))
+          (setq n (or (progn (forward-char -2) (looking-at "\\bif"))
+                      (progn (forward-char -1) (looking-at "\\bfor"))
+                      (progn (forward-char -1) (looking-at "\\bcase"))
+                      (progn (forward-char -1) (looking-at "\\bwhile"))
                       )
                 )
-          (setq except (or (progn (forward-char -2) (looking-at "kdDebug"))
-                           (looking-at "kdError")
-                           (progn (forward-char -2) (looking-at "kdWarning"))
+          (setq except (or (progn (forward-char -2) (looking-at "kDebug"))
+                           (looking-at "kError")
+                           (progn (forward-char -2) (looking-at "kWarning"))
 			   )
                 )
           )
@@ -422,7 +539,8 @@ This function does not do any hidden buffer changes."
   )
 
 (defun insert-parens2 (arg) (interactive "*P")
-  (if (not (c-in-literal))
+  (if (and (not (c-in-literal))
+           (boundp 'magic-parens-mode) magic-parens-mode)
       (let ((remv nil) (nospac nil))
         (forward-char -2)
         (setq remv (looking-at "( ")) ; () -> we'll have to remove that space
@@ -430,13 +548,13 @@ This function does not do any hidden buffer changes."
         (setq nospac ; no space to be added
               (or (looking-at " ")
                   (looking-at "(")
-                  (save-excursion ; check for kdDebug(123
+                  (save-excursion ; check for kDebug(123
                     (while (looking-at "[0-9]")
                       (forward-char -1))
                     (forward-char -7)
-                    (or (looking-at "kdDebug(")
-			(looking-at "kdError(")
-                           (progn (forward-char -2) (looking-at "kdWarning("))
+                    (or (looking-at "kDebug(")
+			(looking-at "kError(")
+                           (progn (forward-char -2) (looking-at "kWarning("))
 			   )
 		    )
                   )
@@ -577,7 +695,7 @@ This function does not do any hidden buffer changes."
   (let ((f (file-name-nondirectory (buffer-file-name)))
 	(objext nil))
 
-    (if (file-readable-p "Makefile.am")
+    (if (and (file-readable-p "Makefile.am") (not (file-readable-p "CMakeLists.txt")))
 	(setq objext "\.lo")
       (setq objext "\.o"))
     (if (string-match "\.cpp$" f) (setq f (replace-match objext t t f)))
@@ -598,12 +716,11 @@ This function does not do any hidden buffer changes."
 (defun scroll-other-up () (interactive) (scroll-other-window-down 1)) ; hehe :)
 (defun scroll-other-down () (interactive) (scroll-other-window 1))
 
-(defun match-paren (arg)
-  "Go to the matching parenthesis if on parenthesis otherwise insert %."
-  (interactive "p")
-  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
-        ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
-        (t (self-insert-command (or arg 1)))))
+(defun match-paren ()
+  "Go to the matching parenthesis if on parenthesis otherwise do nothing."
+  (interactive)
+  (cond ((looking-at "[ \t]*[\({]") (forward-sexp) (backward-char))
+	((looking-at "[\)}]") (forward-char) (backward-sexp))))
 
 (defun kde-start-c++-header ()
   "Start a new C++ header by inserting include guards ( see \
@@ -798,5 +915,58 @@ This function does not do any hidden buffer changes."
 	  (comment-region (point-at-bol) (point-at-eol))
 	  (newline)))))
 
+; Helper for qt-open-header, for Qt 4. Opens a file if it says #include "../foo/bar.h",
+; close it and open that file instead; recursively until finding a real file.
+(defun qt-follow-includes (file)
+  (let ((line "")
+	(begin nil)
+	(buffer nil))
+    (find-file file)
+    (goto-char 0)
+    (if (looking-at "#include \"")
+	(progn
+	  (forward-char 10)
+	  (setq begin (point))
+	  (re-search-forward "\"" nil t)
+	  (backward-char 1)
+	  (setq file (buffer-substring begin (point)))
+	  (setq buffer (current-buffer))
+	  (qt-follow-includes file)
+	  (kill-buffer buffer)
+	  )
+      ; else: this is the right file, skip the comments and go to the class
+      (progn
+	(re-search-forward "^class" nil t)
+	(beginning-of-line))
+    )))
+
+(defun qt-open-header ()
+  "Open the Qt header file for the class under point"
+  (interactive)
+  (let* ((qtinc (concat (getenv "QTDIR") "/include/"))
+	(class (thing-at-point 'word))
+	(f nil)
+	(file nil)
+	(files nil)
+	)
+    (save-excursion
+      ; The Qt3 case: the includes are directly in $QTDIR/include/, lowercased
+      (setq f (concat qtinc (downcase class) ".h" ))
+      (if (file-readable-p f)
+	  (setq file f)
+        ; For some Qt3/e classes: add _qws
+	(setq f (concat qtinc (downcase class) "_qws.h" ))
+	(if (file-readable-p f)
+	    (setq file f)
+        ; The Qt4 case: the includes are in $QTDIR/include/QSomething/, in original case
+	  (setq files (directory-files qtinc t nil "dirsonly"))
+	  (dolist (f files nil)
+	    (if (file-readable-p (concat f "/" class) )
+		(setq file (concat f "/" class))))
+	  ))
+      (and file
+	   (qt-follow-includes file))
+      )
+  ))
 
 (provide 'kde-emacs-utils)

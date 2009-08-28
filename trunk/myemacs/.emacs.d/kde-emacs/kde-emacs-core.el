@@ -14,8 +14,8 @@
 ;;
 ;; You should have received a copy of the GNU Lesser General Public
 ;; License along with this library; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-;; 02111-1307  USA
+;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+;; 02110-1301  USA
 
 (require 'kde-emacs-vars)
 ;*---------------------------------------------------------------------*/
@@ -26,7 +26,7 @@
   "Specifies the current tab behavior. default will expand try to complete
 the symbol at point if at the end of something that looks like an indentifier else
 it will indent the current line if the pointer is at the beginning of the line it will
-be moved the the start of the indention. abbrev-indent behaves like default, but the 
+be moved to the start of the indention. abbrev-indent behaves like default, but the 
 cursor isn't moved to the beginning of the indention with tab is pressed when the cursor
 is at the beginning of the line. indent simply indents the line without trying to 
 complete the symbol"
@@ -110,7 +110,7 @@ With arg, do it arg times."
   )
 
 (c-add-style "kde-c" '("stroustrup"
-		       (c-basic-offset . 2)
+		       (c-basic-offset . 4)
 		       (c-offsets-alist
 			(case-label . 4)
 			(access-label . -)
@@ -136,7 +136,7 @@ With arg, do it arg times."
 			 (c-offsets-alist . ((case-label . 0)
 					     (inline-open . 0)))
 			 ))
-		    
+
 ;; KDE C++ mode
 ;; Not a "(setq c++-mode-hook ..." because this way we would
 ;; prune all other hooks!
@@ -154,17 +154,19 @@ With arg, do it arg times."
   ;; fontify "public|protected|private slots" with one and the same face :)
   ;; NOTE: write face-at-point function to fontify those just like other
   ;; access specifiers
-  (font-lock-add-keywords nil '(("\\<\\(\\(public\\|protected\\|private\\) slots\\)\\>" 
-				 . font-lock-reference-face)))
+  ;; This breaks in the font-lock-fontify engine in xemacs-21.5.28... no solution known yet.
+  ;; TODO use the const variable kde-access-labels here. Couldn't figure out the syntax.
+  (font-lock-add-keywords nil '(("\\<\\(signals\\|Q_SIGNALS\\|k_dcop\\|\\(public\\|protected\\|private\\)\\([     ]+\\(slots\\|Q_SLOTS\\)\\)?\\)\\>:" . font-lock-reference-face)))
+
   ;; Add (setq magic-keys-mode nil) to your .emacs (before loading this file)
   ;; to disable the magic keys in C++ mode.
-  ;(and (boundp 'magic-keys-mode) magic-keys-mode
-  ;     (progn
-;	 (define-key c++-mode-map "\(" 'insert-parens)
-;	 (define-key c++-mode-map "\)" 'insert-parens2)
-;	 (define-key c++-mode-map "\," 'insert-comma)
-;	 (define-key c++-mode-map "\{" 'insert-curly-brace)
-;	 ))
+  (and (boundp 'magic-keys-mode) magic-keys-mode
+       (progn
+	 (define-key c++-mode-map "\," 'insert-comma)
+	 (define-key c++-mode-map "\{" 'insert-curly-brace)
+	 (define-key c++-mode-map "\(" 'insert-parens)
+	 (define-key c++-mode-map "\)" 'insert-parens2)
+	 ))
   )
 
 (defun kde-c-mode-hook ()
@@ -178,6 +180,8 @@ With arg, do it arg times."
 ;;        If you don't have 5.30 comment out the following c-guess-basic-syntax
 ;;        and uncomment the one underneath.
 (cond
+ ((string-match "^5\\.31\\." c-version)
+  )
  ((string-match "^5\\.30\\." c-version)
   (defun c-guess-basic-syntax ()
   "Return the syntactic context of the current line.
@@ -866,7 +870,8 @@ This function does not do any hidden buffer changes."
 			  (not (bobp))
 			  (save-excursion
 			    (c-safe (progn (c-backward-sexp 1) t))
-			    (and (looking-at "slots:")
+			    (and (or (looking-at "slots:")
+				     (looking-at "Q_SLOTS:"))
 				 (c-backward-sexp 1))
 			    (looking-at c-opt-access-key)))
 		(c-backward-sexp 1)
@@ -2116,7 +2121,8 @@ This function does not do any hidden buffer changes."
 			      (not (bobp))
 			      (save-excursion
 				(c-safe (progn (c-backward-sexp 1) t))
-				(and (looking-at "slots:")
+				(and (or (looking-at "slots:")
+					 (looking-at "Q_SLOTS:"))
 				   (c-backward-sexp 1))
 				(looking-at c-opt-access-key)))
 		    (c-backward-sexp 1)
@@ -2734,7 +2740,7 @@ This function does not do any hidden buffer changes."
 		      (setq containing-sexp (car containing-sexp))
 		    ;; otherwise, ignore this element
 		    (setq containing-sexp nil))
-		;; ignore the bufpos if its been narrowed out by the
+		;; ignore the bufpos if it has been narrowed out by the
 		;; containing class or does not contain the indent point
 		(if (or (<= containing-sexp (point-min))
 			(>= containing-sexp indent-point))
@@ -3172,7 +3178,8 @@ This function does not do any hidden buffer changes."
 			    (save-excursion
 			      (c-safe (progn (c-backward-sexp 1) t))
 			      ;; agulbrahack 2
-			      (and (looking-at "slots:")
+			      (and (or (looking-at "slots:")
+				       (looking-at "Q_SLOTS:"))
 				   (c-backward-sexp 1))
 			      (looking-at c-access-key)))
 		  (c-backward-sexp 1)
@@ -3637,7 +3644,7 @@ This function does not do any hidden buffer changes."
 	       )))
 	   ;; CASE 17: statement catchall
 	   (t
-	    ;; we know its a statement, but we need to find out if it is
+	    ;; we know it is a statement, but we need to find out if it is
 	    ;; the first statement in a block
 	    (goto-char containing-sexp)
 	    (forward-char 1)

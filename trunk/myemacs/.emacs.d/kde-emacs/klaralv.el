@@ -1,5 +1,5 @@
 ;; ------------------------------ COPYRIGHT NOTICE ------------------------------
-;; klaralv.el version 1.3
+;; klaralv.el version 1.4
 ;; Copyright Klaralvdalens Datakonsult AB.
 ;;
 ;; This program is free software; you can redistribute it and/or modify it
@@ -14,115 +14,63 @@
 ;;
 ;; You should have received a copy of the GNU General Public License along
 ;; with GNU Emacs.  If you did not, write to the Free Software Foundation,
-;; Inc., 675 Mass Ave., Cambridge, MA 02139, USA.
+;; Inc., 51 Franklin Street, Fifth Floor., Boston, MA 02110-1301, USA.
 
 
 ;; ------------------------------ INSTALLATION ------------------------------
-;; To use this file, add the current directory to your load path.
-;; you do this by inserting something like the following to your .emacs:
-;; (setq load-path (cons "/home/blackie/Emacs/" load-path))
+;; To use this file, put this file in your emacs config directory.
+;; If you do not have such a directory, create one and add 
+;; something like the following to your .emacs: 
+;; (setq load-path (cons "/home/joe/Emacs/" load-path))
 ;;
 ;; Next insert the following line into your .emacs
 ;; (require 'klaralv)
 ;; (global-set-key [(f5)] 'kdab-insert-header)
 ;; (global-set-key [(shift f5)] 'kdab-insert-forward-decl)
-;; (setq kdab-qt-documentation "file://usr/local/qt/html/doc/XXX.html")
 ;; (global-set-key [(control f5)] 'kdab-lookup-qt-documentation)
 ;; 
-;; If you use QTopia, and do not want include files to be prefixed with qpe/,
-;; as in qpe/qpeapplication, then insert the following code in your setup
+;; If you use Qtopia, insert the following line to activate Qtopia headers
+;; (setq kdab-include-qpe 't)
+;; If you do not want include files to be prefixed with qtopia/,
+;; as in qtopia/qpeapplication, then insert the following code in your setup
 ;; (setq kdab-prefix-qpe nil)
+;;
+;; If you are using Qt 3 rather than Qt 4, insert the following line into you setup:
+;; (setq kdab-qt-version 3)
+;; or in a .emacs-dirvars file:
+;; kdab-qt-version: 3
+;;
+;; Finally, if you do not want header files to be inserted lower-cased when
+;; not found locally, insert (kdab-lowercase-header-files nil)
 
 ;; ------------------------------ CONFIGURATION ------------------------------
-(defvar kdab-qt-documentation
-  "http://doc.trolltech.com/3.0/XXX.html"
-  "URL for Qt documentation. XXX must be in the string. 
-  Example: file://packages/kde-src/qt-copy/doc/html/XXX.html")
+(defvar kdab-qt-version 4
+  "Specify which header files to use")
 
-(defvar kdab-qpe-documentation
-  "file://opt/qtopia/doc/XXX.html"
-  "URL for QTopia documentatin. XXX must be in the string. 
-  Example: file:/opt/qtopia/doc/XXX.html")
-
+(defvar kdab-include-qpe nil
+  "Specifies whether Qtopia headers should be included")
 
 (defvar kdab-prefix-qpe 't
-  "set this to nil if you do not want QPE header files prefixed with qpe/")
+  "set this to nil if you do not want QTopia header files prefixed with qtopia/")
 
+(defvar kdab-lowercase-header-files 't
+  "Should header files be all lowercase, or would you prefer to use same case as class?")
+
+(defvar kdab-private-special-includes '()
+  "Override variable for special include specifications")
+
+(defvar kdab-suffix-for-private-headers "_p\\|_priv"
+  "Regular expression specifying the possible suffix to a file name for private includes.
+The default regular expression allows that a file named test.cpp may include test_p.h or test_priv.h.
+This is used when inserting headers, to ensure that no includes are inserted before the private header")
+
+;; ------------------------------ Include Specifications ------------------------------ 
 ;; special case for include files
 ;; Please notify blackie@klaralvdalens-datakonsult.se with any modification to this variable!
 (defvar kdab-special-includes
   '( 
-    (qlayout.h QHBoxLayout QVBoxLayout QGridLayout QBoxLayout)
-    (qlistview.h QListViewItem QCheckListItem QListViewItemIterator)
-    (qiconview.h QIconViewItem QIconDragItem QIconDrag)
-    (qdragobject.h QTextDrag QStoredDrag QUriDag QColorDrag QImageDrag QDragManager)
-    (qmime.h QMimeSource QMimeSourceFactory QWindowsMime)
-    (qptrlist.h QPtrListIterator)
-    (qevent.h QTimerEvent QMouseEvent QWheelEvent QTabletEvent QKeyEvent 
-              QFocusEvent QPaintEvent QMoveEvent QResizeEvent QCloseEvent 
-              QShowEvent QHideEvent QContextMenuEvent QIMEvent QDropEvent
-              QDragMoveEvent QDragEnterEvent QDragResponseEvent QDragLeaveEvent
-              QChildEvent QCustomEvent)
-    (qdatetime.h QTime QDateTime QDate)
-    (qdatetimeedit.h QTimeEdit QDateTimeEditBase QDateEdit QDateTimeEdit)
-    (qcstring.h QByteArray)
-    (qobjectlist.h QObjectListIt QObjectListIterator)
-    (qwidgetlist.h QWidgetListIt)
-    (qtabbar.h QTab)
-    (qpalette.h QColorGroup)
-    (qaction.h QActionGroup)
-    (qvalidator.h QIntValidator QDoubleValidator QRegExpValidator)
-    (qlistbox.h QListBoxItem QListBoxText QListBoxPixmap)
-    (qstring.h QChar QCharRef QConstString)
-    (qcanvas.h QCanvasSprite QCanvasPolygonalItem QCanvasRectangle
-               QCanvasPolygon QCanvasEllipse QCanvasText QCanvasLine
-               QCanvasChunk QCanvas QCanvasItem QCanvasView QCanvasPixmap)
-    (qgl.h QGLFormat QGL QGLContext QGLWidget QGLColormap)
-    (qtable.h QTableSelection QTableItem QComboTableItem QCheckTableItem) 
-    (qsqlfield.h QSqlField QSqlFieldInfo)
-    (qsqlrecord.h QSqlRecord QSqlRecordInfo)
-    
-    ; Qt/Embedded
-    (qcopchannel_qws.h QCopChannel)
-    (qdirectpainter_qws.h QDirectPainter)
-    (qfontfactorybdf_qws.h QFontFactoryBDF)
-    (qfontfactoryttf_qws.h QFontFactoryFT)
-    (qfontmanager_qws.h QGlyphMetrics QGlyph QRenderedFont QDiskFont QFontManager QFontFactory)
-    (qgfx_qws.h QScreenCursor QPoolEntry QScreen QGfx)
-    (qgfxlinuxfb_qws.h QLinuxFbScreen)
-    (qgfxmatroxdefs_qws.h QQnxFbGfx QQnxScreen)
-    (qgfxraster_qws.h QGfxRasterBase QGfxRaster)
-    (qgfxvnc_qws.h QRfbRect QRfbPixelFormat QRfbServerInit QRfbSetEncodings 
-                   QRfbFrameBufferUpdateRequest QRfbKeyEvent QRfbPointerEvent QRfbClientCutText QVNCServer)
-    (qkeyboard_qws.h QWSKeyboardHandler)
-    (qlock_qws.h QLock QLockHolder)
-    (qmemorymanager_qws.h QMemoryManagerPixmap QMemoryManager)
-    (qsoundqss_qws.h QWSSoundServer QWSSoundClient QWSSoundServerClient QWSSoundServerSocket)
-    (qwindowsystem_qws.h QWSInternalWindowInfo QWSScreenSaver QWSWindow QWSSoundServer 
-                         QWSServer QWSServer KeyboardFilter QWSClient)
-    (qwsbeosdecoration_qws.h QWSBeOSDecoration)
-    (qwscursor_qws.h QWSCursor)
-    (qwsdecoration_qws.h QWSDecoration)
-    (qwsdefaultdecoration_qws.h QWSDefaultDecoration)
-    (qwsdisplay_qws.h QWSWindowInfo QWSDisplay)
-    (qwshydrodecoration_qws.h QWSHydroDecoration)
-    (qwskde2decoration_qws.h QWSKDE2Decoration)
-    (qwskdedecoration_qws.h QWSKDEDecoration)
-    (qwsmanager_qws.h QWSManager QWSButton)
-    (qwsmouse_qws.h QWSPointerCalibrationData QWSMouseHandler QCalibratedMouseHandler 
-                    QAutoMouseHandlerPrivate QWSMouseHandlerPrivate QVrTPanelHandlerPrivate 
-                    QTPanelHandlerPrivate QYopyTPanelHandlerPrivate QCustomTPanelHandlerPrivate 
-                    QVFbMouseHandlerPrivate)
-    (qwsproperty_qws.h QWSPropertyManager)
-    (qwsregionmanager_qws.h QWSRegionManager)
-    (qwssocket_qws.h QWSSocket QWSServerSocket)
-    (qwswindowsdecoration_qws.h QWSWindowsDecoration)
-    (qstatusbar.h statusBar())
-
     ; KDE
-    (kdebug.h kdDebug kdWarning kdError kdFatal kdBacktrace)
-    (kconfig.h KConfigGroup)
-    (kiconloader.h BarIcon SmallIcon DesktopIcon KIcon)
+    (kdebug.h kDebug kWarning kError kFatal kBacktrace kdDebug kdWarning kdError kdFatal kdBacktrace)
     (kicondialog.h KIconCanvas KIconButton)
     (knuminput.h KDoubleNumInput KIntNumInput)
 
@@ -170,9 +118,7 @@
     (KDFrame.h KDFrame KDFrameCorner)
     (KDFrameProfileSection.h KDFrameProfileSection)
 
-
     ; Useful fake entries
-    (qapplication.h qApp)
     (kapplication.h kapp)
     (klocale.h i18n I18N_NOOP)
     (kstandarddirs.h locate locateLocal)
@@ -180,11 +126,93 @@
     (unistd.h unlink sleep usleep)
     (iostream cout cerr)
     (ctype.h isalnum isalpha isascii isblank iscntrl isdigit isgraph islower isprint ispunct isspace isupper isxdigit)
-    (qeventloop.h eventloop)
-
+    (string.h strcpy strlen memcpy strerror)
+    (stdlib.h atoi atol)
     )
     "List of special include files which do not follow the normal scheme")
 
+(defvar kdab-qt3-special-includes
+  '((qlayout.h QHBoxLayout QVBoxLayout QGridLayout QBoxLayout)
+    (qlistview.h QListViewItem QCheckListItem QListViewItemIterator)
+    (qiconview.h QIconViewItem QIconDragItem QIconDrag)
+    (qdragobject.h QTextDrag QStoredDrag QUriDag QColorDrag QImageDrag QDragManager)
+    (qmime.h QMimeSource QMimeSourceFactory QWindowsMime)
+    (qptrlist.h QPtrListIterator)
+    (qevent.h QTimerEvent QMouseEvent QWheelEvent QTabletEvent QKeyEvent 
+              QFocusEvent QPaintEvent QMoveEvent QResizeEvent QCloseEvent 
+              QShowEvent QHideEvent QContextMenuEvent QIMEvent QDropEvent
+              QDragMoveEvent QDragEnterEvent QDragResponseEvent QDragLeaveEvent
+              QChildEvent QCustomEvent)
+    (qdatetime.h QTime QDateTime QDate)
+    (qdatetimeedit.h QTimeEdit QDateTimeEditBase QDateEdit QDateTimeEdit)
+    (qcstring.h QByteArray)
+    (qobjectlist.h QObjectListIt QObjectListIterator)
+    (qwidgetlist.h QWidgetListIt)
+    (qtabbar.h QTab)
+    (qpalette.h QColorGroup)
+    (qaction.h QActionGroup)
+    (qvalidator.h QIntValidator QDoubleValidator QRegExpValidator)
+    (qlistbox.h QListBoxItem QListBoxText QListBoxPixmap)
+    (qstring.h QChar QCharRef QConstString)
+    (qcanvas.h QCanvasSprite QCanvasPolygonalItem QCanvasRectangle
+               QCanvasPolygon QCanvasEllipse QCanvasText QCanvasLine
+               QCanvasChunk QCanvas QCanvasItem QCanvasView QCanvasPixmap)
+    (qgl.h QGLFormat QGL QGLContext QGLWidget QGLColormap)
+    (qtable.h QTableSelection QTableItem QComboTableItem QCheckTableItem) 
+    (qsqlfield.h QSqlField QSqlFieldInfo)
+    (qsqlrecord.h QSqlRecord QSqlRecordInfo)
+    
+    ; Qt/Embedded
+    (qcopchannel_qws.h QCopChannel)
+    (qdirectpainter_qws.h QDirectPainter)
+    (qfontfactorybdf_qws.h QFontFactoryBDF)
+    (qfontfactoryttf_qws.h QFontFactoryFT)
+    (qfontmanager_qws.h QGlyphMetrics QGlyph QRenderedFont QDiskFont QFontManager QFontFactory)
+    (qgfx_qws.h QScreenCursor QPoolEntry QScreen QGfx)
+    (qgfxlinuxfb_qws.h QLinuxFbScreen)
+    (qgfxmatroxdefs_qws.h QQnxFbGfx QQnxScreen)
+    (qgfxraster_qws.h QGfxRasterBase QGfxRaster)
+    (qgfxvnc_qws.h QRfbRect QRfbPixelFormat QRfbServerInit QRfbSetEncodings 
+                   QRfbFrameBufferUpdateRequest QRfbKeyEvent QRfbPointerEvent QRfbClientCutText QVNCServer)
+    (qkeyboard_qws.h QWSKeyboardHandler)
+    (qlock_qws.h QLock QLockHolder)
+    (qmemorymanager_qws.h QMemoryManagerPixmap QMemoryManager)
+    (qsoundqss_qws.h QWSSoundServer QWSSoundClient QWSSoundServerClient QWSSoundServerSocket)
+    (qwindowsystem_qws.h QWSInternalWindowInfo QWSScreenSaver QWSWindow QWSSoundServer 
+                         QWSServer qwsServer KeyboardFilter QWSClient)
+    (qwsbeosdecoration_qws.h QWSBeOSDecoration)
+    (qwscursor_qws.h QWSCursor)
+    (qwsdecoration_qws.h QWSDecoration)
+    (qwsdefaultdecoration_qws.h QWSDefaultDecoration)
+    (qwsdisplay_qws.h QWSWindowInfo QWSDisplay)
+    (qwshydrodecoration_qws.h QWSHydroDecoration)
+    (qwskde2decoration_qws.h QWSKDE2Decoration)
+    (qwskdedecoration_qws.h QWSKDEDecoration)
+    (qwsmanager_qws.h QWSManager QWSButton)
+    (qwsmouse_qws.h QWSPointerCalibrationData QWSMouseHandler QCalibratedMouseHandler 
+                    QAutoMouseHandlerPrivate QWSMouseHandlerPrivate QVrTPanelHandlerPrivate 
+                    QTPanelHandlerPrivate QYopyTPanelHandlerPrivate QCustomTPanelHandlerPrivate 
+                    QVFbMouseHandlerPrivate)
+    (qwsproperty_qws.h QWSPropertyManager)
+    (qwsregionmanager_qws.h QWSRegionManager)
+    (qwssocket_qws.h QWSSocket QWSServerSocket)
+    (qwswindowsdecoration_qws.h QWSWindowsDecoration)
+    (qstatusbar.h statusBar())
+
+    ; Useful fake entries
+    (qapplication.h qApp)
+    (qglobal.h qDebug qWarning)
+    (qeventloop.h eventloop)    
+  ))
+
+(defvar kdab-qt4-special-includes
+  '(
+    ; Useful fake entries
+    (QApplication qApp)
+    (QDebug qDebug qWarning)
+    (QEventLoop eventloop)
+    ))
+  
 (defvar kdab-qpe-includes 
   '(
     (alarmserver.h AlarmServer)
@@ -239,17 +267,48 @@
     (tzselect.h TZCombo TimeZoneSelector)
     ))
 
+; List of classes in Qt4 that don't start with a Q.
+(defvar kdab-qt4-classes
+  '(ActiveQt) )
+
 ;; ------------------------------ SOURCE CODE ------------------------------
 
-;; Merge in qpe classes
-(defun kdab-get-special-include-list ()
-  (let (elm header classes (list kdab-qpe-includes) filename (result kdab-special-includes))
+;; build Qt4 special include list
+(defun kdab-build-qt4-special-includes ()
+  (let ( elm (res kdab-qt4-special-includes) (list kdab-qt4-classes))
+    (while list
+      (progn
+        (setq elm (car list))
+        (setq list (cdr list))
+        (setq res (cons (list elm elm ) res ))))
+    res))
+
+(defun kdab-build-qpe-special-incldues ()
+  (let (elm header classes (list kdab-qpe-includes) filename (result '()))
     (while list
       (setq elm (car list))
       (setq list (cdr list))
-      (setq filename (concat (if kdab-prefix-qpe "qpe/" "") (symbol-name (car elm))))
+      (setq filename (concat (if kdab-prefix-qpe "qtopia/" "") (symbol-name (car elm))))
       (setq result (cons (cons (intern filename) (cdr elm)) result)))
     result))
+
+(defun kdab-join-lists (list1 list2)
+  (let ((res list1)
+        (list list2)
+        elm)
+    (while list
+      (progn
+        (setq elm (car list))
+        (setq list (cdr list))
+        (setq res (cons elm res))))
+    res))
+
+(defun kdab-get-special-include-list ()
+  (kdab-join-lists kdab-private-special-includes
+                   (kdab-join-lists kdab-special-includes
+                                    (kdab-join-lists (if (eq kdab-qt-version 3) kdab-qt3-special-includes 
+                                                       (if (eq kdab-qt-version 4) (kdab-build-qt4-special-includes) '()))
+                                                     (if kdab-include-qpe (kdab-build-qpe-special-incldues) '())))))
 
 ;; Lookup class `cls' in kdab-special-includes and return the associate include file name
 (defun kdab-map-special (cls)
@@ -266,7 +325,10 @@
       (setq list (cdr list)))
     (if found
         (symbol-name found)
-      nil)  ; return value
+         ; not found: check if starts with 'Q'
+      (if (string-startsWith cls "Q")
+	  cls ; assume a Qt-4 forwarding header exists for the class
+	nil))  ; return value
     ))
         
 
@@ -295,24 +357,41 @@
     (let* ((word (downcase word-with-case))
            (special-header (cond
                     ((kdab-map-special word) (kdab-map-special word))
-                    ((string-match "^qdom" word) "qdom.h")
-                    ((string-match "^qxml" word) "qxml.h")
-                    (t (concat word ".h"))))
-           header is-local)
+                    ((and (string-match "^qdom" word) (eq kdab-qt-version 3)) "qdom.h")
+                    ((and (string-match "^qxml" word) (eq kdab-qt-version 3)) "qxml.h")
+                    ((and (string-match "^q" word) (eq kdab-qt-version 3)) (concat word ".h") )
+                    ((and (string-match "^q" word) (eq kdab-qt-version 4)) word-with-case )
+                    (kdab-lowercase-header-files (concat word ".h" ))
+                    (t (concat word-with-case ".h"))))
+           header is-local override)
 
-      
       ;; decide on the header file.
-      (if (file-exists-p (concat word-with-case ".h"))
-          (progn ; file exists in given case in pwd.
-            (setq header (concat word-with-case ".h"))
-            (setq is-local 't))
-        (if  (file-exists-p (concat word ".h")) ; file exists in lowercase in pwd
-            (progn
-              (setq header (concat word ".h"))
+      (if (functionp 'kdab-name-include-file)
+          (setq override (kdab-name-include-file word-with-case)))
+
+      (if override
+          (progn ;; Users hook solved it for us.
+            (setq header (car override))
+            (setq is-local (cdr override)))
+        (if (file-exists-p (concat word-with-case ".h"))
+            (progn ; file exists in given case in pwd.
+              (setq header (concat word-with-case ".h"))
               (setq is-local 't))
-          (progn ; header in <..> path
-            (setq header special-header)
-            (setq is-local nil))))
+          (if  (file-exists-p (concat word ".h")) ; file exists in lowercase in pwd
+              (progn
+                (setq header (concat word ".h"))
+                (setq is-local 't))
+            (if (file-exists-p word-with-case)
+                (progn
+                  (setq header word-with-case)
+                  (setq is-local 't))
+              (if (file-exists-p word)
+                  (progn
+                    (setq header word)
+                    (setq is-local 't))
+                (progn ; header in <..> path
+                  (setq header special-header)
+                  (setq is-local nil)))))))
 
       (kdab-insert-include-file header is-local t))))
 
@@ -326,6 +405,7 @@
                         (concat "#include <" header ">"))))
 
     (beginning-of-buffer)
+    ; first look for //#include "foo.h" being already there
     (if (re-search-forward (concat "^ *// *\\(#include *[<\"][ \t]*" header "[ \t]*[>\"]\\)") nil t)
         (progn
           (replace-match "\\1")
@@ -333,20 +413,42 @@
             (message (concat "commented in #include for " header))))
       
       (if (not (re-search-forward (concat "#include *[\"<][ \t]*" header "[ \t]*[\">]") nil t))
-          (progn
-                                        ; No include existed
-            (goto-char (point-max)) ; Using end-of-buffer makes point move, despite save-excursion
-            (if (not (re-search-backward "^#include *[\"<][^\">]+\.h *[\">]" nil t))
-                (beginning-of-buffer)
-              (progn (end-of-line) (forward-char 1)))
-            
-            ;; Now insert the header
-            (insert (concat include-file "\n"))
-            (when show-message
-              (message (concat "inserted " include-file))))
+          (kdab-insert-header-from-end include-file show-message) ;; No include existed
         (when show-message
-              (message (concat "header file \"" header "\" is already included")))))))
+          (message (concat "header file \"" header "\" is already included")))))))
 
+;--------------------------------------------------------------------------------
+; Insert header file starting the search from behind. This is a helper function for 
+; kdab-insert-include-file
+; Historically kdab-insert-include-file added the include file at the end of the list
+; of include files, which had the unfortunate effect that it sometimes inserted the
+; include into #ifdef'ed sections.
+; So now we insert it at the top of the list. We need to go after the include for
+; the source files own header.
+;--------------------------------------------------------------------------------
+(defun kdab-insert-header-from-end (include-file show-message)
+  (let ((basename (file-name-nondirectory (file-name-sans-extension (buffer-file-name))))
+        found-own-include found-any-include)
+    (goto-char (point-max)) ; Using end-of-buffer makes point move, despite save-excursion
+    (setq found-own-include 
+          (re-search-backward (concat "^[ \t]*#[ \t]*include[ \t]*[\"<]" basename "\\(" 
+                                      kdab-suffix-for-private-headers "\\)?\\(.h\\)?[\">]") nil 't))
+    
+    (if found-own-include
+        (progn ; Found an include for my own header file
+          (next-line 1)
+          (beginning-of-line))
+      (progn ; Did not find a local include - we will then insert before first include
+        (beginning-of-buffer)
+        (setq found-any-include (re-search-forward "^[ \s]*#include[ \t]*[\"<]\\([^\">]+\\)[\">]" nil t))
+        (if found-any-include
+            (beginning-of-line) ;; OK we found some include
+          (beginning-of-buffer)))) ;; None found at all.
+
+    ;; Now insert the header
+    (insert (concat include-file "\n"))
+    (when show-message
+      (message (concat "inserted " include-file)))))
 
 
 ;----------------------------------------------------------------------------
@@ -403,20 +505,5 @@
       (setq list (cdr list)))
     found))
         
-;--------------------------------------------------------------------------------
-; Start konqueror with documentation for the class under point.
-; set `kdab-qt-documentation' and `kdab-qpe-documentation'
-; to specify the replacement for the documentation
-;--------------------------------------------------------------------------------
-(defun kdab-lookup-qt-documentation ()
-  (interactive "")
-  (save-excursion
-    (let* ((word (downcase (current-word)))
-           (doc (if (is-qpe-class word) kdab-qpe-documentation kdab-qt-documentation))
-           (url (if (not (string-match "XXX" doc))
-                   (error "didn't find three X's in kdab-qt-documentation or kdab-qpe-documentation")
-                 (replace-match word t t doc))))
-      (start-process "qt documentation" nil "kfmclient" "openURL" url)
-      (message (concat "Loading " url)))))
 
 (provide 'klaralv)

@@ -14,8 +14,8 @@
 ;;
 ;; You should have received a copy of the GNU Lesser General Public
 ;; License along with this library; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-;; 02111-1307  USA
+;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+;; 02110-1301  USA
 
 ; currently no binding for header-protection and add-file-to-makefile-am,
 ; you need to call them from M-x
@@ -47,7 +47,7 @@
 ;
 ; M-n: jump to the next error (after compiling) or grep matches
 ;
-; Ctrl+Meta+D : insert a kdDebug statement with the name of the current method
+; Ctrl+Meta+D : insert a kDebug statement with the name of the current method
 ; [the new hide-all-windows shortcut conflicts with that, you may have to
 ;  change it, or use Ctrl+Meta+Shift+D (!!)]
 ;
@@ -80,12 +80,12 @@
 (define-key global-map [(meta up)] 'scroll-other-up)
 (define-key global-map [(meta down)] 'scroll-other-down)
 (define-key global-map [(control j)] 'goto-line)
-(global-set-key [(meta $)] 'match-paren) ;;for all buffers :)
+(global-set-key [(control %)] 'match-paren) ;;for all buffers :)
 
 (if (featurep 'igrep)
     (progn
       (setq igrep-find-prune-clause
-	    (format "-type d %s -name CVS -o -name .libs -o -name .deps %s"
+	    (format "-type d %s -name CVS -o -name .libs -o -name .deps -o -name .svn %s"
 		    (shell-quote-argument "(")
 		    (shell-quote-argument ")")))
       (setq igrep-find-file-clause
@@ -121,13 +121,14 @@
 (define-key global-map [(shift f4)] 'makeclean)
 (define-key global-map [(f4)] 'make)
 (define-key global-map [(f5)] 'makeinstall)
-(define-key global-map [(shift f5)] 'makeinstallexec)
+(define-key global-map [(shift f5)] 'makeinstallexec) ; TODO replace with run-current-program
 (define-key global-map [(shift f6)] 'makethisfile)
 (if kde-emacs-newline-semicolon 
     (define-key c++-mode-map "\;" 'insert-semicolon))
 (define-key c++-mode-map [(f6)] 'kde-switch-cpp-h)
 (define-key c-mode-map [(f6)] 'kde-switch-cpp-h)
 (define-key c++-mode-map [(f7)] 'switch-to-function-def)
+(define-key c-mode-map [(f7)] 'switch-to-function-def)
 (define-key c++-mode-map [(f9)] 'agulbra-make-member)
 (define-key c-mode-map [(f9)] 'agulbra-make-member)
 (define-key global-map [(meta n)] 'next-error)
@@ -136,7 +137,7 @@
 (define-key c++-mode-map [(f10)] 'kdab-insert-header)
 (define-key c++-mode-map [(shift f10)] 'kdab-insert-forward-decl)
 (define-key c++-mode-map [(meta f10)] 'kdab-lookup-qt-documentation)
-;(define-key c++-mode-map [(control meta d)] 'insert-kdDebug)
+(define-key c++-mode-map [(control meta d)] 'insert-kDebug)
 
 ; Standard Qt/KDE shortcuts: Ctrl+Backspace, Ctrl+Delete
 (define-key global-map [(control backspace)] 'backward-kill-word)
@@ -177,8 +178,8 @@
   '("make this file" . makethisfile))
 (define-key c++-mode-map [menu-bar KDE kdeswitchcpph]
   '("Switch to .h/.cpp file" . kde-switch-cpp-h))
-(define-key c++-mode-map [menu-bar KDE insert-kdDebug]
-  '("Insert kdDebug" . insert-kdDebug))
+(define-key c++-mode-map [menu-bar KDE insert-kDebug]
+  '("Insert kDebug" . insert-kDebug))
 
 
 (provide 'kde-emacs-bindings)

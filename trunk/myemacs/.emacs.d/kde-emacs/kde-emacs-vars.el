@@ -15,8 +15,8 @@
 ;; 									    ;;
 ;; You should have received a copy of the GNU General Public License	    ;;
 ;; along with this program; if not, write to the Free Software		    ;;
-;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA		    ;;
-;; 02111-1307, USA.							    ;;
+;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA		    ;;
+;; 02110-1301, USA.							    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defconst kde-emacs-version "0.2"
@@ -28,10 +28,9 @@
 
 
 (defvar kde-emacs-type
-  (eval-when-compile
-    (if (string-match "XEmacs" (emacs-version))
-	'xemacs
-      'emacs))
+  (if (string-match "XEmacs" (emacs-version))
+      'xemacs
+    'emacs)
   "The type of Emacs we are running on.")
 
 ;*---------------------------------------------------------------------*/
@@ -39,14 +38,8 @@
 ;*---------------------------------------------------------------------*/
 
 (defconst kde-access-labels
-  "\\<\\(signals\\|k_dcop\\|\\(public\\|protected\\|private\\)\\([     ]+slots\\)?\\)\\>:"
+  "\\<\\(signals\\|Q_SIGNALS\\|k_dcop\\|\\(public\\|protected\\|private\\)\\([     ]+\\(slots\\|Q_SLOTS\\)\\)?\\)\\>:"
   "KDE specific access labels regexp.")
-
-(defconst kde-source-files '("cpp" "cc" "cxx" "CC" "C" "c")
-  "List of source-file extensions.")
-
-(defconst kde-header-files '("h" "H" "hh" "hxx" "hpp")
-  "List of header-file extensions.")
 
 ;*---------------------------------------------------------------------*/
 ;*    Group ...                                                        */
@@ -79,7 +72,12 @@
   :type 'string)
 
 (defcustom magic-keys-mode 't
-  "Set this variable to true to have some special keybindings.  E.g. bind '(' to a function which inserts '( ' when appropriate..."
+  "Set this variable to true to have some special keybindings. E.g. bind ',' to a function which inserts ', ' when appropriate..."
+  :group 'kde-devel
+  :type 'boolean)
+
+(defcustom magic-parens-mode 't
+  "Set this variable to true to bind '(' and ')' to functions which insert spaces when appropriate. Depends on magic-keys-mode being set."
   :group 'kde-devel
   :type 'boolean)
 
