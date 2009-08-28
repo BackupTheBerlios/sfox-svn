@@ -2,7 +2,11 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/povray"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/kde-emacs"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/color-theme"))
+(add-to-list 'load-path (expand-file-name "~/share/emacs/site-lisp"))
+
+(transient-mark-mode 0)
+(setq split-width-threshold 9999)
+(autoload 'gtags-mode "gtags" "" t)
 
 ;;CLisp mode
 (add-to-list 'load-path "~/.emacs.d/slime/")
@@ -10,22 +14,30 @@
 (require 'slime)
 (slime-setup)
 
-(transient-mark-mode 0)
-(autoload 'gtags-mode "gtags" "" t)
+(require 'doxymacs)
+(defun my-doxymacs-font-lock-hook ()
+  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+      (doxymacs-font-lock)))
+(add-hook 'font-lock-mode-hook 'my-doxymacs-font-lock-hook)
 
 ;(require 'color-theme)
 ;(color-theme-initialize)
 ;(color-theme-deep-blue)
 
 ;;kde modes
-(setq magic-keys-mode nil)
+;;(setq magic-keys-mode nil)
 (require 'kde-emacs)
+(load "cc-engine.elc")
+;(load "~/.emacs.d/kde-emacs/kde-emacs.el")
+(setq magic-keys-mode t)
+(require 'cwarn)
 
 ;;mail
 (require 'smtpmail)
 (setq smtpmail-smtp-server "localhost")
 (setq send-mail-function 'smtpmail-send-it)
 (setq user-mail-address "leserpent@berlios.de")
+;(setq user-mail-address "bgrange@mc.com")
 (setq user-full-name "Ben")
 
 (require 'ctypes)
@@ -37,15 +49,27 @@
 ;      (append '(("\\.css$" . css-mode) 
 ;		) auto-mode-alist))
 
-;;Mode special QT
-(load "cc-engine.elc")
-;(load "kde-devel-emacs.el")
+
+;;Semantic
+;(setq semantic-load-turn-everything-on t)
+;require 'semantic-load)
+
+;(require 'semantic-ia)
+;;Ecb
+;(global-semantic-show-dirty-mode -1)
+;(global-semantic-show-unmatched-syntax-mode -1)
+;(require 'ecb)
+
+;;Mode c++ pour glsl, cg, h 
 (setq auto-mode-alist
       (append '(("\\.h$" . c++-mode)
 		("\\.cg$" . c++-mode)
+		("\\.cgfx$" . c++-mode)
 		("\\.glsl$" . c++-mode)
+		("\\.cu$" . c++-mode)
 		("\\.fx$" . c++-mode)) auto-mode-alist))
 (setq magic-keys-mode nil)
+(cwarn-mode t)
 
 ;;Mode OpenGL
 ;;(autoload 'OpenGL-minor-mode "OpenGL" "OpenGL editing utilities." t)
@@ -56,7 +80,7 @@
 (autoload 'todo-show "todo-mode" "Show TODO items." t)
 (autoload 'todo-insert-item "todo-mode" "Add TODO items" t)
 
-;;Désactive le bip
+;;Dï¿½sactive le bip
 (setq visible-bell 't)
 
 ;;Suppresion de la toolbar
@@ -76,7 +100,6 @@
 (setq auto-mode-alist
       (append '(("\\.asm$" . nasm-mode) 
 		("\\.inc$" . nasm-mode)
-		("\\.cu$" . c++-mode)
 		) auto-mode-alist))
 
 ;; Set autoloading of POV-mode for these file-types.
@@ -88,10 +111,11 @@
 ;(add-hook 'pov-mode-hook 'turn-on-font-lock)
 
 ;Charge les fonctions de creation auto de classes
-(load "ccext.el")
+;(load "ccext.el")
 
 ;;Affiche l'heure et le numero de ligne
 (setq line-number-mode t)
+(setq column-number-mode t)
 (display-time)
 
 ;;Decompression automatique des fichiers
@@ -129,6 +153,7 @@
 (global-set-key [f7] 'compile)
 (global-set-key "\M-g" 'goto-line)
 (global-set-key [(print)] 'font-lock-fontify-buffer)
+(global-set-key "\M-n" 'next-error)
 
 (define-key c++-mode-map [(f7)] 'compile)
 
@@ -139,12 +164,20 @@
 ;;indentation en mode bash
 (setq sh-basic-offset 2)
 
+;(setq c-default-style "stroustrup")
+(setq c-basic-offset 2)
 ;;indentation en mode C
 (defun my-c-mode-hook()
-  (setq c-basic-offset 2))
-(add-hook 'c-mode-hook 'my-c-mode-hook)
+  (cwarn-mode)
+  ;(c-set-style 'stroustrup)
+  (setq c-basic-offset 2)
+  (c-toggle-auto-newline)
+  (setq c-hanging-braces-alist '(append '((substatement-open before after)) c-hanging-braces-alist)))
 
-(setq c-basic-offset 2)
+(add-hook 'c-mode-hook 'my-c-mode-hook)
+(add-hook 'c++-mode-hook 'my-c-mode-hook)
+(add-hook 'c-mode-common-hook 'my-c-mode-hook)
+
 ;;indentation en mode Java
 (add-hook 'java-mode-hook 'my-c-mode-hook)
 
@@ -172,8 +205,8 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
  '(display-time-mode t)
- '(ecb-options-version "2.32")
  '(gnuserv-program (concat exec-directory "/gnuserv"))
  '(load-home-init-file t t)
  '(magic-keys-mode nil)
@@ -203,13 +236,35 @@
 (setq indent-tabs-mode nil)
 
 
+(setq diff-switches "-b -c")
+'(compare-ignore-whitespace t)
+
+(setq cvs-diff-flags
+[cl-struct-cvs-flags
+ (("-b" "-u" "-N")
+  ("-b" "-c" "-N")
+  ("-b" "-u" "-b")
+  ("-b" "-u" "-N")
+ nil nil nil nil)
+ nil nil nil nil]
+)
+
+;; Make the % key jump to the matching []() if on another, like VI
+(global-set-key "\M-$" 'match-paren)
+(defun match-paren (arg)
+  "Go to the matching parenthesis if on parenthesis otherwise insert %."
+    (interactive "p")
+      (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+              ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+                      (t (self-insert-command (or arg 1)))))
+
 ;;Options de compile
 (setq compilation-scroll-output t)
 (setq compilation-window-height 14)
-;;Utiliser lorsque la compilation est lancée avec -C ../../
+;;Utiliser lorsque la compilation est lancï¿½e avec -C ../../
 (setq compilation-search-path '("." "../.." "../../.." "../../../../"))
 ;(setq compile-command "scons -C .")
-(global-set-key [f4] 'compile)
+;(global-set-key [f4] 'compile)
 
 ;;CMAKE
 (setq auto-mode-alist
@@ -233,5 +288,23 @@
 (load "cxx-tools.el")
 (define-key c-mode-map [(f6)] 'cxxtools-switch-cpp-h)
 (define-key c++-mode-map [(f6)] 'cxxtools-switch-cpp-h)
-(define-key c-mode-map [(shift f6)] 'cxxtools-switch-to-included-file)
 (define-key c++-mode-map [(shift f6)] 'cxxtools-switch-to-included-file)
+(define-key c-mode-map [(shift f6)] 'cxxtools-switch-to-included-file)
+(define-key c++-mode-map [(control meta d)] 'cxx-tools-insert-cerr)
+
+;(set-default-font "-adobe-courier-medium-r-normal-*-14-*-*-*-*-*-iso8859-1")
+;(set-default-font "-adobe-courier-medium-r-normal-*-14-*-*-*-*-*-*")
+(require 'midnight)
+
+(global-set-key (kbd "C-x C-b") 'bs-show)
+
+(setq dabbrev-case-fold-search nil)
+
+;Avoid truncate long lines, usefull for compil windows
+;(setq truncate-partial-width-windows nil)
+
+(define-key global-map [(f10)] 'gud-next)
+(define-key global-map [(f11)] 'gud-step)
+(define-key global-map [(shift f11)] 'gud-finish)
+(define-key global-map [(f9)] 'gud-break)
+(define-key global-map [(shift f9)] 'gud-remove)

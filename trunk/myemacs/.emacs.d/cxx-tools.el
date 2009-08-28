@@ -25,14 +25,15 @@
  (let* ( (relname (file-name-nondirectory (buffer-file-name)))
          (nameonly (file-name-sans-extension relname))
          (ext (file-name-extension relname))
-         (name-header (concat nameonly ".h"))
-         (name-cpp (mapcar '(lambda (x) (concat nameonly "." x)) cxxtools-cpp-ext)) 
+         (name-header (mapcar '(lambda (x) (concat nameonly "." x)) cxxtools-h-ext))
+         (name-cpp (mapcar '(lambda (x) (concat nameonly "." x)) cxxtools-cpp-ext))
 	 (buf nil) )
-   (if (string-match ext "h")
-       (setq buf (cxxtools-scan-list name-cpp))
-     (setq buf (cxxtools-find-file-buffer name-header)))
-   (if (bufferp buf)
-       (switch-to-buffer buf))))
+
+  (if (some '(lambda(y) (string-match y ext)) cxxtools-h-ext)
+      (setq buf (cxxtools-scan-list name-cpp))
+    (setq buf (cxxtools-scan-list name-header)))
+  (if (bufferp buf)
+      (switch-to-buffer buf))))
 
 (defun cxxtools-get-include-statement ()
   "Return the string between <> on the current line"
@@ -88,9 +89,10 @@
 
 ; Inserts a kdDebug statement showing the name of the current method.
 ; You need to create the empty line first.
-(defun insert-std-cerr ()
+(defun cxx-tools-insert-cerr ()
   (interactive)
   (insert "std::cerr << ")
-  (insert " << std::endl;")
-  )
-(define-key c++-mode-map [(control meta d)] 'insert-std-cerr)
+  (let ((pos (point))) 
+    (insert " << std::endl;")
+    (goto-char pos)))
+(define-key c++-mode-map [(control meta d)] 'cxx-tools-insert-cerr)
