@@ -1,7 +1,8 @@
 (require 'cc-mode)
 
 ;;switch cxx/h
-(setq cxxtools-cpp-ext '("cxx" "cpp" "c"))
+(setq cxxtools-cpp-ext '("cpp" "cpp" "c"))
+(setq cxxtools-h-ext '("hpp" "h"))
 
 (defun cxxtools-find-file-buffer (name)
   "Return the buffer conatining the file name"
@@ -95,4 +96,3 @@
   (let ((pos (point))) 
     (insert " << std::endl;")
     (goto-char pos)))
-(define-key c++-mode-map [(control meta d)] 'cxx-tools-insert-cerr)
