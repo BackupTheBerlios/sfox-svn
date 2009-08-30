@@ -169,7 +169,7 @@
 ;;indentation en mode C
 (defun my-c-mode-hook()
   (cwarn-mode)
-  ;(c-set-style 'stroustrup)
+  (c-set-style 'stroustrup)
   (setq c-basic-offset 2)
   (c-toggle-auto-newline)
   (setq c-hanging-braces-alist '(append '((substatement-open before after)) c-hanging-braces-alist)))
@@ -272,7 +272,7 @@
 	   '(("CMakeLists\\.txt\\'" . cmake-mode))
 	   '(("\\.cmake\\'" . cmake-mode))
 	   auto-mode-alist))
-(autoload 'cmake-mode "~/.emacs.d/cmake-mode.el" t)
+(autoload 'cmake-mode "~/.emacs.d/cmake-mode.el" "cmake mode" t)
 (defun cmake-rename-buffer ()
   "Renames a CMakeLists.txt buffer to cmake-<directory name>."
   (interactive)
